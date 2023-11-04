@@ -6,10 +6,12 @@ export enum TokenType {
     CloseParen = "CloseParen",
     BinaryOperator = "BinaryOperator",
     Let = "Let",
+    Outer = "Outer"
 }
 
 const KEYWORDS: Record<string, TokenType> = {
     "let": TokenType.Let,
+    "outer": TokenType.Outer,
 }
 
 export interface Token {
@@ -34,7 +36,7 @@ function isint(str: string){
 }
 
 function isskippable(str: string){
-    return str == ' ' || str == " \n" || str == " \t";
+    return str == ' ' || str == "\n" || str == "\t";
 }
 
 export function tokenize (sourceCode: string): Token[]{
