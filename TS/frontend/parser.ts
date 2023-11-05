@@ -42,7 +42,7 @@ export default class Parser{
         const program: Program ={
         kind: "Program",
         body: [],
-    };
+        };
         while(this.not_eof()){
             program.body.push(this.parse_stmt());
         }
@@ -57,7 +57,7 @@ export default class Parser{
     private parse_expr(): Expr{
         return this.parse_additive_expr();
     }
-
+    
     private parse_additive_expr(): Expr{
         let left = this.parse_multiplicative_expr();
         
@@ -92,16 +92,6 @@ export default class Parser{
         return left;
     }
 
-    // Orders of Precedence
-    //AssignmentExpr
-    //MemberExpr
-    //FunctionCall
-    //LogicalExpr
-    //Comparison
-    //additiveExpr
-    //MultiExpr
-    //UnaryExpr
-    //primary expression
 
     private parse_primary_expr(): Expr{
         const tk = this.at().type;
@@ -115,13 +105,14 @@ export default class Parser{
             case TokenType.OpenParen: {
                 this.eat(); //eat opening paren
                 const value = this.parse_expr();
+                //so after gawin lahat ng nasa loop, eat the current character
+                //if it's not a closing parenthesis, show the error
                 this.expect(
                     TokenType.CloseParen,
                     "Unexpected token found inside parentheisised expression. Expected closing parenthesis.",
                 ); //eat closing paren
                 return value;
             }
-
             
 
             default:
@@ -131,6 +122,17 @@ export default class Parser{
         }
     }
 }
+
+ // Orders of Precedence
+    //AssignmentExpr
+    //MemberExpr
+    //FunctionCall
+    //LogicalExpr
+    //Comparison
+    //additiveExpr
+    //MultiExpr
+    //UnaryExpr
+    //primary expression
 /* 
 case TokenType.Number:
             case TokenType.Equals:

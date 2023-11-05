@@ -62,12 +62,14 @@ export function tokenize (sourceCode: string): Token[]{
             tokens.push(token(src.shift(), TokenType.Equals))
         } else{
             //handle multicharacter tokens
-
+            // cat
+            // outer
             //build number token
             if (isint(src[0])){
                 let num = ""; //string to hold the number
                 //remember yung shift tinatanggal yung current character then returns it
                 //so laging nasa index 0 yung current
+                
                 //while there's a character in src (array) and the next character is an int
                 while (src.length > 0 && isint(src[0])){
                     num += src.shift();
@@ -77,7 +79,7 @@ export function tokenize (sourceCode: string): Token[]{
                 
                 //same thing with is alpha
             } else if (isalpha(src[0])){
-                let ident = ""; // foo let
+                let ident = ""; // store dito yung word
                 while (src.length > 0 && isalpha(src[0])){
                     ident += src.shift();
                 }
@@ -88,7 +90,7 @@ export function tokenize (sourceCode: string): Token[]{
                 if (reserved == undefined){
                     tokens.push(token(ident, TokenType.Identifier));
                 } else {
-                    //if there's a valuee in KEYWORDS, return reserved
+                    //if there's a value in KEYWORDS, return reserved
                     tokens.push(token(ident, reserved));
                 }
             // if it's a whitespace
