@@ -2,8 +2,11 @@
 import { Stmt, Program, Expr, BinaryExpr, NumericLiteral, Identifier } from "./ast.ts";
 import { tokenize , Token, TokenType} from "./lexer.ts";
 
+//declare a class with methods
 export default class Parser{
+    //returns a token?
     private tokens: Token[] = [];
+
 
     private not_eof(): boolean{
         return this.tokens[0].type != TokenType.EOF;
@@ -26,7 +29,14 @@ export default class Parser{
         }
         return prev;
     }
-
+    // eto yung iccall sa main
+    //returns a program
+    /*a program is
+    kind: "Program"
+    body: Stmt[]
+    Stmt is 
+    kind: NodeType
+    */
     public produceAST (sourceCode:string): Program {
         this.tokens = tokenize(sourceCode);
         const program: Program ={

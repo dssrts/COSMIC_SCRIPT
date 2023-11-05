@@ -1,3 +1,4 @@
+//parang set sa python
 export enum TokenType {
     Number = "Number",
     Identifier = "Identifier",
@@ -9,32 +10,37 @@ export enum TokenType {
     Outer = "Outer", 
     EOF = "EOF"
 }
-
+// this is a dictionary that holds the reserved words
 const KEYWORDS: Record<string, TokenType> = {
     "let": TokenType.Let,
     "outer": TokenType.Outer,
 }
 
+//eto na yung tokens
+//interface is parang class sa python
 export interface Token {
     value: string,
     type: TokenType,
 }
 
+// this returns a token
 function token (value = '', type: TokenType): Token{
     return { value, type };
 }
 
 
-
+//checks if the input is an alphabet
 function isalpha(src: string){
     return src.toUpperCase() != src.toLowerCase();
 }
 
+//checks if the input is an int
 function isint(str: string){
     const c = str.charCodeAt(0);
     const bounds = ['0'.charCodeAt(0), '9'.charCodeAt(0)];
     return (c >= bounds[0] && c <= bounds[1]);
 }
+
 
 function isskippable(str: string){
     return str == ' ' || str == "\n" || str == "\t";
@@ -45,6 +51,7 @@ export function tokenize (sourceCode: string): Token[]{
     const src = sourceCode.split("");
 
     while(src.length > 0){
+    //remember .shift() returns a value from an array then deletes it after
         if(src[0] == "("){
             tokens.push(token(src.shift(), TokenType.OpenParen))
         } else if(src[0] == ")"){
@@ -58,12 +65,17 @@ export function tokenize (sourceCode: string): Token[]{
 
             //build number token
             if (isint(src[0])){
-                let num = "";
+                let num = ""; //string to hold the number
+                //remember yung shift tinatanggal yung current character then returns it
+                //so laging nasa index 0 yung current
+                //while there's a character in src (array) and the next character is an int
                 while (src.length > 0 && isint(src[0])){
                     num += src.shift();
                 }
-
+                //push the number string to tokens array
                 tokens.push(token(num, TokenType.Number));
+                
+                //same thing with is alpha
             } else if (isalpha(src[0])){
                 let ident = ""; // foo let
                 while (src.length > 0 && isalpha(src[0])){
@@ -71,12 +83,15 @@ export function tokenize (sourceCode: string): Token[]{
                 }
                 //check for reserved keywords
                 const reserved = KEYWORDS[ident];
-
+                
+                //if the dictionary KEYWORDS didnt return anything
                 if (reserved == undefined){
                     tokens.push(token(ident, TokenType.Identifier));
                 } else {
+                    //if there's a valuee in KEYWORDS, return reserved
                     tokens.push(token(ident, reserved));
                 }
+            // if it's a whitespace
             } else if (isskippable(src[0])){
                 src.shift();
             } else {
