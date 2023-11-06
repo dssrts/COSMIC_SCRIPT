@@ -9,7 +9,7 @@ export interface NullVal extends RuntimeVal{
     value: "null";
 }
 
-export interface NumberVal extends RuntimeVal{
+export interface NumberVal extends RuntimeVal {
     type: "number";
-    value: "number";
-}
+    value: number;
+  }

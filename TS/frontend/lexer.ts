@@ -14,7 +14,8 @@ export enum TokenType {
 
     //reserved words
     Let = "Let",
-    //Outer = "Outer", 
+    Outer = "Outer", 
+    Inner = "Inner",
 
     //end of file
     EOF = "EOF"
@@ -23,7 +24,8 @@ export enum TokenType {
 const KEYWORDS: Record<string, TokenType> = {
     "let": TokenType.Let,
     "null": TokenType.Null,
-    // "outer": TokenType.Outer,
+    "outer": TokenType.Outer,
+    "inner": TokenType.Inner,
 
 }
 
