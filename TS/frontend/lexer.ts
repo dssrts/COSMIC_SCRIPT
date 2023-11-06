@@ -1,13 +1,22 @@
 //parang set sa python
 export enum TokenType {
+
+    //literals
+    Null = "Null",
     Number = "Number",
     Identifier = "Identifier",
+
+    //operators
     Equals = "Equals",
     OpenParen = "OpenParen",
     CloseParen = "CloseParen",
     BinaryOperator = "BinaryOperator",
+
+    //reserved words
     Let = "Let",
     Outer = "Outer", 
+
+    //end of file
     EOF = "EOF"
 }
 // this is a dictionary that holds the reserved words
