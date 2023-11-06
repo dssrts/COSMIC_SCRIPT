@@ -14,7 +14,7 @@ export enum TokenType {
 
     //reserved words
     Let = "Let",
-    Outer = "Outer", 
+    //Outer = "Outer", 
 
     //end of file
     EOF = "EOF"
@@ -22,7 +22,9 @@ export enum TokenType {
 // this is a dictionary that holds the reserved words
 const KEYWORDS: Record<string, TokenType> = {
     "let": TokenType.Let,
-    "outer": TokenType.Outer,
+    "null": TokenType.Null,
+    // "outer": TokenType.Outer,
+
 }
 
 //eto na yung tokens
@@ -96,11 +98,12 @@ export function tokenize (sourceCode: string): Token[]{
                 const reserved = KEYWORDS[ident];
                 
                 //if the dictionary KEYWORDS didnt return anything
-                if (reserved == undefined){
-                    tokens.push(token(ident, TokenType.Identifier));
-                } else {
+                if (typeof reserved == "string"){
                     //if there's a value in KEYWORDS, return reserved
                     tokens.push(token(ident, reserved));
+                    
+                } else {
+                    tokens.push(token(ident, TokenType.Identifier));
                 }
             // if it's a whitespace
             } else if (isskippable(src[0])){
