@@ -68,7 +68,11 @@ class Lexer:
             elif self.current_char in all_letters:
                 tokens.append(self.make_word())
             elif self.current_char in all_num:
-                tokens.append(self.make_number())
+                flag = self.make_number()
+                if flag == True:
+                    return "Missing Operator"
+                else:
+                    tokens.append(self.make_number())
             elif self.current_char == '+':
                 tokens.append(Token(TT_PLUS))
                 self.advance()
@@ -96,8 +100,12 @@ class Lexer:
     def make_number(self):
         num_str = ''
         dot_count = 0
-        
-        while self.current_char != None and self.current_char in all_num + '.':
+        num_error = False
+
+        while self.current_char != None:
+            if self.current_char not in all_num:
+                num_error = True
+                return num_error
             if self.current_char == '.':
                 if dot_count == 1: 
                     break
