@@ -17,6 +17,10 @@ class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "Illegal Character", details)
 
+class ExpectedSemicolon(Error):
+    def __init__(self, pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, "Expected ';' ", details)
+
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
         self.idx = idx
@@ -77,37 +81,43 @@ class Lexer:
         tokens = []
 
         
-        while self.current_char != ";":
-            if self.current_char in ' \t':
-                self.advance()
-            elif self.current_char in DIGITS:
-                tokens.append(self.make_number())
-            elif self.current_char == '+':
-                tokens.append(Token(TT_PLUS))
-                self.advance()
-            elif self.current_char == '-':
-                tokens.append(Token(TT_MINUS))
-                self.advance()
-            elif self.current_char == '*':
-                tokens.append(Token(TT_MUL))
-                self.advance()
-            elif self.current_char == '/':
-                tokens.append(Token(TT_DIV))
-                self.advance()
-            elif self.current_char == '(':
-                tokens.append(Token(TT_LPAREN))
-                self.advance()
-            elif self.current_char == ')':
-                tokens.append(Token(TT_RPAREN))
-                self.advance()
-            else:
-                pos_start = self.pos.copy()
-                char = self.current_char
-                self.advance()
-                return [], IllegalCharError(pos_start, self.pos, "'"+ char + "'")
+        try:
+            while self.current_char != ";":
+                if self.current_char in ' \t':
+                    self.advance()
+                elif self.current_char in DIGITS:
+                    tokens.append(self.make_number())
+                elif self.current_char == '+':
+                    tokens.append(Token(TT_PLUS))
+                    self.advance()
+                elif self.current_char == '-':
+                    tokens.append(Token(TT_MINUS))
+                    self.advance()
+                elif self.current_char == '*':
+                    tokens.append(Token(TT_MUL))
+                    self.advance()
+                elif self.current_char == '/':
+                    tokens.append(Token(TT_DIV))
+                    self.advance()
+                elif self.current_char == '(':
+                    tokens.append(Token(TT_LPAREN))
+                    self.advance()
+                elif self.current_char == ')':
+                    tokens.append(Token(TT_RPAREN))
+                    self.advance()
+                else:
+                    pos_start = self.pos.copy()
+                    char = self.current_char
+                    self.advance()
+                    return [], IllegalCharError(pos_start, self.pos, "'"+ char + "'")
+        except:
+            return [], ExpectedSemicolon(self.pos.copy(), self.pos, "woah! looks like you forgot a semicolon!")
+        
         
         return tokens, None       
-
+    
+            
+    
     def make_number(self):
         num_str = ''
         dot_count = 0
