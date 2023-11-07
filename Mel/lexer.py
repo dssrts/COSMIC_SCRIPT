@@ -13,6 +13,11 @@ TT_MUL = 'MUL'
 TT_DIV = 'DIV'
 TT_LPAREN = 'LPAREN'
 TT_RPAREN = 'RPAREN'
+BANG = 'BANG'
+BLAST = 'BLAST'
+IDENTIFIER = 'IDENTIFIER'
+INTEL = 'INTEL'
+COMMA = 'COMMA'
 
 
 class Token:
@@ -46,6 +51,8 @@ class Lexer:
         while self.current_char != None:
             if self.current_char in ' \t':
                 self.advance()
+            elif self.current_char in all_letters:
+                tokens.append(self.make_word())
             elif self.current_char in all_num:
                 tokens.append(self.make_number())
             elif self.current_char == '+':
@@ -65,6 +72,9 @@ class Lexer:
                 self.advance()
             elif self.current_char == ')':
                 tokens.append(Token(TT_RPAREN))
+                self.advance()
+            elif self.current_char == ',':
+                tokens.append(Token(COMMA))
                 self.advance()
         
         return tokens      
@@ -87,6 +97,46 @@ class Lexer:
             return Token(TT_INT, int(num_str))
         else:
             return Token(TT_FLOAT, float(num_str))
+        
+    def make_word(self):
+        ident = ""
+
+        while self.current_char != None and self.current_char in all_letters:
+            if self.current_char == "b":
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "n":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "g":
+                            ident += self.current_char
+                            self.advance()
+                            return Token(BANG, "bang")
+                elif self.current_char == "l":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "a":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "s":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "t":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(BLAST, "blast")
+            else:
+                ident += self.current_char
+                self.advance()
+
+        return Token(IDENTIFIER, ident)
+            
+            #self.advance()
+
+       
   
 
 def run(text):
