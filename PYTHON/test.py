@@ -1,5 +1,5 @@
 
-
+# tinignan ko lang kung pano nirereturn yung value
 class Melissa:
     def __init__(self, type, value=None):
         self.type = type
