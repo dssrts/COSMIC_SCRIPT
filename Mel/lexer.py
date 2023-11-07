@@ -57,22 +57,28 @@ class Lexer:
 
     def make_tokens(self):
         tokens = []
+        errors = []
 
-        
-        while self.current_char != None:
+        while self.current_char is not None:
             if self.current_char in '\t':
                 self.advance()
-            if self.current_char in ' ':
+            elif self.current_char in ' ':
                 tokens.append(Token(SPACE))
                 self.advance()
             elif self.current_char in all_letters:
-                tokens.append(self.make_word())
-            elif self.current_char in all_num:
-                flag = self.make_number()
-                if flag == True:
-                    return "Missing Operator"
+                result = self.make_word()
+                if isinstance(result, list):  # Check if make_word returned errors
+                    errors.extend(result)
+                    break  # Exit the loop if there are errors
                 else:
-                    tokens.append(self.make_number())
+                    tokens.append(result)
+            elif self.current_char in all_num:
+                result = self.make_number()
+                if isinstance(result, list):  # Check if make_number returned errors
+                    errors.extend(result)
+                    break  # Exit the loop if there are errors
+                else:
+                    tokens.append(result)
             elif self.current_char == '+':
                 tokens.append(Token(TT_PLUS))
                 self.advance()
@@ -94,32 +100,38 @@ class Lexer:
             elif self.current_char == ',':
                 tokens.append(Token(COMMA))
                 self.advance()
-        
-        return tokens      
+
+        if errors:
+            return errors
+        else:
+            return tokens      
 
     def make_number(self):
         num_str = ''
         dot_count = 0
-        num_error = False
+        errors = []
 
-        while self.current_char != None:
-            if self.current_char not in all_num:
-                num_error = True
-                return num_error
+        while self.current_char is not None and self.current_char in all_num + '.':
             if self.current_char == '.':
                 if dot_count == 1: 
+                    errors.append(f"Invalid character '{self.current_char}' in number.")
                     break
                 dot_count += 1
                 num_str += '.'
             else:
                 num_str += self.current_char
             self.advance()
+        
+        # Check if there are letters after the number
+        if self.current_char is not None and self.current_char.isalpha():
+            errors.append("Identifiers cannot start with a number!")
 
-        if dot_count == 0:
+        if errors:
+            return errors
+        elif dot_count == 0:
             return Token(TT_INT, int(num_str))
         else:
             return Token(TT_FLOAT, float(num_str))
-        
     def make_word(self):
         ident = ""
         
