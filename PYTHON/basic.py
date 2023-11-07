@@ -81,40 +81,42 @@ class Lexer:
         tokens = []
 
         
-        try:
-            while self.current_char != ";":
-                if self.current_char in ' \t':
-                    self.advance()
-                elif self.current_char in DIGITS:
-                    tokens.append(self.make_number())
-                elif self.current_char == '+':
-                    tokens.append(Token(TT_PLUS))
-                    self.advance()
-                elif self.current_char == '-':
-                    tokens.append(Token(TT_MINUS))
-                    self.advance()
-                elif self.current_char == '*':
-                    tokens.append(Token(TT_MUL))
-                    self.advance()
-                elif self.current_char == '/':
-                    tokens.append(Token(TT_DIV))
-                    self.advance()
-                elif self.current_char == '(':
-                    tokens.append(Token(TT_LPAREN))
-                    self.advance()
-                elif self.current_char == ')':
-                    tokens.append(Token(TT_RPAREN))
-                    self.advance()
-                else:
-                    pos_start = self.pos.copy()
-                    char = self.current_char
-                    self.advance()
-                    return [], IllegalCharError(pos_start, self.pos, "'"+ char + "'")
-        except:
-            return [], ExpectedSemicolon(self.pos.copy(), self.pos, "woah! looks like you forgot a semicolon!")
+        #try:
+        #while self.current_char != ";":
+        while self.current_char != ";":
+            if self.current_char in ' \t':
+                self.advance()
+            elif self.current_char in DIGITS:
+                tokens.append(self.make_number())
+            elif self.current_char == '+':
+                tokens.append(Token(TT_PLUS))
+                self.advance()
+            elif self.current_char == '-':
+                tokens.append(Token(TT_MINUS))
+                self.advance()
+            elif self.current_char == '*':
+                tokens.append(Token(TT_MUL))
+                self.advance()
+            elif self.current_char == '/':
+                tokens.append(Token(TT_DIV))
+                self.advance()
+            elif self.current_char == '(':
+                tokens.append(Token(TT_LPAREN))
+                self.advance()
+            elif self.current_char == ')':
+                tokens.append(Token(TT_RPAREN))
+                self.advance()
+            else:
+                pos_start = self.pos.copy()
+                char = self.current_char
+                self.advance()
+                return [], IllegalCharError(pos_start, self.pos, "'"+ char + "'")
         
+        return tokens, None
+        #except:
+            #return [], ExpectedSemicolon(self.pos.copy(), self.pos, "woah! please add a semicolon at the end :]]")
         
-        return tokens, None       
+            
     
             
     
@@ -138,8 +140,75 @@ class Lexer:
             return Token(TT_FLOAT, float(num_str))
   
 
+#NODES
+class NumberNode:
+    def __init__(self, tok):
+        self.tok = tok
+
+    def __repr__(self):
+        return f'{self.tok}'
+    
+class BinOpNode:
+    def __init__(self, left_node, op_tok, right_node):
+        self.left_node = left_node
+        self.op_tok = op_tok
+        self.right_node = right_node
+
+    def __repr__ (self):
+        return f'({self.left_node}, {self.op_tok}, {self.right_node})'
+    
+#PARSER
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.tok_idx = -1
+        self.advance()
+
+    def advance(self):
+        self.tok_idx += 1
+        if self.tok_idx < len(self.tokens):
+            self.current_tok = self.tokens[self.tok_idx]
+        return self.current_tok
+
+    def parse(self):
+        res = self.expr()
+        return res
+    
+    def expr(self):
+        return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
+    
+    def term(self):
+        return self.bin_op(self.factor, (TT_MUL, TT_DIV))
+    
+    def factor(self):
+        tok = self.current_tok
+
+        if tok.type in (TT_INT, TT_FLOAT):
+            self.advance()
+            return NumberNode(tok)
+
+    def bin_op(self, func, ops):
+        left = func()
+
+        while self.current_tok.type in ops:
+            op_tok = self.current_tok
+            self.advance()
+            right = func()
+            left = BinOpNode(left, op_tok, right)
+
+        return left
+
+#RUN
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
+    if error:
+        return None, error
+    #print(tokens, error)
 
-    return tokens, error
+    #generate AST
+    parser = Parser(tokens)
+    ast = parser.parse()
+
+    return ast, None
