@@ -3,21 +3,32 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+#errors
+error = []
 
-#tokens
+#TOKENS
+
+#types
 TT_INT = 'INTEL'
 TT_FLOAT = 'GRAVITY'
+
+#operators
 TT_PLUS = 'PLUS'
 TT_MINUS = 'MINUS'
 TT_MUL = 'MUL'
 TT_DIV = 'DIV'
 TT_LPAREN = 'LPAREN'
 TT_RPAREN = 'RPAREN'
+
+#reserved words
 BANG = 'BANG'
 BLAST = 'BLAST'
-IDENTIFIER = 'IDENTI'
 INTEL = 'INTEL'
+
+#literals
+IDENTIFIER = 'IDENTI'
 COMMA = 'COMMA'
+SPACE = 'SPACE'
 
 
 class Token:
@@ -49,7 +60,10 @@ class Lexer:
 
         
         while self.current_char != None:
-            if self.current_char in ' \t':
+            if self.current_char in '\t':
+                self.advance()
+            if self.current_char in ' ':
+                tokens.append(Token(SPACE))
                 self.advance()
             elif self.current_char in all_letters:
                 tokens.append(self.make_word())
@@ -82,7 +96,7 @@ class Lexer:
     def make_number(self):
         num_str = ''
         dot_count = 0
-
+        
         while self.current_char != None and self.current_char in all_num + '.':
             if self.current_char == '.':
                 if dot_count == 1: 
@@ -100,8 +114,8 @@ class Lexer:
         
     def make_word(self):
         ident = ""
-
-        while self.current_char != None and self.current_char in all_letters:
+        
+        while self.current_char != None and self.current_char in alphanum:
             if self.current_char == "b":
                 ident += self.current_char
                 self.advance()
@@ -129,8 +143,12 @@ class Lexer:
                                 self.advance()
                                 return Token(BLAST, "blast")
             else:
-                ident += self.current_char
-                self.advance()
+                if self.current_char.isdigit() == True:
+                    ident += str(self.current_char)
+                    self.advance()
+                else:
+                    ident += self.current_char
+                    self.advance()
 
         return Token(IDENTIFIER, ident)
             
