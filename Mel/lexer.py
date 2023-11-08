@@ -187,35 +187,35 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(BLAST, "blast")
-                if self.current_char == "d":
+            if self.current_char == "d":
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "o":
                     ident += self.current_char
                     self.advance()
-                    if self.current_char == "o":
-                        ident += self.current_char
-                        self.advance()
-                        return Token(DO, "do")
-                if self.current_char == "e":
+                    return Token(DO, "do")
+            if self.current_char == "e":
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "l":
                     ident += self.current_char
                     self.advance()
-                    if self.current_char == "l":
+                    if self.current_char == "s":
                         ident += self.current_char
                         self.advance()
-                        if self.current_char == "s":
+                        if self.current_char == "e":
                             ident += self.current_char
                             self.advance()
-                            if self.current_char == "e":
-                                ident += self.current_char
-                                self.advance()
 
-                                if self.current_char == " ":
-                                    if self.current_char == "i":
+                            if self.current_char == " ":
+                                if self.current_char == "i":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "f":
                                         ident += self.current_char
                                         self.advance()
-                                        if self.current_char == "f":
-                                            ident += self.current_char
-                                            self.advance()
-                                            return Token(ELSEIF, "elseif")
-                            return Token(ELSE, "else")
+                                        return Token(ELSEIF, "elseif")
+                        return Token(ELSE, "else")
                 elif self.current_char == "i":
                     ident += self.current_char
                     self.advance()
