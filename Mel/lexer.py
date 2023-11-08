@@ -407,6 +407,144 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(OUTER, "outer")
+            if self.current_char == "s": #saturn, shift, star
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "t":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "u":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "r":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "n":
+                                    ident += self.current_char
+                                    self.advance()
+                                    return Token(SATURN, "saturn")
+                elif self.current_char == "h":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "i":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "f":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "t":
+                                    ident += self.current_char
+                                    self.advance()
+                                    return Token(SHIFT, "shift")
+                elif self.current_char == "t":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "a":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "r":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(STAR, "star")
+            if self.current_char == "t": #takeoff, trace, true
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "k":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "e":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "o":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "f":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "f":
+                                        ident += self.current_char
+                                        self.advance()
+                                        return Token(TAKEOFF, "takeoff")
+                elif self.current_char == "r":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "a":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "c":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "e":
+                                    ident += self.current_char
+                                    self.advance()
+                                    return Token(TRACE, "trace") 
+                        elif self.current_char == "u":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "e":
+                                ident += self.current_char
+                                self.advance()         
+                                return Token(TRUE, "true")  
+            if self.current_char == "u": #universe
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "n":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "v":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "e":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "r":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "s":
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == "e":
+                                            ident += self.current_char
+                                            self.advance()
+                                            return Token(UNIVERSE, "universe")    
+            if self.current_char == "v": #void
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "o":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "d":
+                            ident += self.current_char
+                            self.advance()
+                            return Token(VOID, "void")   
+            if self.current_char == "w": #whirl
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "h":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "r":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "l":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(WHIRL, "whirl")
             else:
                 if self.current_char == None:
                     break
