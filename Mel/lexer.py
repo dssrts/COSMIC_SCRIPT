@@ -142,14 +142,15 @@ class Lexer:
             return tokens       
 
     def make_number(self):
-        num_count = 1
+        dec_count = 0
+        num_count = 0
         num_str = ''
         dot_count = 0
         errors = []
 
         while self.current_char is not None and self.current_char in all_num + '.':
             if num_count > 9:
-                errors.append(f"You've reached the integer limit!")
+                errors.append(f"You've reached the number limit!")
                 break
             if self.current_char == '.':
                 if dot_count == 1: 
@@ -157,7 +158,14 @@ class Lexer:
                     break
                 dot_count += 1
                 num_str += '.'
+                
             else:
+                if '.' in num_str:
+                    dec_count += 1
+                    num_count -= 1
+                if dec_count > 4:
+                    errors.append(f"You've reached the gravity limit!")
+                    break
                 num_count += 1
                 num_str += self.current_char
             self.advance()
