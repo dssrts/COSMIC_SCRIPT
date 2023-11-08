@@ -5,7 +5,7 @@ while True:
     result, error = lexer.run(text)
     
     for item in result:
-        print(item)
+        print(item.value)
 
     if error:
         for err in error:

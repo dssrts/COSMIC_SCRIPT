@@ -132,25 +132,27 @@ class Lexer:
     def make_tokens(self):
         tokens = []
         errors = []
+        string = ""
 
         while self.current_char is not None:
             if self.current_char in '\t':
+                tokens.append(Token(N_TAB, "\\t"))
                 self.advance()
             elif self.current_char in ' ':
                 tokens.append(Token(SPACE, "\" \""))
                 self.advance()
             elif self.current_char in all_letters:
                 result = self.make_word()
-                if isinstance(result, list):  # Check if make_word returned errors
+                if isinstance(result, list):  # check if make_word returned errors
                     errors.extend(result)
-                    #break  # Exit the loop if there are errors
+                    #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char in all_num:
                 result = self.make_number()
-                if isinstance(result, list):  # Check if make_number returned errors
+                if isinstance(result, list):  # check if make_number returned errors
                     errors.extend(result)
-                    #break  # Exit the loop if there are errors
+                    #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
@@ -212,8 +214,13 @@ class Lexer:
                 if self.current_char == '=': #for /= symbol
                     tokens.append(Token(DIV_EQUAL, "/="))
                     self.advance()
-                elif self.current_char == '*': #for /* single comet
-                    tokens.append(Token(S_COMET, "/*"))
+                elif self.current_char == '/': #for 
+                    self.advance()
+                    if self.current_char == "*":
+                        tokens.append(Token(M_OPEN_COMET, "//*"))
+                        self.advance()# for multi comment
+                elif self.current_char == "*":
+                    tokens.append(Token(S_COMET, "/*"))# for single comet
                     self.advance()
                 else:
                     tokens.append(Token(DIV, "/"))
@@ -268,12 +275,10 @@ class Lexer:
                     self.advance()
                 else:
                     tokens.append(Token(SHARP, "#"))
-            elif self.current_char == '“':
-                tokens.append(Token(LQ_MARK, "“"))
-                self.advance()
-            elif self.current_char == '”':
-                tokens.append(Token(RQ_MARK, "”"))
-                self.advance()
+            
+            elif self.current_char == "\"":
+                tokens.append(Token(QMARK, "\'"))
+            
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
