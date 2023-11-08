@@ -216,13 +216,13 @@ class Lexer:
                                         self.advance()
                                         return Token(ELSEIF, "elseif")
                         return Token(ELSE, "else")
-                elif self.current_char == "i":
+            if self.current_char == "i":
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "f":
                     ident += self.current_char
                     self.advance()
-                    if self.current_char == "f":
-                        ident += self.current_char
-                        self.advance()
-                        return Token(IF, "if")
+                    return Token(IF, "if")
 
             else:
                 if self.current_char.isdigit() == True:
