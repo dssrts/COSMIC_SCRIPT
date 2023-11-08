@@ -63,12 +63,12 @@ SPACE = 'SPACE'
 
 
 class Token:
-    def __init__(self, type_, value=None):
-        self.type = type_
+    def __init__(self, token, value=None):
+        self.token = token
         self.value = value
     
     def __repr__(self):
-        if self.value: return f'{self.type}:{self.value}'
+        if self.value: return f'{self.value}: {self.token}'
         return f'{self.type}'
 
 
@@ -142,11 +142,15 @@ class Lexer:
             return tokens       
 
     def make_number(self):
+        num_count = 1
         num_str = ''
         dot_count = 0
         errors = []
 
         while self.current_char is not None and self.current_char in all_num + '.':
+            if num_count > 9:
+                errors.append(f"You've reached the integer limit!")
+                break
             if self.current_char == '.':
                 if dot_count == 1: 
                     errors.append(f"Invalid character '{self.current_char}' in number.")
@@ -154,6 +158,7 @@ class Lexer:
                 dot_count += 1
                 num_str += '.'
             else:
+                num_count += 1
                 num_str += self.current_char
             self.advance()
         
@@ -559,6 +564,8 @@ class Lexer:
             
             #self.advance()
 
+    def make_symbol(self):
+        pass
        
   
 
