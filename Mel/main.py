@@ -5,4 +5,5 @@ while True:
     result = lexer.run(text)
     
     for item in result:
+        
         print(item)

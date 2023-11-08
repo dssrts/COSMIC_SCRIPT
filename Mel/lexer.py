@@ -2,9 +2,11 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+underscore = "_"
 space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
+symbols = ""
 
 #errors
 error = []
@@ -101,14 +103,14 @@ class Lexer:
                 result = self.make_word()
                 if isinstance(result, list):  # Check if make_word returned errors
                     errors.extend(result)
-                    break  # Exit the loop if there are errors
+                    #break  # Exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char in all_num:
                 result = self.make_number()
                 if isinstance(result, list):  # Check if make_number returned errors
                     errors.extend(result)
-                    break  # Exit the loop if there are errors
+                    #break  # Exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char == '+':
@@ -137,9 +139,9 @@ class Lexer:
                 self.advance()
 
         if errors:
-            return errors
+            return [], errors
         else:
-            return tokens       
+            return tokens, None       
 
     def make_number(self):
         dec_count = 0
@@ -150,7 +152,7 @@ class Lexer:
 
         while self.current_char is not None and self.current_char in all_num + '.':
             if num_count > 9:
-                errors.append(f"You've reached the number limit!")
+                errors.append(f"You've reached the intel limit!")
                 break
             if self.current_char == '.':
                 if dot_count == 1: 
@@ -170,7 +172,7 @@ class Lexer:
                 num_str += self.current_char
             self.advance()
         
-        # Check if there are letters after the number
+        # check if there are letters after the number
         if self.current_char is not None and self.current_char.isalpha():
             errors.append("Identifiers cannot start with a number!")
 
@@ -181,9 +183,10 @@ class Lexer:
         else:
             return Token(GRAVITY, float(num_str))
         
-    
+    #takes in the input character by character then translates them into words then tokens
     def make_word(self):
         ident = ""
+        errors = []
         
         while self.current_char != None and self.current_char in alphanum:
             if self.current_char == "b":
@@ -233,7 +236,7 @@ class Lexer:
                                     self.advance()
                                     if self.current_char == None:
                                         return Token(IDENTIFIER, ident)
-                                ###test
+                                
                             else:
                                 return Token(BLAST, ident)
             if self.current_char == "d": #do
@@ -573,12 +576,16 @@ class Lexer:
             #self.advance()
 
     def make_symbol(self):
-        pass
+        symbol = ""
+
+        while self.current_char != None and self.current_char in alphanum:
+            pass
+        
        
   
 
 def run(text):
     lexer = Lexer(text)
-    tokens = lexer.make_tokens()
+    tokens, error = lexer.make_tokens()
     
-    return tokens
+    return tokens, error
