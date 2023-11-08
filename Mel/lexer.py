@@ -250,14 +250,14 @@ class Lexer:
                     tokens.append(Token(AND_OP, "&&"))
                     self.advance()
                 else:
-                    errors.extend("Please enter a valid symbol!")
+                    errors.extend(["Please enter a valid symbol!"])
             elif self.current_char == '|': #return error
-                self.advance()   
+                self.advance()
                 if self.current_char == '|':
                     tokens.append(Token(OR_OP, "||"))
                     self.advance()
                 else:
-                    tokens.append(Token(OR_OP, "|"))
+                    errors.extend(["Please enter a valid symbol!"])
             elif self.current_char == '(': #other operator
                 tokens.append(Token(LPAREN, "("))
                 self.advance()
@@ -282,7 +282,7 @@ class Lexer:
                     tokens.append(Token(SHARP, "##"))
                     self.advance()
                 else:
-                    tokens.append(Token(SHARP, "#"))
+                    errors.extend(["Please enter a valid symbol!"])
             elif self.current_char == "\"":
                 result = self.make_string()
                 if isinstance(result, list):  # check if make_word returned errors
