@@ -3,6 +3,8 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 space_delim = " "
+arithmetic_operator = "+-*/%"
+lineEnd_delim = " ;"
 
 #errors
 error = []
@@ -51,6 +53,7 @@ MUL = '*'
 DIV = '/'
 LPAREN = '('
 RPAREN = ')'
+SEMICOLON = ';'
 
 #literals
 IDENTIFIER = 'IDENTI'
@@ -129,6 +132,9 @@ class Lexer:
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
+            elif self.current_char == ";":
+                tokens.append(Token(SEMICOLON, ";"))
+                self.advance()
 
         if errors:
             return errors
@@ -205,12 +211,11 @@ class Lexer:
                             if self.current_char == "t":
                                 ident += self.current_char
                                 self.advance()
-                                #return Token(BLAST, "blast")
                                 if self.current_char == None:
                                     return Token(BLAST, ident)
-                            #delimiter ng bang defined in space_delim
-                            if self.current_char not in space_delim:
-                                while self.current_char in alphanum and self.current_char not in space_delim:
+                            #arith ops
+                            if self.current_char not in lineEnd_delim:
+                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
                                     ident += self.current_char
                                     self.advance()
                                     if self.current_char == None:
