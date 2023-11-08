@@ -225,6 +225,7 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     return Token(DO, "do")
+                
             if self.current_char == "e": #else, else if, entity
                 ident += self.current_char
                 self.advance()
@@ -237,8 +238,9 @@ class Lexer:
                         if self.current_char == "e":
                             ident += self.current_char
                             self.advance()
-
                             if self.current_char == " ":
+                                ident += self.current_char
+                                self.advance()
                                 if self.current_char == "i":
                                     ident += self.current_char
                                     self.advance()
@@ -246,7 +248,8 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         return Token(ELSEIF, "elseif")
-                        return Token(ELSE, "else")
+                            else:
+                                return Token(ELSE, "else")
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
@@ -400,6 +403,8 @@ class Lexer:
                                 self.advance()
                                 return Token(OUTER, "outer")
             else:
+                if self.current_char == None:
+                    break
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
                     self.advance()
