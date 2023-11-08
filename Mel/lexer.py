@@ -8,28 +8,53 @@ error = []
 
 #TOKENS
 
-#types
-TT_INT = 'INTEL'
-TT_FLOAT = 'GRAVITY'
+#reserved words
+TAKEOFF = 'takeoff' #Start
+LANDING = 'landing' #End
+#Data types
+INTEL = 'intel'
+GRAVITY = 'gravity'
+STAR = 'star'
+BANG = 'bang'
+VOID = 'void'
+#data structure
+ENTITY = 'entity'
+#input and output statements
+INNER = 'inner'
+OUTER = 'outer'
+#conditional statements
+IF = 'if'
+ELSE = 'else'
+ELSEIF = 'elseif'
+SHIFT = 'shift'
+TRACE = 'trace'
+#looping statements
+FORCE = 'force'
+WHIRL = 'whirl'
+DOWHIRL = 'dowhirl'
+#loop control statements
+BLAST = 'blast'
+BREAK = 'break'
+#other statements
+SATURN = 'saturn'
+FORM = 'form'
+LAUNCH = 'launch'
+UNIVERSE = 'universe'
+TRUE = 'true'
+FALSE = 'false'
 
 #operators
-TT_PLUS = 'PLUS'
-TT_MINUS = 'MINUS'
-TT_MUL = 'MUL'
-TT_DIV = 'DIV'
-TT_LPAREN = 'LPAREN'
-TT_RPAREN = 'RPAREN'
-
-#reserved words
-BANG = 'BANG'
-BLAST = 'BLAST'
-INTEL = 'INTEL'
+PLUS = '+'
+MINUS = '-'
+MUL = '*'
+DIV = '/'
+LPAREN = '('
+RPAREN = ')'
 
 #literals
 IDENTIFIER = 'IDENTI'
 COMMA = 'COMMA'
 SPACE = 'SPACE'
-
 
 class Token:
     def __init__(self, type_, value=None):
@@ -63,7 +88,7 @@ class Lexer:
             if self.current_char in '\t':
                 self.advance()
             elif self.current_char in ' ':
-                tokens.append(Token(SPACE))
+                tokens.append(Token(SPACE, "\" \""))
                 self.advance()
             elif self.current_char in all_letters:
                 result = self.make_word()
@@ -80,25 +105,25 @@ class Lexer:
                 else:
                     tokens.append(result)
             elif self.current_char == '+':
-                tokens.append(Token(TT_PLUS))
+                tokens.append(Token(PLUS, "+"))
                 self.advance()
             elif self.current_char == '-':
-                tokens.append(Token(TT_MINUS))
+                tokens.append(Token(MINUS))
                 self.advance()
             elif self.current_char == '*':
-                tokens.append(Token(TT_MUL))
+                tokens.append(Token(MUL))
                 self.advance()
             elif self.current_char == '/':
-                tokens.append(Token(TT_DIV))
+                tokens.append(Token(DIV))
                 self.advance()
             elif self.current_char == '(':
-                tokens.append(Token(TT_LPAREN))
+                tokens.append(Token(LPAREN, "("))
                 self.advance()
             elif self.current_char == ')':
-                tokens.append(Token(TT_RPAREN))
+                tokens.append(Token(RPAREN, ")"))
                 self.advance()
             elif self.current_char == ',':
-                tokens.append(Token(COMMA))
+                tokens.append(Token(COMMA, ","))
                 self.advance()
 
         if errors:
@@ -129,9 +154,9 @@ class Lexer:
         if errors:
             return errors
         elif dot_count == 0:
-            return Token(TT_INT, int(num_str))
+            return Token(INTEL, intel(num_str))
         else:
-            return Token(TT_FLOAT, float(num_str))
+            return Token(GRAVITY, gravity(num_str))
     def make_word(self):
         ident = ""
         
