@@ -206,7 +206,7 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()
-                                
+
                                 if self.current_char == " ":
                                     if self.current_char == "i":
                                         ident += self.current_char
@@ -215,8 +215,7 @@ class Lexer:
                                             ident += self.current_char
                                             self.advance()
                                             return Token(ELSEIF, "elseif")
-                                elif self.current_char == None:
-                                    return Token(ELSE, "else")
+                            return Token(ELSE, "else")
                 elif self.current_char == "i":
                     ident += self.current_char
                     self.advance()
