@@ -570,10 +570,18 @@ class Lexer:
                 else:
                     ident += self.current_char
                     self.advance()
+        
+        for item in ident:
+            if item not in alphanum:
+                errors.append("Identifiers cannot contain special symbols!")
+                break
+
+        if errors:
+            return errors
 
         return Token(IDENTIFIER, ident)
             
-            #self.advance()
+            
 
     def make_symbol(self):
         symbol = ""
