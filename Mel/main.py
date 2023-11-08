@@ -2,8 +2,7 @@ import lexer
 
 while True:
     text = input('cosmic script > ')
-    print("markcys")
-    print("v2")
+    print("pano ba nag pull req!!!!")
     result = lexer.run(text)
     
     for item in result:
