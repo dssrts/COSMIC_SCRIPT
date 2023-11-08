@@ -3,7 +3,7 @@ import lexer
 while True:
     text = input('cosmic script > ')
     print("markcys")
-    print("9 40 am")
+    print("v2")
     result = lexer.run(text)
     
     for item in result:
