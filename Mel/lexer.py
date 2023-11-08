@@ -2,8 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-ascii_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-underscore = "_"
+
 space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
@@ -95,6 +94,7 @@ M_OPEN_COMET = '//*'
 M_END_COMET =  '*//'
 SEMICOLON = ';'
 COLON = ':'
+UNDERSCORE = "_"
 
 
 #literals
@@ -149,7 +149,8 @@ class Lexer:
                     #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
-                    self.advance()
+                    
+                    
             elif self.current_char in all_num:
                 result = self.make_number()
                 if isinstance(result, list):  # check if make_number returned errors
@@ -157,7 +158,7 @@ class Lexer:
                     #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
-                    self.advance()
+                    
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
                 self.advance()
                 if self.current_char == '=':
@@ -192,7 +193,7 @@ class Lexer:
                     self.advance()
                 else:
                     tokens.append(Token(PLUS, "+"))
-                    self.advance()
+                    
             elif self.current_char == '-': 
                 self.advance()
                 if self.current_char == '=': #for -=symbol
@@ -249,7 +250,7 @@ class Lexer:
                     tokens.append(Token(AND_OP, "&&"))
                     self.advance()
                 else:
-                    tokens.append(Token(AND_OP, "&"))
+                    errors.extend("Please enter a valid symbol!")
             elif self.current_char == '|': #return error
                 self.advance()   
                 if self.current_char == '|':
@@ -290,7 +291,7 @@ class Lexer:
                 else:
                     tokens.append(result)
                     self.advance()
-                    if self.current_char not in ("+", " ", ";", None):
+                    if self.current_char not in ("+", " ", ",", None):
                         errors.append("Invalid delimiter for string!")
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
@@ -301,6 +302,8 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
+
+            
 
         if errors:
             return [], errors
@@ -352,7 +355,7 @@ class Lexer:
         ident = ""
         errors = []
         
-        while self.current_char != None and self.current_char in alphanum:
+        while self.current_char != None :
             if self.current_char == "b":
                 ident += self.current_char
                 self.advance()
@@ -726,7 +729,8 @@ class Lexer:
                                 self.advance()
                                 return Token(WHIRL, "whirl")
             else:
-                #make identifiers
+                if self.current_char == " ":
+                    break
                 if self.current_char == None:
                     break
                 if self.current_char.isdigit() == True:
@@ -736,6 +740,7 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
 
+        
 
         if errors:
             return errors
