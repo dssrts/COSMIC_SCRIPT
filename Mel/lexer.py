@@ -261,7 +261,7 @@ class Lexer:
                             if self.current_char == "l":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(INTEL, "intel")            
+                                return Token(INTEL, "i")            
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
                 self.advance()
