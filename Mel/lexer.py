@@ -22,6 +22,7 @@ GRAVITY = 'gravity'
 STAR = 'star'
 BANG = 'bang'
 VOID = 'void'
+STRING = 'string'
 #data structure
 ENTITY = 'entity'
 #input and output statements
@@ -87,8 +88,7 @@ CRBRACKET = '}'
 N_TAB = '\\t'
 N_LINE = '\\n'
 SHARP = '##'
-LQ_MARK = '“'
-RQ_MARK = '”'
+Q_MARK = "\""
 S_COMET = '/*'
 M_OPEN_COMET = '//*'
 M_END_COMET =  '*//'
@@ -111,7 +111,7 @@ class Token:
     
     def __repr__(self):
         if self.value: return f'{self.value}: {self.token}'
-        return f'{self.type}'
+        return f'{self.token}'
 
 
 #LEXER
@@ -148,6 +148,7 @@ class Lexer:
                     #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
+                    self.advance()
             elif self.current_char in all_num:
                 result = self.make_number()
                 if isinstance(result, list):  # check if make_number returned errors
@@ -155,6 +156,7 @@ class Lexer:
                     #break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
+                    self.advance()
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
                 self.advance()
                 if self.current_char == '=':
@@ -275,10 +277,14 @@ class Lexer:
                     self.advance()
                 else:
                     tokens.append(Token(SHARP, "#"))
-            
             elif self.current_char == "\"":
-                tokens.append(Token(QMARK, "\'"))
-            
+                result = self.make_string()
+                if isinstance(result, list):  # check if make_word returned errors
+                    errors.extend(result)
+                    #break  # exit the loop if there are errors
+                else:
+                    tokens.append(result)
+                    self.advance()
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
@@ -732,13 +738,22 @@ class Lexer:
 
         return Token(IDENTIFIER, ident)
             
+        
+    def make_string(self):
+        string = ""
+        errors = []
+        self.advance()
+        while self.current_char != "\"" and self.current_char != None :
             
-
-    def make_symbol(self):
-        symbol = ""
-
-        while self.current_char != None and self.current_char in alphanum:
-            pass
+            string += self.current_char
+            self.advance()
+        if self.current_char == "\"":
+            self.advance()
+            return Token(STRING, f"\"{string}\"")
+        elif self.current_char == None:
+            errors.append("Expected closing quotation mark!")
+        if errors:
+            return errors
         
        
   
