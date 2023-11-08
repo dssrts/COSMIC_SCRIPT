@@ -469,7 +469,61 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()         
-                                return Token(TRUE, "true")              
+                                return Token(TRUE, "true")  
+            if self.current_char == "u": #universe
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "n":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "v":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "e":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "r":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "s":
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == "e":
+                                            ident += self.current_char
+                                            self.advance()
+                                            return Token(UNIVERSE, "universe")    
+            if self.current_char == "v": #void
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "o":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "d":
+                            ident += self.current_char
+                            self.advance()
+                            return Token(VOID, "void")   
+            if self.current_char == "w": #whirl
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "h":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "i":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "r":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "l":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(WHIRL, "whirl") 
             else:
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
