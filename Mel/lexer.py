@@ -200,6 +200,10 @@ class Lexer:
                 elif self.current_char == '-': #for -- decre
                     tokens.append(Token(DECRE, "--"))
                     self.advance()
+                elif self.current_char in all_num:
+                    result = self.make_number()
+                    result = Token(result.token, result.value * -1)
+                    tokens.append(result)
                 else:
                     tokens.append(Token(MINUS, "-"))
                     self.advance()
@@ -285,6 +289,8 @@ class Lexer:
                 else:
                     tokens.append(result)
                     self.advance()
+                    if self.current_char not in ("+", " "):
+                        errors.append("Invalid delimiter for string!")
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
@@ -748,12 +754,14 @@ class Lexer:
             string += self.current_char
             self.advance()
         if self.current_char == "\"":
-            self.advance()
             return Token(STRING, f"\"{string}\"")
+    
         elif self.current_char == None:
             errors.append("Expected closing quotation mark!")
+
         if errors:
             return errors
+        
         
        
   
