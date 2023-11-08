@@ -9,22 +9,49 @@ error = []
 
 #TOKENS
 
-#types
-TT_INT = 'INTEL'
-TT_FLOAT = 'GRAVITY'
 
 #operators
-TT_PLUS = 'PLUS'
-TT_MINUS = 'MINUS'
-TT_MUL = 'MUL'
-TT_DIV = 'DIV'
-TT_LPAREN = 'LPAREN'
-TT_RPAREN = 'RPAREN'
+PLUS = '+'
+MINUS = '-'
+MUL = '*'
+DIV = '/'
+LPAREN = '('
+RPAREN = ')'
 
 #reserved words
-BANG = 'BANG'
-BLAST = 'BLAST'
-INTEL = 'INTEL'
+TAKEOFF = 'takeoff' #Start
+LANDING = 'landing' #End
+#Data types
+INTEL = 'intel'
+GRAVITY = 'gravity'
+STAR = 'star'
+BANG = 'bang'
+VOID = 'void'
+#data structure
+ENTITY = 'entity'
+#input and output statements
+INNER = 'inner'
+OUTER = 'outer'
+#conditional statements
+IF = 'if'
+ELSE = 'else'
+ELSEIF = 'elseif'
+SHIFT = 'shift'
+TRACE = 'trace'
+#looping statements
+FORCE = 'force'
+WHIRL = 'whirl'
+DO = 'do'
+#loop control statements
+BLAST = 'blast'
+BREAK = 'break'
+#other statements
+SATURN = 'saturn'
+FORM = 'form'
+LAUNCH = 'launch'
+UNIVERSE = 'universe'
+TRUE = 'true'
+FALSE = 'false'
 
 #literals
 IDENTIFIER = 'IDENTI'
@@ -65,48 +92,48 @@ class Lexer:
             if self.current_char in '\t':
                 self.advance()
             elif self.current_char in ' ':
-                tokens.append(Token(SPACE))
+                tokens.append(Token(SPACE, "\" \""))
                 self.advance()
             elif self.current_char in all_letters:
                 result = self.make_word()
-                if isinstance(result, list):  # check if make_word returned errors
+                if isinstance(result, list):  # Check if make_word returned errors
                     errors.extend(result)
-                    break  # exit the loop if there are errors
+                    break  # Exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char in all_num:
                 result = self.make_number()
-                if isinstance(result, list):  # check if make_number returned errors
+                if isinstance(result, list):  # Check if make_number returned errors
                     errors.extend(result)
-                    break  # exit the loop if there are errors
+                    break  # Exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char == '+':
-                tokens.append(Token(TT_PLUS))
+                tokens.append(Token(PLUS, "+"))
                 self.advance()
             elif self.current_char == '-':
-                tokens.append(Token(TT_MINUS))
+                tokens.append(Token(MINUS, "-"))
                 self.advance()
             elif self.current_char == '*':
-                tokens.append(Token(TT_MUL))
+                tokens.append(Token(MUL, "*"))
                 self.advance()
             elif self.current_char == '/':
-                tokens.append(Token(TT_DIV))
+                tokens.append(Token(DIV, "/"))
                 self.advance()
             elif self.current_char == '(':
-                tokens.append(Token(TT_LPAREN))
+                tokens.append(Token(LPAREN, "("))
                 self.advance()
             elif self.current_char == ')':
-                tokens.append(Token(TT_RPAREN))
+                tokens.append(Token(RPAREN, ")"))
                 self.advance()
             elif self.current_char == ',':
-                tokens.append(Token(COMMA))
+                tokens.append(Token(COMMA, ","))
                 self.advance()
 
         if errors:
             return errors
         else:
-            return tokens      
+            return tokens          
 
     def make_number(self):
         num_str = ''
@@ -131,16 +158,16 @@ class Lexer:
         if errors:
             return errors
         elif dot_count == 0:
-            return Token(TT_INT, int(num_str))
+            return Token(INTEL, int(num_str))
         else:
-            return Token(TT_FLOAT, float(num_str))
+            return Token(GRAVITY, float(num_str))
         
     
     def make_word(self):
         ident = ""
         
         while self.current_char != None and self.current_char in alphanum:
-            if self.current_char == "b":
+            if self.current_char == "b": #bang blast
                 ident += self.current_char
                 self.advance()
                 if self.current_char == "a":
@@ -163,7 +190,91 @@ class Lexer:
                                 ###test
                             else:
                                 return Token(BANG, ident)
-                            
+            if self.current_char == "d": #do
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "o":
+                    ident += self.current_char
+                    self.advance()
+                    return Token(DO, "do")
+            if self.current_char == "e": #else, else if, entity
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "l":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "s":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "e":
+                            ident += self.current_char
+                            self.advance()
+
+                            if self.current_char == " ":
+                                if self.current_char == "i":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "f":
+                                        ident += self.current_char
+                                        self.advance()
+                                        return Token(ELSEIF, "elseif")
+                        return Token(ELSE, "else")
+                elif self.current_char == "n":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "t":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "i":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "t":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "y":
+                                    ident += self.current_char
+                                    self.advance()
+                                    return Token(ENTITY, "entity")
+            if self.current_char == "i":
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "f":
+                    ident += self.current_char
+                    self.advance()
+                    return Token(IF, "if")
+            if self.current_char == "f": #false, force, form
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "l":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "s":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "e":
+                                ident += self.current_char
+                                self.advance()
+                    return Token(FALSE, "false")
+                elif self.current_char == "o":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "r":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "c":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "e":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(FORCE, "force")
+                        elif self.current_char == "m":
+                            ident += self.current_char
+                            self.advance()
+                            return Token(FORM, "form")                
                 elif self.current_char == "l":
                     ident += self.current_char
                     self.advance()
@@ -177,6 +288,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(BLAST, "blast")
+            
             else:
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
