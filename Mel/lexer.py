@@ -108,13 +108,13 @@ class Lexer:
                 tokens.append(Token(PLUS, "+"))
                 self.advance()
             elif self.current_char == '-':
-                tokens.append(Token(MINUS))
+                tokens.append(Token(MINUS, "-"))
                 self.advance()
             elif self.current_char == '*':
-                tokens.append(Token(MUL))
+                tokens.append(Token(MUL, "*"))
                 self.advance()
             elif self.current_char == '/':
-                tokens.append(Token(DIV))
+                tokens.append(Token(DIV, "/"))
                 self.advance()
             elif self.current_char == '(':
                 tokens.append(Token(LPAREN, "("))
@@ -232,13 +232,36 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     return Token(ENTITY, "entity")
-            if self.current_char == "i":
+            if self.current_char == "i": #if, inner, intel
                 ident += self.current_char
                 self.advance()
                 if self.current_char == "f":
                     ident += self.current_char
                     self.advance()
                     return Token(IF, "if")
+                elif self.current_char == "n":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "n":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "e":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "r":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(INNER, "inner")
+                    elif self.current_char == "t":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "e":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "l":
+                                ident += self.current_char
+                                self.advance()
+                                return Token(INTEL, "intel")            
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
                 self.advance()
@@ -272,6 +295,30 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             return Token(FORM, "form")
+            if self.current_char == "g": #gravity
+                ident += self.current_char
+                self.advance()
+                if self.current_char == "r":
+                    ident += self.current_char
+                    self.advance()
+                    if self.current_char == "a":
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == "v":
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == "i":
+                                ident += self.current_char
+                                self.advance()
+                                if self.current_char == "t":
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == "y":
+                                        ident += self.current_char
+                                        self.advance()
+                    return Token(GRAVITY, "gravity")  
+
+
             else:
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
