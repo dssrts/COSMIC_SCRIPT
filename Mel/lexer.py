@@ -16,7 +16,7 @@ error = []
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
-#Data types
+#data types
 INTEL = 'intel'
 GRAVITY = 'gravity'
 STAR = 'star'
@@ -48,16 +48,56 @@ UNIVERSE = 'universe'
 TRUE = 'true'
 FALSE = 'false'
 
-#operators
-PLUS = '+'
+
+#OPERATORS
+
+#assignment operators | done
+EQUAL = '=' 
+PLUS_EQUAL = '+='
+MINUS_EQUAL = '-='
+MUL_EQUAL = '*='
+DIV_EQUAL = '/='
+#unary operators | done
+INCRE = '++'
+DECRE = '--'
+#relational operators | done
+E_EQUAL = '=='
+NOT_EQUAL = '!='
+LESS_THAN = '<'
+GREATER_THAN = '>'
+LESS_THAN_EQUAL = '<='
+GREATER_THAN_EQUAL = '>='
+#mathematical operators | done
+PLUS = '+' #it can also use in string operator
 MINUS = '-'
 MUL = '*'
 DIV = '/'
+MODULUS = '%'
+#logical operators
+NOT_OP = '!'
+AND_OP = '&&'
+OR_OP = '||'
+#other symbols
 LPAREN = '('
 RPAREN = ')'
+SLBRACKET = '['
+SRBRACKET = ']'
+CLBRACKET = '{'
+CRBRACKET = '}'
+N_TAB = '\\t'
+N_LINE = '\\n'
+SHARP = '##'
+LQ_MARK = '“'
+RQ_MARK = '”'
+S_COMET = '/*'
+M_OPEN_COMET = '//*'
+M_END_COMET =  '*//'
 SEMICOLON = ';'
+COLON = ':'
+
 
 #literals
+
 IDENTIFIER = 'IDENTI'
 COMMA = 'COMMA'
 SPACE = 'SPACE'
@@ -113,29 +153,135 @@ class Lexer:
                     #break  # Exit the loop if there are errors
                 else:
                     tokens.append(result)
-            elif self.current_char == '+':
-                tokens.append(Token(PLUS, "+"))
+            elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
                 self.advance()
-            elif self.current_char == '-':
-                tokens.append(Token(MINUS, "-"))
+                if self.current_char == '=':
+                    tokens.append(Token(E_EQUAL, "==")) #for == symbol
+                    self.advance()
+                else:
+                    tokens.append(Token(EQUAL, "="))
+                    self.advance()
+            elif self.current_char == '<': #relational operator
+                self.advance()        
+                if self.current_char == '=':
+                    tokens.append(Token(LESS_THAN_EQUAL, "<=")) #for == symbol
+                    self.advance()
+                else:
+                    tokens.append(Token(LESS_THAN, "<"))
+                    self.advance()    
+            elif self.current_char == '>': 
                 self.advance()
-            elif self.current_char == '*':
-                tokens.append(Token(MUL, "*"))
+                if self.current_char == '=':
+                    tokens.append(Token(GREATER_THAN_EQUAL, ">=")) #for == symbol
+                    self.advance()
+                else:
+                    tokens.append(Token(GREATER_THAN, ">"))
+                    self.advance()    
+            elif self.current_char == '+': #mathematical operator (+, -, *, /, %)
                 self.advance()
-            elif self.current_char == '/':
-                tokens.append(Token(DIV, "/"))
+                if self.current_char == '=': #for += symbol
+                    tokens.append(Token(PLUS_EQUAL, "+="))
+                    self.advance()
+                elif self.current_char == '+': #for ++ incre
+                    tokens.append(Token(INCRE, "++"))
+                    self.advance()
+                else:
+                    tokens.append(Token(PLUS, "+"))
+                    self.advance()
+            elif self.current_char == '-': 
                 self.advance()
-            elif self.current_char == '(':
+                if self.current_char == '=': #for -=symbol
+                    tokens.append(Token(MINUS_EQUAL, "-="))
+                    self.advance()
+                elif self.current_char == '-': #for -- decre
+                    tokens.append(Token(DECRE, "--"))
+                    self.advance()
+                else:
+                    tokens.append(Token(MINUS, "-"))
+                    self.advance()
+            elif self.current_char == '*': 
+                self.advance()
+                if self.current_char == '=': #for *= symbol
+                    tokens.append(Token(MUL_EQUAL, "*=")) #for *// ending comet
+                    self.advance()
+                else:
+                    tokens.append(Token(MUL, "*"))
+                    self.advance()
+            elif self.current_char == '/': 
+                self.advance()
+                if self.current_char == '=': #for /= symbol
+                    tokens.append(Token(DIV_EQUAL, "/="))
+                    self.advance()
+                elif self.current_char == '*': #for /* single comet
+                    tokens.append(Token(S_COMET, "/*"))
+                    self.advance()
+                else:
+                    tokens.append(Token(DIV, "/"))
+                    self.advance()
+            elif self.current_char == '%':
+                tokens.append(Token(MODULUS, "%"))
+                self.advance()
+            elif self.current_char == '!': #logical operators (!, &&, ||)
+                self.advance()
+                if self.current_char == '=':
+                    tokens.append(Token(NOT_EQUAL, "!=")) #for != symbol
+                    self.advance()
+                else:
+                    tokens.append(Token(NOT_OP, "!"))
+                    self.advance()
+            elif self.current_char == '&': #return error
+                self.advance()
+                if self.current_char == '&':
+                    tokens.append(Token(AND_OP, "&&"))
+                    self.advance()
+                else:
+                    tokens.append(Token(AND_OP, "&"))
+            elif self.current_char == '|': #return error
+                self.advance()   
+                if self.current_char == '|':
+                    tokens.append(Token(OR_OP, "||"))
+                    self.advance()
+                else:
+                    tokens.append(Token(OR_OP, "|"))
+            elif self.current_char == '(': #other operator
                 tokens.append(Token(LPAREN, "("))
                 self.advance()
             elif self.current_char == ')':
                 tokens.append(Token(RPAREN, ")"))
+                self.advance()
+            elif self.current_char == '[':
+                tokens.append(Token(SLBRACKET, "["))
+                self.advance()
+            elif self.current_char == ']':
+                tokens.append(Token(SRBRACKET, "]"))
+                self.advance()
+            elif self.current_char == '{':
+                tokens.append(Token(CLBRACKET, "{"))
+                self.advance()
+            elif self.current_char == '}':
+                tokens.append(Token(CLBRACKET, "}"))
+                self.advance()
+            elif self.current_char == '#': #return error
+                self.advance()
+                if self.current_char == '#':
+                    tokens.append(Token(SHARP, "##"))
+                    self.advance()
+                else:
+                    tokens.append(Token(SHARP, "#"))
+            elif self.current_char == '“':
+                tokens.append(Token(LQ_MARK, "“"))
+                self.advance()
+            elif self.current_char == '”':
+                tokens.append(Token(RQ_MARK, "”"))
                 self.advance()
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
             elif self.current_char == ";":
                 tokens.append(Token(SEMICOLON, ";"))
+                self.advance()
+            elif self.current_char == ":":
+                tokens.append(Token(COLON, ":"))
                 self.advance()
 
         if errors:
