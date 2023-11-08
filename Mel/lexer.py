@@ -289,7 +289,7 @@ class Lexer:
                 else:
                     tokens.append(result)
                     self.advance()
-                    if self.current_char not in ("+", " "):
+                    if self.current_char not in ("+", " ", ";", None):
                         errors.append("Invalid delimiter for string!")
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
@@ -733,11 +733,7 @@ class Lexer:
                 else:
                     ident += self.current_char
                     self.advance()
-        
-        for item in ident:
-            if item not in alphanum:
-                errors.append("Identifiers cannot contain special symbols!")
-                break
+
 
         if errors:
             return errors
