@@ -2,6 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+space_delim = " "
 
 #errors
 error = []
@@ -53,7 +54,8 @@ class Lexer:
 
     def advance(self):
         self.pos += 1
-        self.current_char = self.text[self.pos] if self.pos < len(self.text) else None
+        # current char is the current pos if the pos is less than the length of the text
+        self.current_char = self.text[self.pos] if self.pos <= len(self.text)-1 else None
 
     def make_tokens(self):
         tokens = []
@@ -67,16 +69,16 @@ class Lexer:
                 self.advance()
             elif self.current_char in all_letters:
                 result = self.make_word()
-                if isinstance(result, list):  # Check if make_word returned errors
+                if isinstance(result, list):  # check if make_word returned errors
                     errors.extend(result)
-                    break  # Exit the loop if there are errors
+                    break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char in all_num:
                 result = self.make_number()
-                if isinstance(result, list):  # Check if make_number returned errors
+                if isinstance(result, list):  # check if make_number returned errors
                     errors.extend(result)
-                    break  # Exit the loop if there are errors
+                    break  # exit the loop if there are errors
                 else:
                     tokens.append(result)
             elif self.current_char == '+':
@@ -132,6 +134,8 @@ class Lexer:
             return Token(TT_INT, int(num_str))
         else:
             return Token(TT_FLOAT, float(num_str))
+        
+    
     def make_word(self):
         ident = ""
         
@@ -148,7 +152,18 @@ class Lexer:
                         if self.current_char == "g":
                             ident += self.current_char
                             self.advance()
-                            return Token(BANG, "bang")
+                            # catch if bang lang yung tinype ng user
+                            if self.current_char == None:
+                                return Token(BANG, ident)
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim:
+                                while self.current_char in alphanum and self.current_char not in space_delim:
+                                    ident += self.current_char
+                                    self.advance()
+                                ###test
+                            else:
+                                return Token(BANG, ident)
+                            
                 elif self.current_char == "l":
                     ident += self.current_char
                     self.advance()
