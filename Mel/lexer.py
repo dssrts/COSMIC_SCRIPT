@@ -3,6 +3,8 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 space_delim = " "
+arithmetic_operator = "+-*/%"
+lineEnd_delim = " ;"
 
 #errors
 error = []
@@ -12,7 +14,7 @@ error = []
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
-#Data types
+#data types
 INTEL = 'intel'
 GRAVITY = 'gravity'
 STAR = 'star'
@@ -44,19 +46,59 @@ UNIVERSE = 'universe'
 TRUE = 'true'
 FALSE = 'false'
 
-#operators
-PLUS = '+'
+
+#OPERATORS
+
+#assignment operators
+EQUAL = '=' 
+PLUS_EQUAL = '+='
+MINUS_EQUAL = '-='
+MUL_EQUAL = '*='
+DIV_EQUAL = '/='
+#unary operators
+INCRE = '++'
+DECRE = '--'
+#relational operators
+E_EQUAL = '=='
+NOT_EQUAL = '!='
+LESS_THAN = '<'
+GREATER_THAN = '>'
+LESS_THAN_EQUAL = '<='
+GREATER_THAN_EQUAL = '>='
+#mathematical operators
+PLUS = '+' #it can also use in string operator
 MINUS = '-'
 MUL = '*'
 DIV = '/'
+MODULUS = '%'
+#logical operators
+NOT_OP = '!'
+AND_OP = '&&'
+OR_OP = '||'
+#other symbols
 LPAREN = '('
 RPAREN = ')'
+SLBRACKET = '['
+SRBRACKET = ']'
+CLBRACKET = '{'
+CRBRACKET = '}'
+N_TAB = '\\t'
+N_LINE = '\\n'
+SHARP = '##'
+LQ_MARK = '“'
+RQ_MARK = '”'
+S_COMMENT = '/*'
+M_OPEN_COMMENT = '//*'
+M_END_COMMENT =  '*//'
+SEMICOLON = ';'
+COLON = ':'
+
 
 #literals
+
 IDENTIFIER = 'IDENTI'
 COMMA = 'COMMA'
 SPACE = 'SPACE'
-
 
 
 class Token:
@@ -129,6 +171,9 @@ class Lexer:
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
+            elif self.current_char == ";":
+                tokens.append(Token(SEMICOLON, ";"))
+                self.advance()
 
         if errors:
             return errors
@@ -181,7 +226,7 @@ class Lexer:
                             self.advance()
                             # catch if bang lang yung tinype ng user
                             if self.current_char == None:
-                                return Token(BANG, "bang")
+                                return Token(BANG, ident)
                             #delimiter ng bang defined in space_delim
                             if self.current_char not in space_delim:
                                 while self.current_char in alphanum and self.current_char not in space_delim:
@@ -191,7 +236,8 @@ class Lexer:
                                         return Token(IDENTIFIER, ident)
                                 ###test
                             else:
-                                return Token(BANG, "bang")
+                                return Token(BANG, ident)
+                           
                 elif self.current_char == "l":
                     ident += self.current_char
                     self.advance()
@@ -204,7 +250,18 @@ class Lexer:
                             if self.current_char == "t":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(BLAST, "blast")
+                                if self.current_char == None:
+                                    return Token(BLAST, ident)
+                            #arith ops
+                            if self.current_char not in lineEnd_delim:
+                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                                ###test
+                            else:
+                                return Token(BLAST, ident)
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
@@ -212,6 +269,7 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     return Token(DO, "do")
+                
             if self.current_char == "e": #else, else if, entity
                 ident += self.current_char
                 self.advance()
@@ -224,8 +282,9 @@ class Lexer:
                         if self.current_char == "e":
                             ident += self.current_char
                             self.advance()
-
                             if self.current_char == " ":
+                                ident += self.current_char
+                                self.advance()
                                 if self.current_char == "i":
                                     ident += self.current_char
                                     self.advance()
@@ -233,7 +292,8 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         return Token(ELSEIF, "elseif")
-                        return Token(ELSE, "else")
+                            else:
+                                return Token(ELSE, "else")
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
@@ -523,8 +583,10 @@ class Lexer:
                             if self.current_char == "l":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(WHIRL, "whirl") 
+                                return Token(WHIRL, "whirl")
             else:
+                if self.current_char == None:
+                    break
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
                     self.advance()
