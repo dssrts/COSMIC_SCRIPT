@@ -2,6 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+ascii_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
 underscore = "_"
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -725,6 +726,7 @@ class Lexer:
                                 self.advance()
                                 return Token(WHIRL, "whirl")
             else:
+                #make identifiers
                 if self.current_char == None:
                     break
                 if self.current_char.isdigit() == True:
