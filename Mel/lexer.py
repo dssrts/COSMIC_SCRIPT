@@ -205,7 +205,19 @@ class Lexer:
                             if self.current_char == "t":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(BLAST, "blast")
+                                #return Token(BLAST, "blast")
+                                if self.current_char == None:
+                                    return Token(BLAST, ident)
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim:
+                                while self.current_char in alphanum and self.current_char not in space_delim:
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                                ###test
+                            else:
+                                return Token(BLAST, ident)
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
