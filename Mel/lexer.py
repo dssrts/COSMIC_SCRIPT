@@ -225,9 +225,9 @@ class Lexer:
                 if self.current_char == '=': #for *= symbol
                     tokens.append(Token(MUL_EQUAL, "*=")) #for *// ending comet
                     self.advance()
-                else:
-                    tokens.append(Token(MUL, "*"))
-                    self.advance()
+                
+                tokens.append(Token(MUL, "*"))
+                
             elif self.current_char == '/': 
                 self.advance()
                 if self.current_char == '=': #for /= symbol
@@ -986,7 +986,7 @@ class Lexer:
                 for item in ident:
                     if item not in alphanum :
                         errors.extend(["Identifiers cannot have special characters!"])
-                        return
+                        return errors
             
              
         if ident_count > 10:
