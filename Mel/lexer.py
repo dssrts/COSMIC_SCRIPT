@@ -96,6 +96,7 @@ M_END_COMET =  '*//'
 SEMICOLON = ';'
 COLON = ':'
 UNDERSCORE = "_"
+NEWLINE= "\\n"
 
 
 #literals
@@ -139,6 +140,9 @@ class Lexer:
         while self.current_char is not None:
             if self.current_char in '\t':
                 tokens.append(Token(N_TAB, "\\t"))
+                self.advance()
+            elif self.current_char  == '\n':
+                tokens.append(Token(NEWLINE, "\\n"))
                 self.advance()
             elif self.current_char in ' ':
                 tokens.append(Token(SPACE, "\" \""))
