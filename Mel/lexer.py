@@ -412,7 +412,7 @@ class Lexer:
                                     
                                 else:
                                     return Token(BLAST, ident)
-                        ident_count += 1
+                ident_count += 1
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
@@ -420,7 +420,7 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     return Token(DO, "do")
-                    ident_count += 1
+                ident_count += 1
                 
             if self.current_char == "e": #else, else if, entity
                 ident += self.current_char
@@ -462,7 +462,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     return Token(ENTITY, "entity")
-                    ident_count += 1
+                ident_count += 1
             if self.current_char == "i": #if, inner, intel
                 ident += self.current_char
                 self.advance()
@@ -493,7 +493,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(INTEL, "intel")    
-                    ident_count += 1         
+                ident_count += 1         
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
                 self.advance()
@@ -510,7 +510,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(FALSE, "false")
-                    ident_count += 1
+                    
                 elif self.current_char == "o":
                     ident += self.current_char
                     self.advance()
@@ -528,7 +528,7 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             return Token(FORM, "form")
-                    ident_count += 1 
+                ident_count += 1 
             if self.current_char == "g": #gravity
                 ident += self.current_char
                 self.advance()
@@ -551,7 +551,7 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         return Token(GRAVITY, "gravity") 
-                    ident_count += 1 
+                ident_count += 1 
             if self.current_char == "l": #landing, launch
                 ident += self.current_char
                 self.advance()
@@ -604,7 +604,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(OUTER, "outer")
-                    ident_count += 1
+                ident_count += 1
             if self.current_char == "s": #saturn, shift, star
                 ident += self.current_char
                 self.advance()
@@ -624,7 +624,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     return Token(SATURN, "saturn")
-                    ident_count += 1
+                
                 elif self.current_char == "h":
                         ident += self.current_char
                         self.advance()
@@ -638,6 +638,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     return Token(SHIFT, "shift")
+                
                 elif self.current_char == "t":
                         ident += self.current_char
                         self.advance()
@@ -649,7 +650,7 @@ class Lexer:
                                 self.advance()
                                 return Token(STAR, "star")
                 
-                        ident_count += 1
+                ident_count += 1
             
             if self.current_char == "t": #takeoff, trace, true
                 ident += self.current_char
@@ -694,7 +695,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()         
                                 return Token(TRUE, "true")  
-                        ident_count += 1
+                ident_count += 1
             if self.current_char == "u": #universe
                 ident += self.current_char
                 self.advance()
@@ -720,7 +721,7 @@ class Lexer:
                                             ident += self.current_char
                                             self.advance()
                                             return Token(UNIVERSE, "universe")
-                    ident_count += 1
+                ident_count += 1
             if self.current_char == "v": #void
                 ident += self.current_char
                 self.advance()
@@ -734,7 +735,7 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             return Token(VOID, "void") 
-                    ident_count += 1  
+                ident_count += 1  
                             
             if self.current_char == "w": #whirl
                 ident += self.current_char
@@ -752,7 +753,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(WHIRL, "whirl")
-                    ident_count += 1
+                ident_count += 1
              
             else:
                 
