@@ -311,6 +311,8 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
+
+
         '''
         for item in tokens:
             if item.token != TAKEOFF:
@@ -328,7 +330,7 @@ class Lexer:
             return [], errors
         else:
         '''
-        
+
         return tokens, errors       
 
     def make_number(self):
@@ -492,6 +494,7 @@ class Lexer:
             if self.current_char == "e": #else, else if, entity
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "l":
                     ident += self.current_char
                     self.advance()
@@ -1237,7 +1240,7 @@ class Lexer:
                                 ident_count += 1
                                 # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
-                                    return Token(WHIRL, "void")
+                                    return Token(WHIRL, "whirl")
                             
                                 #delimiter ng bang defined in space_delim
                                 if self.current_char not in space_delim: 
@@ -1252,9 +1255,13 @@ class Lexer:
                                         if self.current_char == None:
                                             return Token(IDENTIFIER, ident)
                                 else:
-                                    return Token(WHIRL, "void")
-                  
-                
+                                   return Token(WHIRL, "whirl")
+                else:
+                    ident_count += 1
+                    if ident_count > 10:
+                        errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
+                        return errors
+                       
             
             else:
                 
@@ -1271,6 +1278,7 @@ class Lexer:
                 if self.current_char in "\n":
                     break
                 
+                
                 if self.current_char.isdigit() == True:
                     ident_count += 1
                     ident += str(self.current_char)
@@ -1283,7 +1291,7 @@ class Lexer:
                     if item not in alphanum :
                         errors.extend(["Identifiers cannot have special characters!"])
                         return errors
-            
+                
              
         if ident_count > 10:
             errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
@@ -1292,6 +1300,7 @@ class Lexer:
         if errors:
             return errors
         #print(ident_count)
+        # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
         return Token(IDENTIFIER, ident)
             
         
