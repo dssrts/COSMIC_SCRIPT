@@ -313,13 +313,17 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
-            
-
+        
         for item in tokens:
-            if item != TAKEOFF:
+            if item.token != TAKEOFF:
                 errors.extend(["Program cannot start without takeoff!"])
                 break
             break
+        
+        '''
+        if tokens[-1] != LANDING:
+            errors.extend(["Please input landing to end the program!"])
+        '''
 
 
         if errors:
