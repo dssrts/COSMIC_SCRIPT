@@ -340,7 +340,7 @@ class Lexer:
 
         while self.current_char is not None and self.current_char in all_num + '.':
             if num_count > 9:
-                errors.append(f"You've reached the intel limit!")
+                errors.append(f"You've reached the intel limit! Intet limit: 9 digits. Above the limit: {num_str}")
                 break
             if self.current_char == '.':
                 if dot_count == 1: 
