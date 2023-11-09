@@ -339,9 +339,9 @@ class Lexer:
         errors = []
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            if num_count > 9:
-                errors.append(f"You've reached the intel limit! Intet limit: 9 digits. Above the limit: {num_str}")
-                break
+            if num_count == 10:
+                errors.append(f"You've reached the intel limit! Intel limit: 9 digits.")
+                
             if self.current_char == '.':
                 if dot_count == 1: 
                     errors.append(f"Invalid character '{self.current_char}' in number.")
@@ -354,7 +354,7 @@ class Lexer:
                     dec_count += 1
                     num_count -= 1
                 if dec_count > 4:
-                    errors.append(f"You've reached the gravity limit!")
+                    errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits.")
                     break
                 num_count += 1
                 num_str += self.current_char
@@ -1204,6 +1204,7 @@ class Lexer:
             if self.current_char == "w": #whirl
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "h":
                     ident += self.current_char
                     self.advance()
@@ -1220,9 +1221,26 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(WHIRL, "whirl")
-                ident_count += 1
-            
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(WHIRL, "void")
+                            
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        print(ident_count)
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(WHIRL, "void")
+                  
+                
             
             else:
                 
