@@ -353,6 +353,7 @@ class Lexer:
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
         ident = ""
+        ident_count = 0
         errors = []
         
         while self.current_char != None :
@@ -729,30 +730,35 @@ class Lexer:
                                 self.advance()
                                 return Token(WHIRL, "whirl")
             else:
+                ident_count += 1
                 if self.current_char == None:
                     break
                 if self.current_char == " ":
                     break
+                
                 if self.current_char in arithmetic_operator:
                     break
                 if self.current_char.isdigit() == True:
+                    ident_count += 1
                     ident += str(self.current_char)
                     self.advance()
                 else:
+                    ident_count += 1
                     ident += self.current_char
                     self.advance()
-
+                
                 for item in ident:
                     if item not in alphanum:
                         errors.extend(["Identifiers cannot have special characters!"])
                         break
-
             
-        
+                
+        if ident_count > 10:
+            errors.extend(["Exeeded identifier limit!"])           
 
         if errors:
             return errors
-
+        print(ident_count)
         return Token(IDENTIFIER, ident)
             
         
