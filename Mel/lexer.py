@@ -103,8 +103,8 @@ NEWLINE= "\\n"
 #literals
 
 IDENTIFIER = 'IDENTI'
-COMMA = 'COMMA'
-SPACE = 'SPACE'
+COMMA = ','
+SPACE = ' '
 
 
 
