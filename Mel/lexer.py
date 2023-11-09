@@ -408,7 +408,7 @@ class Lexer:
                                     
                                 else:
                                     return Token(BLAST, ident)
-                    ident_count += 1
+                        ident_count += 1
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
@@ -760,15 +760,15 @@ class Lexer:
                     break    
                 if self.current_char in arithmetic_operator:
                     break
+                
                 if self.current_char.isdigit() == True:
-                    ident_count += 1
+                    
                     ident += str(self.current_char)
                     self.advance()
                 else:
-                    ident_count += 1
+                    
                     ident += self.current_char
                     self.advance()
-                
                 for item in ident:
                     if item not in alphanum:
                         errors.extend(["Identifiers cannot have special characters!"])
