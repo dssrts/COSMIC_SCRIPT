@@ -42,7 +42,7 @@ WHIRL = 'whirl'
 DO = 'do'
 #loop control statements
 BLAST = 'blast'
-BREAK = 'break'
+SKIP = 'skip'
 #other statements
 SATURN = 'saturn'
 FORM = 'form'
