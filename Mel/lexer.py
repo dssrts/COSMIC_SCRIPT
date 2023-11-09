@@ -7,6 +7,7 @@ space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
+ident_delim = ","
 
 #errors
 error = []
@@ -500,7 +501,7 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()
-                    return Token(FALSE, "false")
+                                return Token(FALSE, "false")
                 elif self.current_char == "o":
                     ident += self.current_char
                     self.advance()
@@ -729,13 +730,15 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 return Token(WHIRL, "whirl")
+                
             else:
-                ident_count += 1
+                
                 if self.current_char == None:
                     break
                 if self.current_char == " ":
                     break
-                
+                if self.current_char in ident_delim:
+                    break    
                 if self.current_char in arithmetic_operator:
                     break
                 if self.current_char.isdigit() == True:
