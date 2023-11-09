@@ -216,9 +216,9 @@ class Lexer:
                     result = self.make_number()
                     result = Token(result.token, result.value * -1)
                     tokens.append(result)
-                else:
-                    tokens.append(Token(MINUS, "-"))
-                    self.advance()
+                
+                tokens.append(Token(MINUS, "-"))
+                
             elif self.current_char == '*': 
                 self.advance()
                 if self.current_char == '=': #for *= symbol
@@ -240,9 +240,9 @@ class Lexer:
                 elif self.current_char == "*":
                     tokens.append(Token(S_COMET, "/*"))# for single comet
                     self.advance()
-                else:
-                    tokens.append(Token(DIV, "/"))
-                    self.advance()
+                
+                tokens.append(Token(DIV, "/"))
+                
             elif self.current_char == '%':
                 tokens.append(Token(MODULUS, "%"))
                 self.advance()
