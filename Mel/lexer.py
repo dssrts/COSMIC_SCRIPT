@@ -396,7 +396,7 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            # catch if bang lang yung tinype ng user
+                            # catch if bang lang yung tinype ng user (for demo purposes)
                             if self.current_char == None:
                                 return Token(BANG, ident)
                             
@@ -431,18 +431,24 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
+                                # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
-                                    return Token(BLAST, ident)
+                                    return Token(BLAST, "blast")
                             
-                                if self.current_char not in lineEnd_delim:
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
                                     while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
                                         ident += self.current_char
                                         self.advance()
                                         if self.current_char == None:
+                                            print(ident_count)
                                             return Token(IDENTIFIER, ident)
-                                    
                                 else:
-                                    return Token(BLAST, ident)
+                                    return Token(BANG, ident)
                 ident_count += 1
             if self.current_char == "d": #do
                 ident += self.current_char
