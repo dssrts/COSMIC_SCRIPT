@@ -143,7 +143,7 @@ class Lexer:
         while self.current_char is not None:
             if self.current_char in special_chars:
                 errors.extend([f"Invalid symbol: {self.current_char}"])
-                break
+                self.advance()
             elif self.current_char in '\t':
                 tokens.append(Token(N_TAB, "\\t"))
                 self.advance()
@@ -260,7 +260,7 @@ class Lexer:
                     tokens.append(Token(AND_OP, "&&"))
                     self.advance()
                 else:
-                    errors.extend(["Please enter a valid symbol!"])
+                    errors.extend(["Please enter a valid symbol! Did you mean && ?"])
             elif self.current_char == '|': #return error
                 self.advance()
                 if self.current_char == '|':
