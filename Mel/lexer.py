@@ -646,7 +646,7 @@ class Lexer:
                                 return Token(STAR, "star")
                 
                         ident_count += 1
-            ident_count += 1
+            
             if self.current_char == "t": #takeoff, trace, true
                 ident += self.current_char
                 self.advance()
@@ -762,11 +762,11 @@ class Lexer:
                     break
                 
                 if self.current_char.isdigit() == True:
-                    
+                    ident_count += 1
                     ident += str(self.current_char)
                     self.advance()
                 else:
-                    
+                    ident_count += 1
                     ident += self.current_char
                     self.advance()
                 for item in ident:
