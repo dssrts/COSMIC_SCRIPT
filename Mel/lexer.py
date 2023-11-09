@@ -399,15 +399,15 @@ class Lexer:
                                 if self.current_char == None:
                                     return Token(BLAST, ident)
                             #arith ops
-                            if self.current_char not in lineEnd_delim:
-                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                    ident += self.current_char
-                                    self.advance()
-                                    if self.current_char == None:
-                                        return Token(IDENTIFIER, ident)
-                                
-                            else:
-                                return Token(BLAST, ident)
+                                if self.current_char not in lineEnd_delim:
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                    
+                                else:
+                                    return Token(BLAST, ident)
                     ident_count += 1
             if self.current_char == "d": #do
                 ident += self.current_char
