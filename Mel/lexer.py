@@ -2,6 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+special_chars = "$:;?@\^`~"
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -138,7 +139,10 @@ class Lexer:
         string = ""
 
         while self.current_char is not None:
-            if self.current_char in '\t':
+            if self.current_char in special_chars:
+                errors.extend(["Invalid symbol!"])
+                break
+            elif self.current_char in '\t':
                 tokens.append(Token(N_TAB, "\\t"))
                 self.advance()
             elif self.current_char  == '\n':
@@ -307,6 +311,7 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
+            
 
             
 
