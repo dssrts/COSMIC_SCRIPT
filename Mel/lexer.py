@@ -729,9 +729,11 @@ class Lexer:
                                 self.advance()
                                 return Token(WHIRL, "whirl")
             else:
+                if self.current_char == None:
+                    break
                 if self.current_char == " ":
                     break
-                if self.current_char == None:
+                if self.current_char in arithmetic_operator:
                     break
                 if self.current_char.isdigit() == True:
                     ident += str(self.current_char)
@@ -740,6 +742,12 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
 
+                for item in ident:
+                    if item not in alphanum:
+                        errors.extend(["Identifiers cannot have special characters!"])
+                        break
+
+            
         
 
         if errors:
