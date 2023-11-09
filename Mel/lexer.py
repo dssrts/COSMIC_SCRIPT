@@ -366,11 +366,11 @@ class Lexer:
             errors.append("Identifiers cannot start with a number!")
 
         if num_count > 9:
-            errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers")
+            errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
             if dot_count == 0:
-                return Token(INTEL, int(num_str)), errors
+                return [], errors
             else:
-                return Token(GRAVITY, float(num_str)), errors
+                return [], errors
         else:
             if dot_count == 0:
                 return Token(INTEL, int(num_str)), errors
@@ -1211,19 +1211,6 @@ class Lexer:
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
-                #delimiter ng bang defined in space_delim
-                if self.current_char not in space_delim: 
-                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                        ident_count += 1
-                        if ident_count > 10:
-                            if self.current_char == None:
-                                return Token(IDENTIFIER, ident)
-                            errors.append(f"You've reached the identifier limit! Identifier limit: 10 digits. Entered: {ident_count} numbers")
-                            return Token(IDENTIFIER, ident), errors
-                        ident += self.current_char
-                        self.advance()
-                        if self.current_char == None:
-                            return Token(IDENTIFIER, ident)
                 if self.current_char == "h":
                     ident += self.current_char
                     self.advance()
@@ -1250,7 +1237,7 @@ class Lexer:
                                         ident_count += 1
                                         print(ident_count)
                                         if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
+                                            errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
                                             return errors
                                         ident += self.current_char
                                         self.advance()
@@ -1291,7 +1278,7 @@ class Lexer:
             
              
         if ident_count > 10:
-            errors.extend(["Exceeded identifier limit!"])           
+            errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
 
         
         if errors:
