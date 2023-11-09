@@ -104,7 +104,7 @@ NEWLINE= "\\n"
 
 IDENTIFIER = 'IDENTI'
 COMMA = ','
-SPACE = ' '
+SPACE = '\" \" '
 
 
 
