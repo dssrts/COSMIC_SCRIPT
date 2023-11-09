@@ -336,7 +336,9 @@ class Lexer:
         num_str = ''
         dot_count = 0
         errors = []
+        #not used ata to
         reached_limit_intel = False
+        
 
         while self.current_char is not None and self.current_char in all_num + '.':
             '''
@@ -354,9 +356,7 @@ class Lexer:
                 if '.' in num_str:
                     dec_count += 1
                     num_count -= 1
-                if dec_count > 4:
-                    errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits.")
-                    break
+                
                 num_count += 1
                 num_str += self.current_char
             self.advance()
@@ -372,11 +372,17 @@ class Lexer:
                 return [], errors
             else:
                 return [], errors
-        else:
+        if dec_count > 4:
+            errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits. Entered: {dec_count} numbers. Cause: {num_str}")
             if dot_count == 0:
-                return Token(INTEL, int(num_str)), errors
+                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
+                return [], errors
             else:
-                return Token(GRAVITY, float(num_str)), errors
+                return [], errors
+            
+        return Token(INTEL, int(num_str)), errors
+            
+        return Token(GRAVITY, float(num_str)), errors
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
