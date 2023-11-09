@@ -315,7 +315,12 @@ class Lexer:
                 self.advance()
             
 
-            
+        for item in tokens:
+            if item != TAKEOFF:
+                errors.extend(["Program cannot start without takeoff!"])
+                break
+            break
+
 
         if errors:
             return [], errors
