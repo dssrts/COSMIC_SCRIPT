@@ -448,8 +448,8 @@ class Lexer:
                                             print(ident_count)
                                             return Token(IDENTIFIER, ident)
                                 else:
-                                    return Token(BANG, ident)
-                ident_count += 1
+                                    return Token(BANG, "bang")
+                
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
@@ -457,21 +457,24 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
-                   
-                
-                # catch if bang lang yung tinype ng user
+                    # catch if blast lang yung tinype ng user (for demo purposes)
                     if self.current_char == None:
                         return Token(DO, "do")
+                
                     #delimiter ng bang defined in space_delim
-                    if self.current_char not in space_delim:
-                        while self.current_char in alphanum and self.current_char not in space_delim:
+                    if self.current_char not in space_delim: 
+                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                            ident_count += 1
+                            if ident_count > 10:
+                                errors.extend(["Exceeded identifier limit!"])
+                                return errors
                             ident += self.current_char
                             self.advance()
-                            ident_count += 1
                             if self.current_char == None:
+                                print(ident_count)
                                 return Token(IDENTIFIER, ident)
                     else:
-                        return Token(BANG, ident)
+                        return Token(DO, "do")
                 ident_count += 1
                 
             if self.current_char == "e": #else, else if, entity
