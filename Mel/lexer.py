@@ -453,6 +453,7 @@ class Lexer:
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "o":
                     ident += self.current_char
                     self.advance()
@@ -475,7 +476,7 @@ class Lexer:
                                 return Token(IDENTIFIER, ident)
                     else:
                         return Token(DO, "do")
-                ident_count += 1
+                
                 
             if self.current_char == "e": #else, else if, entity
                 ident += self.current_char
@@ -496,17 +497,19 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                if self.current_char == "i":
+                            else:
+                                return Token(ELSE, "else")
+                            if self.current_char == "i":
+                                ident += self.current_char
+                                self.advance()
+                                ident_count += 1
+                                if self.current_char == "f":
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    if self.current_char == "f":
-                                        ident += self.current_char
-                                        self.advance()
-                                        ident_count += 1
-                                        return Token(ELSEIF, "elseif")
-                            else:
-                                return Token(ELSE, "else")
+                                    return Token(ELSEIF, "elseif")
+                        else:
+                            return Token(ELSE, "else")
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
