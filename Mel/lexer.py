@@ -313,7 +313,7 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
-        
+        '''
         for item in tokens:
             if item.token != TAKEOFF:
                 errors.extend(["Program cannot start without takeoff!"])
@@ -324,7 +324,7 @@ class Lexer:
         if tokens[-1].token != LANDING:
             errors.extend(["Please input landing to end the program!"])
         
-
+        '''
 
         if errors:
             return [], errors
@@ -379,9 +379,11 @@ class Lexer:
         errors = []
         
         while self.current_char != None :
+            print(ident_count)
             if self.current_char == "b":
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "a":
                     ident += self.current_char
                     self.advance()
@@ -397,14 +399,19 @@ class Lexer:
                             # catch if bang lang yung tinype ng user
                             if self.current_char == None:
                                 return Token(BANG, ident)
+                            
                             #delimiter ng bang defined in space_delim
-                            if self.current_char not in space_delim:
+                            if self.current_char not in space_delim: 
                                 while self.current_char in alphanum and self.current_char not in space_delim:
+                                    ident_count += 1
+                                    if ident_count > 10:
+                                        errors.extend(["Exceeded identifier limit!"])
+                                        return errors
                                     ident += self.current_char
                                     self.advance()
                                     if self.current_char == None:
+                                        print(ident_count)
                                         return Token(IDENTIFIER, ident)
-                                ###test
                             else:
                                 return Token(BANG, ident)
                            
@@ -426,7 +433,7 @@ class Lexer:
                                 ident_count += 1
                                 if self.current_char == None:
                                     return Token(BLAST, ident)
-                            #arith ops
+                            
                                 if self.current_char not in lineEnd_delim:
                                     while self.current_char in alphanum and self.current_char not in lineEnd_delim:
                                         ident += self.current_char
@@ -444,7 +451,21 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
-                    return Token(DO, "do")
+                   
+                
+                # catch if bang lang yung tinype ng user
+                    if self.current_char == None:
+                        return Token(DO, "do")
+                    #delimiter ng bang defined in space_delim
+                    if self.current_char not in space_delim:
+                        while self.current_char in alphanum and self.current_char not in space_delim:
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
+                            if self.current_char == None:
+                                return Token(IDENTIFIER, ident)
+                    else:
+                        return Token(BANG, ident)
                 ident_count += 1
                 
             if self.current_char == "e": #else, else if, entity
@@ -678,7 +699,7 @@ class Lexer:
                                 ident_count += 1
                                 return Token(OUTER, "outer")
                 ident_count += 1
-            if self.current_char == "s": #saturn, shift, star
+            if self.current_char == "s": #saturn, shift, skip, star
                 ident += self.current_char
                 self.advance()
                 if self.current_char == "a":
@@ -720,6 +741,20 @@ class Lexer:
                                     self.advance()
                                     ident_count += 1
                                     return Token(SHIFT, "shift")
+
+                elif self.current_char == "k":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "i":
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
+                            if self.current_char == "p":
+                                ident += self.current_char
+                                self.advance()
+                                ident_count += 1
+                                return Token(SKIP, "skip")
                 
                 elif self.current_char == "t":
                         ident += self.current_char
@@ -865,7 +900,8 @@ class Lexer:
                                 ident_count += 1
                                 return Token(WHIRL, "whirl")
                 ident_count += 1
-             
+            
+            
             else:
                 
                 if self.current_char == None:
@@ -896,7 +932,7 @@ class Lexer:
             
              
         if ident_count > 10:
-            errors.extend(["Exeeded identifier limit!"])           
+            errors.extend(["Exceeded identifier limit!"])           
 
         
         if errors:
