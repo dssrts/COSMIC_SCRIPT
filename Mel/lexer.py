@@ -320,10 +320,10 @@ class Lexer:
                 break
             break
         
-        '''
-        if tokens[-1] != LANDING:
+        
+        if tokens[-1].token != LANDING:
             errors.extend(["Please input landing to end the program!"])
-        '''
+        
 
 
         if errors:
