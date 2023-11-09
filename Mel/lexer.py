@@ -764,6 +764,8 @@ class Lexer:
                     break    
                 if self.current_char in arithmetic_operator:
                     break
+                if self.current_char in "\n":
+                    break
                 
                 if self.current_char.isdigit() == True:
                     ident_count += 1
