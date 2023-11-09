@@ -448,7 +448,7 @@ class Lexer:
                                             print(ident_count)
                                             return Token(IDENTIFIER, ident)
                                 else:
-                                    return Token(BANG, "bang")
+                                    return Token(BLAST, "blast")
                 
             if self.current_char == "d": #do
                 ident += self.current_char
