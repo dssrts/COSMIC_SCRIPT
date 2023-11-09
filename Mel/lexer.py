@@ -163,12 +163,11 @@ class Lexer:
                     
                     
             elif self.current_char in all_num:
-                result = self.make_number()
-                if isinstance(result, list):  # check if make_number returned errors
-                    errors.extend(result)
+                result, error = self.make_number()
+                
+                errors.extend(error)
                     #break  # exit the loop if there are errors
-                else:
-                    tokens.append(result)
+                tokens.append(result)
                     
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
                 self.advance()
@@ -337,11 +336,13 @@ class Lexer:
         num_str = ''
         dot_count = 0
         errors = []
+        reached_limit_intel = False
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            if num_count == 10:
-                errors.append(f"You've reached the intel limit! Intel limit: 9 digits.")
-                
+            '''
+            if num_count > 9:
+                reached_limit_intel = True
+            '''
             if self.current_char == '.':
                 if dot_count == 1: 
                     errors.append(f"Invalid character '{self.current_char}' in number.")
@@ -364,12 +365,17 @@ class Lexer:
         if self.current_char is not None and self.current_char.isalpha():
             errors.append("Identifiers cannot start with a number!")
 
-        if errors:
-            return errors
-        elif dot_count == 0:
-            return Token(INTEL, int(num_str))
+        if num_count > 9:
+            errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers")
+            if dot_count == 0:
+                return Token(INTEL, int(num_str)), errors
+            else:
+                return Token(GRAVITY, float(num_str)), errors
         else:
-            return Token(GRAVITY, float(num_str))
+            if dot_count == 0:
+                return Token(INTEL, int(num_str)), errors
+            else:
+                return Token(GRAVITY, float(num_str)), errors
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
