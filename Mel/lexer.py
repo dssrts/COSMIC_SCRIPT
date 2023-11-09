@@ -175,9 +175,9 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     self.advance()
-                else:
-                    tokens.append(Token(EQUAL, "="))
-                    self.advance()
+                
+                tokens.append(Token(EQUAL, "="))
+                    
             elif self.current_char == '<': #relational operator
                 self.advance()        
                 if self.current_char == '=':
@@ -201,8 +201,8 @@ class Lexer:
                 elif self.current_char == '+': #for ++ incre
                     tokens.append(Token(INCRE, "++"))
                     self.advance()
-                else:
-                    tokens.append(Token(PLUS, "+"))
+                
+                tokens.append(Token(PLUS, "+"))
                     
             elif self.current_char == '-': 
                 self.advance()
@@ -216,8 +216,8 @@ class Lexer:
                     result = self.make_number()
                     result = Token(result.token, result.value * -1)
                     tokens.append(result)
-                
-                tokens.append(Token(MINUS, "-"))
+                else:
+                    tokens.append(Token(MINUS, "-"))
                 
             elif self.current_char == '*': 
                 self.advance()
@@ -324,7 +324,7 @@ class Lexer:
             errors.extend(["Please input landing to end the program!"])
         
         '''
-
+        
         if errors:
             return [], errors
         else:
@@ -1181,7 +1181,23 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            return Token(VOID, "void") 
+                            # catch if blast lang yung tinype ng user (for demo purposes)
+                            if self.current_char == None:
+                                return Token(VOID, "void")
+                        
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim: 
+                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                    ident_count += 1
+                                    if ident_count > 10:
+                                        errors.extend(["Exceeded identifier limit!"])
+                                        return errors
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                            else:
+                                return Token(VOID, "void")
                   
                             
             if self.current_char == "w": #whirl
