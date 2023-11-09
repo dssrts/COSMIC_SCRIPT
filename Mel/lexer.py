@@ -183,17 +183,16 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(LESS_THAN_EQUAL, "<=")) #for == symbol
                     self.advance()
-                else:
-                    tokens.append(Token(LESS_THAN, "<"))
-                    self.advance()    
+                
+                tokens.append(Token(LESS_THAN, "<"))
+                  
             elif self.current_char == '>': 
                 self.advance()
                 if self.current_char == '=':
                     tokens.append(Token(GREATER_THAN_EQUAL, ">=")) #for == symbol
                     self.advance()
-                else:
-                    tokens.append(Token(GREATER_THAN, ">"))
-                    self.advance()    
+
+                tokens.append(Token(GREATER_THAN, ">"))
             elif self.current_char == '+': #mathematical operator (+, -, *, /, %)
                 self.advance()
                 if self.current_char == '=': #for += symbol
@@ -1099,26 +1098,27 @@ class Lexer:
                                 self.advance()     
                                 ident_count += 1    
                                 # catch if blast lang yung tinype ng user (for demo purposes)
-                                    if self.current_char == None:
-                                        return Token(TRUE, "true")
-                                
-                                    #delimiter ng bang defined in space_delim
-                                    if self.current_char not in space_delim: 
-                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                            ident_count += 1
-                                            if ident_count > 10:
-                                                errors.extend(["Exceeded identifier limit!"])
-                                                return errors
-                                            ident += self.current_char
-                                            self.advance()
-                                            if self.current_char == None:
-                                                return Token(IDENTIFIER, ident)
-                                    else:
-                                        return Token(TRUE, "true") 
+                                if self.current_char == None:
+                                    return Token(TRUE, "true")
+                            
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(TRUE, "true") 
                 
             if self.current_char == "u": #universe
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "n":
                     ident += self.current_char
                     self.advance()
@@ -1147,11 +1147,28 @@ class Lexer:
                                             ident += self.current_char
                                             self.advance()
                                             ident_count += 1
-                                            return Token(UNIVERSE, "universe")
-                ident_count += 1
+                                            # catch if blast lang yung tinype ng user (for demo purposes)
+                                            if self.current_char == None:
+                                                return Token(UNIVERSE, "universe")
+                                        
+                                            #delimiter ng bang defined in space_delim
+                                            if self.current_char not in space_delim: 
+                                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                                    ident_count += 1
+                                                    if ident_count > 10:
+                                                        errors.extend(["Exceeded identifier limit!"])
+                                                        return errors
+                                                    ident += self.current_char
+                                                    self.advance()
+                                                    if self.current_char == None:
+                                                        return Token(IDENTIFIER, ident)
+                                            else:
+                                                return Token(UNIVERSE, "universe") 
+                
             if self.current_char == "v": #void
                 ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "o":
                     ident += self.current_char
                     self.advance()
@@ -1165,7 +1182,7 @@ class Lexer:
                             self.advance()
                             ident_count += 1
                             return Token(VOID, "void") 
-                ident_count += 1  
+                  
                             
             if self.current_char == "w": #whirl
                 ident += self.current_char
