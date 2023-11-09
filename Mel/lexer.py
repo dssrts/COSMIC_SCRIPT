@@ -142,7 +142,7 @@ class Lexer:
 
         while self.current_char is not None:
             if self.current_char in special_chars:
-                errors.extend(["Invalid symbol!"])
+                errors.extend([f"Invalid symbol: {self.current_char}"])
                 break
             elif self.current_char in '\t':
                 tokens.append(Token(N_TAB, "\\t"))
