@@ -6,7 +6,10 @@ while True:
     
     for item in result:
         print(item)
-
+    for err in error:
+        print(err)
+    '''
     if error:
         for err in error:
             print(err)
+    '''

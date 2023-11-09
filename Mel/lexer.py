@@ -324,11 +324,12 @@ class Lexer:
             errors.extend(["Please input landing to end the program!"])
         
         '''
-        
+        '''
         if errors:
             return [], errors
         else:
-            return tokens, None       
+        '''
+        return tokens, errors       
 
     def make_number(self):
         dec_count = 0
@@ -1258,7 +1259,7 @@ class Lexer:
         
         if errors:
             return errors
-        print(ident_count)
+        #print(ident_count)
         return Token(IDENTIFIER, ident)
             
         
