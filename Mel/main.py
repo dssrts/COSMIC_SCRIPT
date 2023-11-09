@@ -2,7 +2,11 @@ import lexer
 
 while True:
     text = input('cosmic script > ')
-    result = lexer.run(text)
+    result, error = lexer.run(text)
     
     for item in result:
         print(item)
+
+    if error:
+        for err in error:
+            print(err)
