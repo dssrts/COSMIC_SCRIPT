@@ -368,6 +368,7 @@ class Lexer:
         if num_count > 9:
             errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
             if dot_count == 0:
+                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
                 return [], errors
             else:
                 return [], errors
