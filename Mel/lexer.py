@@ -2,7 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-special_chars = "$:;?@\^`~"
+special_chars = "$:?@\^`~"
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -42,7 +42,7 @@ WHIRL = 'whirl'
 DO = 'do'
 #loop control statements
 BLAST = 'blast'
-BREAK = 'break'
+SKIP = 'skip'
 #other statements
 SATURN = 'saturn'
 FORM = 'form'
@@ -121,6 +121,7 @@ class Token:
 #LEXER
 
 class Lexer:
+    
     def __init__(self, text):
         
         self.text = text
@@ -134,6 +135,7 @@ class Lexer:
         self.current_char = self.text[self.pos] if self.pos <= len(self.text)-1 else None
 
     def make_tokens(self):
+        
         tokens = []
         errors = []
         string = ""
@@ -311,9 +313,18 @@ class Lexer:
             elif self.current_char == ":":
                 tokens.append(Token(COLON, ":"))
                 self.advance()
-            
+        
+        for item in tokens:
+            if item.token != TAKEOFF:
+                errors.extend(["Program cannot start without takeoff!"])
+                break
+            break
+        
+        
+        if tokens[-1].token != LANDING:
+            errors.extend(["Please input landing to end the program!"])
+        
 
-            
 
         if errors:
             return [], errors
@@ -362,6 +373,7 @@ class Lexer:
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
+        
         ident = ""
         ident_count = 0
         errors = []
@@ -666,7 +678,7 @@ class Lexer:
                                 ident_count += 1
                                 return Token(OUTER, "outer")
                 ident_count += 1
-            if self.current_char == "s": #saturn, shift, star
+            if self.current_char == "s": #saturn, shift, skip, star
                 ident += self.current_char
                 self.advance()
                 if self.current_char == "a":
@@ -708,6 +720,20 @@ class Lexer:
                                     self.advance()
                                     ident_count += 1
                                     return Token(SHIFT, "shift")
+
+                elif self.current_char == "k":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "i":
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
+                            if self.current_char == "p":
+                                ident += self.current_char
+                                self.advance()
+                                ident_count += 1
+                                return Token(SKIP, "skip")
                 
                 elif self.current_char == "t":
                         ident += self.current_char
@@ -860,6 +886,8 @@ class Lexer:
                     break
                 if self.current_char == " ":
                     break
+                if self.current_char in lineEnd_delim:
+                    break
                 if self.current_char in ident_delim:
                     break    
                 if self.current_char in arithmetic_operator:
@@ -880,10 +908,11 @@ class Lexer:
                         errors.extend(["Identifiers cannot have special characters!"])
                         break
             
-                
+             
         if ident_count > 10:
             errors.extend(["Exeeded identifier limit!"])           
 
+        
         if errors:
             return errors
         print(ident_count)
@@ -908,9 +937,6 @@ class Lexer:
             return errors
         
         
-       
-  
-
 def run(text):
     lexer = Lexer(text)
     tokens, error = lexer.make_tokens()
