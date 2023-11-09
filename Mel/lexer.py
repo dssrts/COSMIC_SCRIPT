@@ -368,12 +368,15 @@ class Lexer:
                 if self.current_char == "a":
                     ident += self.current_char
                     self.advance()
+                    ident_count += 1
                     if self.current_char == "n":
                         ident += self.current_char
                         self.advance()
+                        ident_count += 1
                         if self.current_char == "g":
                             ident += self.current_char
                             self.advance()
+                            ident_count += 1
                             # catch if bang lang yung tinype ng user
                             if self.current_char == None:
                                 return Token(BANG, ident)
@@ -587,7 +590,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     return Token(LAUNCH, "launch")
-                    ident_count += 1
+                ident_count += 1
             if self.current_char == "o": #outer
                 ident += self.current_char
                 self.advance()
