@@ -1211,6 +1211,19 @@ class Lexer:
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
+                #delimiter ng bang defined in space_delim
+                if self.current_char not in space_delim: 
+                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                        ident_count += 1
+                        if ident_count > 10:
+                            if self.current_char == None:
+                                return Token(IDENTIFIER, ident)
+                            errors.append(f"You've reached the identifier limit! Identifier limit: 10 digits. Entered: {ident_count} numbers")
+                            return Token(IDENTIFIER, ident), errors
+                        ident += self.current_char
+                        self.advance()
+                        if self.current_char == None:
+                            return Token(IDENTIFIER, ident)
                 if self.current_char == "h":
                     ident += self.current_char
                     self.advance()
