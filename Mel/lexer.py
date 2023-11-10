@@ -3,6 +3,7 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 special_chars = "$:?@\^`~"
+ident_special_chars = "$:?@\^`~#"
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -98,7 +99,8 @@ SEMICOLON = ';'
 COLON = ':'
 UNDERSCORE = "_"
 NEWLINE= "\\n"
-
+IN = ">>"
+OUT = ",,"
 
 #literals
 
@@ -161,7 +163,6 @@ class Lexer:
                 else:
                     tokens.append(result)
                     
-                    
             elif self.current_char in all_num:
                 result, error = self.make_number()
                 
@@ -189,9 +190,14 @@ class Lexer:
                 self.advance()
                 if self.current_char == '=':
                     tokens.append(Token(GREATER_THAN_EQUAL, ">=")) #for == symbol
+                    
+                elif self.current_char == '>':
+                    tokens.append(Token(IN, ">>"))
                     self.advance()
-
-                tokens.append(Token(GREATER_THAN, ">"))
+                else:
+                    tokens.append(Token(GREATER_THAN, ">"))
+                    
+                
             elif self.current_char == '+': #mathematical operator (+, -, *, /, %)
                 self.advance()
                 if self.current_char == '=': #for += symbol
@@ -212,7 +218,7 @@ class Lexer:
                     tokens.append(Token(DECRE, "--"))
                     self.advance()
                 elif self.current_char in all_num:
-                    result = self.make_number()
+                    result, error = self.make_number()
                     result = Token(result.token, result.value * -1)
                     tokens.append(result)
                 else:
@@ -386,7 +392,11 @@ class Lexer:
                 return [], errors
             else:
                 return [], errors
-            
+        if dot_count == 0:
+            #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
+            return Token(INTEL, int(num_str)), errors
+        else:
+            return Token(GRAVITY, float(num_str)), errors
        
         
     #takes in the input character by character then translates them into words then tokens
@@ -1278,8 +1288,7 @@ class Lexer:
                     break    
                 if self.current_char in arithmetic_operator:
                     break
-                if self.current_char in SHARP:
-                    break
+                
                 if self.current_char in "\n":
                     break
                 
@@ -1297,7 +1306,7 @@ class Lexer:
                     self.advance()
 
                 for item in ident:
-                    if item in special_chars:
+                    if item in ident_special_chars:
                         errors.extend(["Identifiers cannot have special characters!"])
                         return errors
                 
