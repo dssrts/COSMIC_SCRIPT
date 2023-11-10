@@ -387,9 +387,7 @@ class Lexer:
             else:
                 return [], errors
             
-        return Token(INTEL, int(num_str)), errors
-            
-        return Token(GRAVITY, float(num_str)), errors
+       
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
@@ -1279,6 +1277,8 @@ class Lexer:
                 if self.current_char in ident_delim:
                     break    
                 if self.current_char in arithmetic_operator:
+                    break
+                if self.current_char in SHARP:
                     break
                 if self.current_char in "\n":
                     break
