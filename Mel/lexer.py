@@ -397,6 +397,7 @@ class Lexer:
         ident = ""
         ident_count = 0
         errors = []
+
         
         while self.current_char != None :
             
@@ -1282,7 +1283,10 @@ class Lexer:
                 if self.current_char in "\n":
                     break
                 
-                
+                if self.current_char == UNDERSCORE:
+                    ident_count += 1
+                    ident += str(self.current_char)
+                    self.advance()
                 if self.current_char.isdigit() == True:
                     ident_count += 1
                     ident += str(self.current_char)
@@ -1291,8 +1295,9 @@ class Lexer:
                     ident_count += 1
                     ident += self.current_char
                     self.advance()
+
                 for item in ident:
-                    if item not in alphanum :
+                    if item in special_chars:
                         errors.extend(["Identifiers cannot have special characters!"])
                         return errors
                 
