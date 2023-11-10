@@ -170,13 +170,13 @@ class Lexer:
                     #break  # exit the loop if there are errors
                 tokens.append(result)
                     
-            elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=)
+            elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=, ==)
                 self.advance()
                 if self.current_char == '=':
                     tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     self.advance()
-                
-                tokens.append(Token(EQUAL, "="))
+                else:
+                    tokens.append(Token(EQUAL, "="))
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
@@ -190,7 +190,7 @@ class Lexer:
                 self.advance()
                 if self.current_char == '=':
                     tokens.append(Token(GREATER_THAN_EQUAL, ">=")) #for == symbol
-                    
+                    self.advance()
                 elif self.current_char == '>':
                     tokens.append(Token(IN, ">>"))
                     self.advance()
