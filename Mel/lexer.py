@@ -106,7 +106,7 @@ OUT = ",,"
 
 IDENTIFIER = 'IDENTI'
 COMMA = ','
-SPACE = '\" \" '
+SPACE = "space"
 
 
 
