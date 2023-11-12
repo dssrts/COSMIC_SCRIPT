@@ -1371,6 +1371,14 @@ class Parser:
                 if self.current_tok.token == IDENTIFIER:
                     parseResult.append(self.current_tok)
                     self.advance()
+                    # delims -> space, =, (, comma, arithmetic, comparison operators, relational
+                    parseResult.append(self.current_tok)
+                    self.advance()
+                    if self.current_tok.token == SPACE:
+                        self.advance()
+                    if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
+                        parseResult.append(self.current_tok)
+                        self.advance() 
                 else:
                     errors.append(["Please enter an identifier after intel!"])
                     return [], errors
@@ -1380,9 +1388,14 @@ class Parser:
                 errors.append([f"Invalid placement of number! Cause: {self.current_tok.value}"])
                 return [], errors
             elif self.current_tok.token == IDENTIFIER:
-                # delims -> space, =, (, comma, arithmetic, comparison operators
+                # delims -> space, =, (, comma, arithmetic, comparison operators, relational
                 parseResult.append(self.current_tok)
                 self.advance()
+                if self.current_tok.token == SPACE:
+                    self.advance()
+                if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
+                    parseResult.append(self.current_tok)
+                    self.advance()  
             else:
                 errors.append([f"Invalid Syntax!"])
                 return [], errors
