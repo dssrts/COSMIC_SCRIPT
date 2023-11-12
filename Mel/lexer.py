@@ -178,13 +178,13 @@ class Lexer:
                     tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     self.advance()
                     if self.current_char not in (all_letters + all_num + equal_delim + space_delim):
-                        errors.extend([f"Invalid delimiter for == : {self.current_char}"])
+                        errors.extend([f"Invalid delimiter for == ! Cause: {self.current_char}"])
                         self.advance()
                 else:
                     tokens.append(Token(EQUAL, "="))
                     
                     if self.current_char not in (all_letters+ all_num + equal_delim + space_delim):
-                        errors.extend([f"Invalid delimiter for = : {self.current_char}"])
+                        errors.extend([f"Invalid delimiter for = ! Cause : {self.current_char}"])
                         self.advance()
                     
             elif self.current_char == '<': #relational operator
