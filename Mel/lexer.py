@@ -16,6 +16,10 @@ error = []
 
 #TOKENS
 
+#input type
+#numbers
+NUMBER = 'number'
+FLOAT = 'float'
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
@@ -108,7 +112,7 @@ IDENTIFIER = 'IDENTI'
 COMMA = ','
 SPACE = "space"
 
-
+EOF = 'eof'
 
 class Token:
     def __init__(self, token, value=None):
@@ -320,6 +324,7 @@ class Lexer:
                 tokens.append(Token(COLON, ":"))
                 self.advance()
 
+        tokens.append(Token(EOF, 'eof'))     
 
         '''
         for item in tokens:
@@ -384,22 +389,23 @@ class Lexer:
             errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
+                return Token(NUMBER, int(num_str)), errors
             else:
-                return Token(GRAVITY, float(num_str)), errors
+                return Token(FLOAT, float(num_str)), errors
         if dec_count > 4:
             errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits. Entered: {dec_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
+                return Token(FLOAT, int(num_str)), errors
             else:
                 return Token(GRAVITY, float(num_str)), errors
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-            return Token(INTEL, int(num_str)), errors
+            return Token(NUMBER, int(num_str)), errors
         else:
-            return Token(GRAVITY, float(num_str)), errors
-       
+            return Token(FLOAT, float(num_str)), errors
+
+        
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
@@ -1342,7 +1348,6 @@ class Lexer:
             return errors
 
 class Parser:
-    
     def __init__(self, tokens):
         self.tokens = tokens
         self.tok_idx = -1
@@ -1357,17 +1362,31 @@ class Parser:
     def parse(self):
         parseResult = []
         errors = []
-        if self.current_tok.token == INTEL:
-            parseResult.append(self.current_tok)
-            self.advance()
-            if self.current_tok.token == SPACE:
+        while self.current_tok.token != EOF:
+            if self.current_tok.token == INTEL:
+                parseResult.append(self.current_tok)
                 self.advance()
-            if self.current_tok.token == IDENTIFIER:
+                if self.current_tok.token == SPACE:
+                    self.advance()
+                if self.current_tok.token == IDENTIFIER:
+                    parseResult.append(self.current_tok)
+                    self.advance()
+                else:
+                    errors.append(["Please enter an identifier after intel!"])
+                    return [], errors
+            if self.current_tok.token == SPACE:
+                self.advance()    
+            elif self.current_tok.token == NUMBER:
+                errors.append([f"Invalid placement of number! Cause: {self.current_tok.value}"])
+                return [], errors
+            elif self.current_tok.token == IDENTIFIER:
+                # delims -> space, =, (, comma, arithmetic, comparison operators
                 parseResult.append(self.current_tok)
                 self.advance()
             else:
-                errors.append(["Please enter an identifier after intel!"])
+                errors.append([f"Invalid Syntax!"])
                 return [], errors
+            
         return parseResult, errors
 
 def run(text):
