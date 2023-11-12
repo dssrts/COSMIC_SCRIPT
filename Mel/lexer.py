@@ -1386,6 +1386,7 @@ class Parser:
                     errors.append(["Please enter an identifier after intel!"])
                     return [], errors
             if self.current_tok.token == SPACE:
+                parseResult.append(self.current_tok)
                 self.advance()    
             
             elif self.current_tok.token == IDENTIFIER:
@@ -1401,13 +1402,14 @@ class Parser:
                         parseResult.append(self.current_tok)
                         self.advance()
                     if self.current_tok.token == SPACE:
+                        parseResult.append(self.current_tok)
                         self.advance()
                     if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
                         parseResult.append(self.current_tok)
                         self.advance()  
                         if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
                             errors.append([f"Invalid delimiter for: {self.current_tok.token}"])
-                            return parseResult, errors
+                            
 
                 
             
