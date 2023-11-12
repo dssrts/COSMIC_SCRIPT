@@ -1,4 +1,4 @@
-# make_a_compiler
+# Cosmic Script
 
 Automata and Formal Languages 
 - Cosmic Script Compiler
