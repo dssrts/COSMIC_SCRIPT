@@ -101,7 +101,7 @@ COLON = ':'
 UNDERSCORE = "_"
 NEWLINE= "\\n"
 IN = ">>"
-OUT = ",,"
+OUT = "<<"
 
 #literals
 
@@ -192,6 +192,9 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(LESS_THAN_EQUAL, "<=")) #for == symbol
                     self.advance()
+                elif self.current_char == '<':
+                    tokens.append(Token(OUT, "<<"))
+                    self.advance()
                 else:
                     tokens.append(Token(LESS_THAN, "<"))
                     
@@ -203,7 +206,7 @@ class Lexer:
                     self.advance()
                 elif self.current_char == '>':
                     tokens.append(Token(IN, ">>"))
-                    
+                    self.advance()
                 else:
                     tokens.append(Token(GREATER_THAN, ">"))
                     
@@ -308,7 +311,7 @@ class Lexer:
                     tokens.append(Token(SHARP, "##"))
                     self.advance()
                 else:
-                    errors.extend(["Please enter a valid symbol!"])
+                    errors.extend(["Please enter a valid symbol! Did you mean ## ?"])
             elif self.current_char == "\"":
                 result = self.make_string()
                 if isinstance(result, list):  # check if make_word returned errors
