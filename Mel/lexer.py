@@ -383,16 +383,16 @@ class Lexer:
             errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return [], errors
+                return Token(INTEL, int(num_str), errors
             else:
-                return [], errors
+                return Token(GRAVITY, float(num_str)), errors
         if dec_count > 4:
             errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits. Entered: {dec_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return [], errors
+                return Token(INTEL, int(num_str), errors
             else:
-                return [], errors
+                return Token(GRAVITY, float(num_str)), errors
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
             return Token(INTEL, int(num_str)), errors
