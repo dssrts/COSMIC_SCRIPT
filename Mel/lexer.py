@@ -1340,6 +1340,17 @@ class Lexer:
 
         if errors:
             return errors
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        current_tok = None
+
+    def advance():
+        
+
+    #if equals yung current token, dapat yung next is either a number, an identifer, or a parenthesis
+    
         
         
        

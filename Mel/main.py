@@ -5,6 +5,7 @@ while True:
     #kaya dalawa kasi dalawa nirererturn ng make_tokens()
     result, error = lexer.run(text)
     
+    
     for item in result:
         print(item)
     for err in error:
