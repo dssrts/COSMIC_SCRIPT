@@ -1363,6 +1363,9 @@ class Parser:
         parseResult = []
         errors = []
         while self.current_tok.token != EOF:
+            if self.current_tok.token == NUMBER:
+                errors.append([f"Invalid placement of number! Cause: {self.current_tok.value}"])
+                return [], errors
             if self.current_tok.token == INTEL:
                 parseResult.append(self.current_tok)
                 self.advance()
@@ -1384,29 +1387,39 @@ class Parser:
                     return [], errors
             if self.current_tok.token == SPACE:
                 self.advance()    
-            elif self.current_tok.token == NUMBER:
-                errors.append([f"Invalid placement of number! Cause: {self.current_tok.value}"])
-                return [], errors
+            
             elif self.current_tok.token == IDENTIFIER:
                 # delims -> space, =, (, comma, arithmetic, comparison operators, relational
                 parseResult.append(self.current_tok)
                 self.advance()
-                if self.current_tok.token == SPACE:
-                    self.advance()
-                if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                    parseResult.append(self.current_tok)
-                    self.advance()  
-            else:
-                errors.append([f"Invalid Syntax!"])
-                return [], errors
+                while self.current_tok.token != EOF:
+                    if self.current_tok.token == NUMBER:
+                        parseResult.append(self.current_tok)
+                        self.advance()
+                    if self.current_tok.token == IDENTIFIER:
+                        # delims -> space, =, (, comma, arithmetic, comparison operators, relational
+                        parseResult.append(self.current_tok)
+                        self.advance()
+                    if self.current_tok.token == SPACE:
+                        self.advance()
+                    if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
+                        parseResult.append(self.current_tok)
+                        self.advance()  
+                        if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
+                            errors.append([f"Invalid delimiter for: {self.current_tok.token}"])
+                            return parseResult, errors
+
+                
             
         return parseResult, errors
 
 def run(text):
     lexer = Lexer(text)
     tokens, error = lexer.make_tokens()
+    '''
     if error:
         return tokens, error
+    '''
     test = Parser(tokens)
     res = test.parse()
     
