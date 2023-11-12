@@ -10,16 +10,13 @@ arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
 ident_delim = ",+-*/%><!=&|"
+equal_delim = alphanum + "({"
 
 #errors
 error = []
 
 #TOKENS
 
-#input type
-#numbers
-NUMBER = 'number'
-FLOAT = 'float'
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
@@ -112,7 +109,7 @@ IDENTIFIER = 'IDENTI'
 COMMA = ','
 SPACE = "space"
 
-EOF = 'eof'
+
 
 class Token:
     def __init__(self, token, value=None):
@@ -180,8 +177,15 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     self.advance()
+                    if self.current_char not in (all_letters + all_num + equal_delim + space_delim):
+                        errors.extend([f"Invalid delimiter for == : {self.current_char}"])
+                        self.advance()
                 else:
                     tokens.append(Token(EQUAL, "="))
+                    
+                    if self.current_char not in (all_letters+ all_num + equal_delim + space_delim):
+                        errors.extend([f"Invalid delimiter for = : {self.current_char}"])
+                        self.advance()
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
@@ -190,6 +194,7 @@ class Lexer:
                     self.advance()
                 else:
                     tokens.append(Token(LESS_THAN, "<"))
+                    
                   
             elif self.current_char == '>': 
                 self.advance()
@@ -264,7 +269,7 @@ class Lexer:
                     self.advance()
                 else:
                     tokens.append(Token(NOT_OP, "!"))
-                    self.advance()
+                    
             elif self.current_char == '&': #return error
                 self.advance()
                 if self.current_char == '&':
@@ -324,7 +329,6 @@ class Lexer:
                 tokens.append(Token(COLON, ":"))
                 self.advance()
 
-        tokens.append(Token(EOF, 'eof'))     
 
         '''
         for item in tokens:
@@ -389,23 +393,22 @@ class Lexer:
             errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(NUMBER, int(num_str)), errors
+                return Token(INTEL, int(num_str)), errors
             else:
-                return Token(FLOAT, float(num_str)), errors
+                return Token(GRAVITY, float(num_str)), errors
         if dec_count > 4:
             errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits. Entered: {dec_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(FLOAT, int(num_str)), errors
+                return Token(INTEL, int(num_str)), errors
             else:
                 return Token(GRAVITY, float(num_str)), errors
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-            return Token(NUMBER, int(num_str)), errors
+            return Token(INTEL, int(num_str)), errors
         else:
-            return Token(FLOAT, float(num_str)), errors
-
-        
+            return Token(GRAVITY, float(num_str)), errors
+       
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
@@ -1346,84 +1349,13 @@ class Lexer:
 
         if errors:
             return errors
-
-class Parser:
-    def __init__(self, tokens):
-        self.tokens = tokens
-        self.tok_idx = -1
-        self.advance()
-
-    def advance(self):
-        self.tok_idx += 1
-        if self.tok_idx < len(self.tokens):
-            self.current_tok = self.tokens[self.tok_idx]
-        return self.current_tok
-    
-    def parse(self):
-        parseResult = []
-        errors = []
-        while self.current_tok.token != EOF:
-            if self.current_tok.token == NUMBER:
-                errors.append([f"Invalid placement of number! Cause: {self.current_tok.value}"])
-                return [], errors
-            if self.current_tok.token == INTEL:
-                parseResult.append(self.current_tok)
-                self.advance()
-                if self.current_tok.token == SPACE:
-                    self.advance()
-                if self.current_tok.token == IDENTIFIER:
-                    parseResult.append(self.current_tok)
-                    self.advance()
-                    # delims -> space, =, (, comma, arithmetic, comparison operators, relational
-                    parseResult.append(self.current_tok)
-                    self.advance()
-                    if self.current_tok.token == SPACE:
-                        self.advance()
-                    if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                        parseResult.append(self.current_tok)
-                        self.advance() 
-                else:
-                    errors.append(["Please enter an identifier after intel!"])
-                    return [], errors
-            if self.current_tok.token == SPACE:
-                parseResult.append(self.current_tok)
-                self.advance()    
-            
-            elif self.current_tok.token == IDENTIFIER:
-                # delims -> space, =, (, comma, arithmetic, comparison operators, relational
-                parseResult.append(self.current_tok)
-                self.advance()
-                while self.current_tok.token != EOF:
-                    if self.current_tok.token == NUMBER:
-                        parseResult.append(self.current_tok)
-                        self.advance()
-                    if self.current_tok.token == IDENTIFIER:
-                        # delims -> space, =, (, comma, arithmetic, comparison operators, relational
-                        parseResult.append(self.current_tok)
-                        self.advance()
-                    if self.current_tok.token == SPACE:
-                        parseResult.append(self.current_tok)
-                        self.advance()
-                    if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                        parseResult.append(self.current_tok)
-                        self.advance()  
-                        if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                            errors.append([f"Invalid delimiter for: {self.current_tok.token}"])
-
-            else:
-                parseResult.append(self.current_tok)
-                self.advance()                    
-            
-        return parseResult, errors
+        
+        
+       
+  
 
 def run(text):
     lexer = Lexer(text)
-    tokens, lexerError = lexer.make_tokens()
+    tokens, error = lexer.make_tokens()
     
-    if lexerError:
-        return tokens, lexerError
-    
-    test = Parser(tokens)
-    res, ParserError = test.parse()
-    
-    return res, ParserError
+    return tokens, error
