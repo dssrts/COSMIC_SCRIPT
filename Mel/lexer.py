@@ -207,7 +207,8 @@ class Lexer:
                     tokens.append(Token(INCRE, "++"))
                     self.advance()
                 
-                tokens.append(Token(PLUS, "+"))
+                else:
+                    tokens.append(Token(PLUS, "+"))
                     
             elif self.current_char == '-': 
                 self.advance()
