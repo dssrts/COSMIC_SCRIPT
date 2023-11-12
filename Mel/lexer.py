@@ -1415,12 +1415,12 @@ class Parser:
 
 def run(text):
     lexer = Lexer(text)
-    tokens, error = lexer.make_tokens()
-    '''
-    if error:
-        return tokens, error
-    '''
-    test = Parser(tokens)
-    res = test.parse()
+    tokens, lexerError = lexer.make_tokens()
     
-    return res, error
+    if lexerError:
+        return tokens, lexerError
+    
+    test = Parser(tokens)
+    res, ParserError = test.parse()
+    
+    return res, ParserError
