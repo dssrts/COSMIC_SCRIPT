@@ -1342,22 +1342,40 @@ class Lexer:
             return errors
 
 class Parser:
+    
     def __init__(self, tokens):
         self.tokens = tokens
-        current_tok = None
+        self.tok_idx = -1
+        self.advance()
 
-    def advance():
-        
-
-    #if equals yung current token, dapat yung next is either a number, an identifer, or a parenthesis
+    def advance(self):
+        self.tok_idx += 1
+        if self.tok_idx < len(self.tokens):
+            self.current_tok = self.tokens[self.tok_idx]
+        return self.current_tok
     
-        
-        
-       
-  
+    def parse(self):
+        parseResult = []
+        errors = []
+        if self.current_tok.token == INTEL:
+            parseResult.append(self.current_tok)
+            self.advance()
+            if self.current_tok.token == SPACE:
+                self.advance()
+            if self.current_tok.token == IDENTIFIER:
+                parseResult.append(self.current_tok)
+                self.advance()
+            else:
+                errors.append(["Please enter an identifier after intel!"])
+                return [], errors
+        return parseResult, errors
 
 def run(text):
     lexer = Lexer(text)
     tokens, error = lexer.make_tokens()
+    if error:
+        return tokens, error
+    test = Parser(tokens)
+    res = test.parse()
     
-    return tokens, error
+    return res, error
