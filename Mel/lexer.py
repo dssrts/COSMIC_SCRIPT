@@ -183,8 +183,8 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(LESS_THAN_EQUAL, "<=")) #for == symbol
                     self.advance()
-                
-                tokens.append(Token(LESS_THAN, "<"))
+                else:
+                    tokens.append(Token(LESS_THAN, "<"))
                   
             elif self.current_char == '>': 
                 self.advance()
@@ -193,7 +193,7 @@ class Lexer:
                     self.advance()
                 elif self.current_char == '>':
                     tokens.append(Token(IN, ">>"))
-                    self.advance()
+                    
                 else:
                     tokens.append(Token(GREATER_THAN, ">"))
                     
