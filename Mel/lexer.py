@@ -282,27 +282,6 @@ class Lexer:
             elif self.current_char == '(': #other operator
                 tokens.append(Token(LPAREN, "("))
                 self.advance()
-                if self.current_char in all_letter:
-                    res = self.make_word()
-                    if isinstance(result, list):  # check if make_word returned errors
-                        errors.extend(result)
-                        #break  # exit the loop if there are errors
-                    else:
-                        tokens.append(result)
-                    if self.current_char != RPAREN:
-                        errors.extend(["Expected ') '!"])
-                if self.current_char in all_num:
-                    res, error = self.make_number()
-                    if error:
-                        errors.extend(error)
-                        #break  # exit the loop if there are errors
-                    else:
-                        tokens.append(result)
-                        self.advance()
-                    if self.current_char != RPAREN:
-                        errors.extend(["Expected ') '!"])
-                else:
-                    errors.extend(["Please enter a valid value inside the parenthesis!"])
             elif self.current_char == ')':
                 tokens.append(Token(RPAREN, ")"))
                 self.advance()
@@ -1403,9 +1382,6 @@ class Parser:
                     if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
                         parseResult.append(self.current_tok)
                         self.advance() 
-                        if self.current_tok.token == NUMBER:
-                            parseResult.append(self.current_tok)
-                            self.advance()
                 else:
                     errors.append(["Please enter an identifier after intel!"])
                     return [], errors
@@ -1421,11 +1397,6 @@ class Parser:
                     if self.current_tok.token == NUMBER:
                         parseResult.append(self.current_tok)
                         self.advance()
-                        if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                            parseResult.append(self.current_tok)
-                            self.advance()
-                            if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
-                                errors.append([f"Invalid delimiter for: {self.current_tok.token}"])
                     if self.current_tok.token == IDENTIFIER:
                         # delims -> space, =, (, comma, arithmetic, comparison operators, relational
                         parseResult.append(self.current_tok)
@@ -1438,9 +1409,10 @@ class Parser:
                         self.advance()  
                         if self.current_tok.token in (COMMA, EQUAL, E_EQUAL, LPAREN, PLUS_EQUAL, MINUS, MINUS_EQUAL, PLUS, DIV, MUL):
                             errors.append([f"Invalid delimiter for: {self.current_tok.token}"])
-                            
 
-                
+            else:
+                parseResult.append(self.current_tok)
+                self.advance()                    
             
         return parseResult, errors
 
