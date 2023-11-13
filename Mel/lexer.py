@@ -280,6 +280,8 @@ class Lexer:
             elif self.current_char == '%':
                 tokens.append(Token(MODULUS, "%"))
                 self.advance()
+                if self.current_char not in (alphanum + equal_delim + space_delim):
+                    errors.append(f"Invalid delimiter for %. Cause:{self.current_char}")
             elif self.current_char == '!': #logical operators (!, &&, ||)
                 self.advance()
                 if self.current_char == '=':
