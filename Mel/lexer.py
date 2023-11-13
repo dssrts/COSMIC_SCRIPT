@@ -270,7 +270,7 @@ class Lexer:
                     tokens.append(Token(DIV_EQUAL, "/="))
                     self.advance()
                     if self.current_char not in (alphanum + equal_delim + space_delim):
-                        errors.append(f"Invalid delimiter for /=. Cause:{self.current_char}")
+                        errors.append(f"Invalid delimiter for /=. Cause: {self.current_char}")
                         self.advance()
                 elif self.current_char == '/': #for 
                     self.advance()
