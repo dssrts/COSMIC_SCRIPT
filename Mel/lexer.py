@@ -9,7 +9,7 @@ space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
-ident_delim = ",+-*/%><!=&|"
+ident_delim = ",+-*/%><!=&|)"
 equal_delim = alphanum + "({"
 
 #errors
@@ -177,15 +177,21 @@ class Lexer:
                 if self.current_char == '=':
                     tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     self.advance()
-                    if self.current_char not in (all_letters + all_num + equal_delim + space_delim):
+                    if self.current_char == None:
+                        tokens.append(Token(E_EQUAL, "=="))
+                    elif self.current_char not in (alphanum + equal_delim + space_delim):
                         errors.extend([f"Invalid delimiter for ' == '. Cause: ' {self.current_char} '"])
                         self.advance()
+                    
                 else:
                     tokens.append(Token(EQUAL, "="))
-                    
-                    if self.current_char not in (all_letters+ all_num + equal_delim + space_delim):
+                    self.advance()
+                    if self.current_char == None:
+                        tokens.append(Token(EQUAL, "="))
+                    elif self.current_char not in (alphanum + equal_delim + space_delim ):
                         errors.extend([f"Invalid delimiter for ' = '. Cause : ' {self.current_char} '"])
                         self.advance()
+                    
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
