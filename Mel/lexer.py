@@ -279,7 +279,7 @@ class Lexer:
                     tokens.append(Token(AND_OP, "&&"))
                     self.advance()
                 else:
-                    errors.extend(["Please enter a valid symbol! Did you mean && ?"])
+                    errors.extend([f"Please enter a valid symbol! User typed: & .Did you mean && ?"])
             elif self.current_char == '|': #return error
                 self.advance()
                 if self.current_char == '|':
@@ -386,11 +386,15 @@ class Lexer:
         
         # check if there are letters after the number
         if self.current_char is not None and self.current_char.isalpha():
-            num_str += self.current_char
-            errors.append(f"Identifiers cannot start with a number! Cause: {num_str}")
-            #added this advance para maskip nya yung identifier if ever
-            self.advance()
-            return [], errors
+            while self.current_char is not None and self.current_char.isalpha():
+                num_str += self.current_char
+                #added this advance para maskip nya yung identifier if ever
+                self.advance()
+            errors.append(f"Identifiers cannot start with a number! Cause: {num_str}")    
+            if errors:
+                return [], errors
+               
+            
 
         if num_count > 9:
             errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
