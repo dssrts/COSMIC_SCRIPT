@@ -243,8 +243,8 @@ class Lexer:
                 if self.current_char == '=': #for *= symbol
                     tokens.append(Token(MUL_EQUAL, "*=")) #for *// ending comet
                     self.advance()
-                
-                tokens.append(Token(MUL, "*"))
+                else:
+                    tokens.append(Token(MUL, "*"))
                 
             elif self.current_char == '/': 
                 self.advance()
@@ -260,7 +260,8 @@ class Lexer:
                     tokens.append(Token(S_COMET, "/*"))# for single comet
                     self.advance()
                 
-                tokens.append(Token(DIV, "/"))
+                else:
+                    tokens.append(Token(DIV, "/"))
                 
             elif self.current_char == '%':
                 tokens.append(Token(MODULUS, "%"))
