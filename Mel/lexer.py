@@ -249,6 +249,14 @@ class Lexer:
                 if self.current_char == '=': #for *= symbol
                     tokens.append(Token(MUL_EQUAL, "*=")) #for *// ending comet
                     self.advance()
+
+                elif self.current_char == "/":
+                    self.advance()
+                    if self.current_char == "/":
+                        tokens.append(Token(M_END_COMET, "*//"))
+                        self.advance()
+                    else:
+                        errors.extend(["Missing ending slash for multi line comment!"])
                 else:
                     tokens.append(Token(MUL, "*"))
                 
