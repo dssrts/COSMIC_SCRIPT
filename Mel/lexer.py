@@ -185,13 +185,15 @@ class Lexer:
                         
                     
                 else:
-                    tokens.append(Token(EQUAL, "="))
                     
                     if self.current_char == None:
-                        tokens.append(Token(EQUAL, "="))
-                    elif self.current_char not in (alphanum + equal_delim + space_delim ):
-                        self.advance()
                         errors.extend([f"Invalid delimiter for ' = '. Cause : ' {self.current_char} '"])
+                    elif self.current_char not in (alphanum + equal_delim + space_delim ):
+                        tokens.append(Token(EQUAL, "="))
+                        errors.extend([f"Invalid delimiter for ' = '. Cause : ' {self.current_char} '"])
+                        self.advance()
+                    else:
+                        tokens.append(Token(EQUAL, "="))
                         
                     
                     
@@ -267,6 +269,9 @@ class Lexer:
                 if self.current_char == '=': #for /= symbol
                     tokens.append(Token(DIV_EQUAL, "/="))
                     self.advance()
+                    if self.current_char not in (alphanum + equal_delim + space_delim):
+                        errors.append(f"Invalid delimiter for /=. Cause:{self.current_char}")
+                        self.advance()
                 elif self.current_char == '/': #for 
                     self.advance()
                     if self.current_char == "*":
