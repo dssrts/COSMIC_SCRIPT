@@ -229,9 +229,15 @@ class Lexer:
                 elif self.current_char == '+': #for ++ incre
                     tokens.append(Token(INCRE, "++"))
                     self.advance()
-                
+                elif self.current_char == None:
+                    errors.extend([f"Expected number or identifier! Cause: \\n"])
                 else:
                     tokens.append(Token(PLUS, "+"))
+                    if self.current_char not in (all_num + all_letters + LPAREN + space_delim):
+                        errors.extend([f"Expected number or identifier! Cause: {self.current_char}"])
+                    
+                    
+                        
                     
             elif self.current_char == '-': 
                 self.advance()
