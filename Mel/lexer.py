@@ -317,6 +317,9 @@ class Lexer:
             elif self.current_char == ')':
                 tokens.append(Token(RPAREN, ")"))
                 self.advance()
+                if self.current_char in (all_num + all_letters):
+                    errors.extend([f"Invalid delimiter for ' ) '. Cause: {self.current_char}"])
+                    self.advance()
             elif self.current_char == '[':
                 tokens.append(Token(SLBRACKET, "["))
                 self.advance()
