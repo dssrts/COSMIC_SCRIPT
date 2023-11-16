@@ -2,7 +2,7 @@
 all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-special_chars = "$:?@\^`~"
+special_chars = "$?@\^`~"
 ident_special_chars = "$:?@\^\"`~#"
 
 space_delim = " "
@@ -117,7 +117,7 @@ class Token:
         self.value = value
     
     def __repr__(self):
-        if self.value: return f'{self.value}: {self.token}'
+        if self.value: return f'{self.value} : {self.token}'
         return f'{self.token}'
 
 
