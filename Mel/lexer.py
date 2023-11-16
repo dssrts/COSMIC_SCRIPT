@@ -293,8 +293,12 @@ class Lexer:
             elif self.current_char == '%':
                 tokens.append(Token(MODULUS, "%"))
                 self.advance()
-                if self.current_char not in (alphanum + equal_delim + space_delim):
+                if self.current_char == None:
+                    errors.append(f"Invalid delimiter for %. Cause:\\n")
+                elif self.current_char not in (alphanum + equal_delim + space_delim):
                     errors.append(f"Invalid delimiter for %. Cause:{self.current_char}")
+                    self.advance()
+                
             elif self.current_char == '!': #logical operators (!, &&, ||)
                 self.advance()
                 if self.current_char == '=':
@@ -325,7 +329,7 @@ class Lexer:
                 self.advance()
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ) '. Cause: \\n"])
-                elif self.current_char in (all_num + all_letters):
+                elif self.current_char in (all_num + all_letters + LPAREN):
                     errors.extend([f"Invalid delimiter for ' ) '. Cause: {self.current_char}"])
                     self.advance()
             elif self.current_char == '[':
@@ -348,6 +352,7 @@ class Lexer:
                 else:
                     errors.extend(["Please enter a valid symbol! Did you mean ## ?"])
             elif self.current_char == "\"":
+                '''
                 result = self.make_string()
                 if isinstance(result, list):  # check if make_word returned errors
                     errors.extend(result)
@@ -357,6 +362,9 @@ class Lexer:
                     self.advance()
                     if self.current_char not in ("+", " ", ",", None):
                         errors.append("Invalid delimiter for string!")
+                '''
+                tokens.append(Token(Q_MARK, "\""))
+                self.advance()
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
                 self.advance()
