@@ -9,7 +9,7 @@ space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
-ident_delim = ",+-*/%><!=&|)"
+ident_delim = ",+-*/%><!=&|)/{/}[]\"/"
 equal_delim = alphanum + "({"
 
 #errors
@@ -230,7 +230,8 @@ class Lexer:
                     tokens.append(Token(INCRE, "++"))
                     self.advance()
                 elif self.current_char == None:
-                    errors.extend([f"Expected number or identifier! Cause: \\n"])
+                    tokens.append(Token(PLUS, "+"))
+                    errors.extend([f"Expected number or identifier after ' + '! Cause: \\n"])
                 else:
                     tokens.append(Token(PLUS, "+"))
                     if self.current_char not in (all_num + all_letters + LPAREN + space_delim):
@@ -338,11 +339,16 @@ class Lexer:
             elif self.current_char == ']':
                 tokens.append(Token(SRBRACKET, "]"))
                 self.advance()
+                if self.current_char == None:
+                    errors.extend([f"Invalid delimiter for ] . Cause : \\n"])
+                elif self.current_char not in (SEMICOLON + space_delim):
+                    errors.extend([f"Invalid delimiter for ' ] '. Cause: {self.current_char}"])
+                    self.advance()
             elif self.current_char == '{':
                 tokens.append(Token(CLBRACKET, "{"))
                 self.advance()
             elif self.current_char == '}':
-                tokens.append(Token(CLBRACKET, "}"))
+                tokens.append(Token(CRBRACKET, "}"))
                 self.advance()
             elif self.current_char == '#': #return error
                 self.advance()
@@ -560,6 +566,7 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             if self.current_char == None:
+                                
                                 return Token(IDENTIFIER, ident)
                     else:
                         return Token(DO, "do")
@@ -1341,14 +1348,9 @@ class Lexer:
                 
                 if self.current_char == None:
                     break
-                if self.current_char == " ":
+                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim):
                     break
-                if self.current_char in lineEnd_delim:
-                    break
-                if self.current_char in ident_delim:
-                    break    
-                if self.current_char in arithmetic_operator:
-                    break
+               
                 
                 if self.current_char in "\n":
                     break
