@@ -417,6 +417,8 @@ class Lexer:
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
+            if num_count == 9:
+                break
             '''
             if num_count > 9:
                 reached_limit_intel = True
@@ -430,6 +432,8 @@ class Lexer:
                 
             else:
                 if '.' in num_str:
+                    if num_count > 9:
+                        break   
                     dec_count += 1
                     num_count -= 1
                 
@@ -449,15 +453,13 @@ class Lexer:
                
             
 
-        if num_count > 9:
-            errors.append(f"You've reached the intel limit! Intel limit: 9 digits. Entered: {num_count} numbers. Cause: {num_str}")
+       
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
                 return Token(INTEL, int(num_str)), errors
             else:
                 return Token(GRAVITY, float(num_str)), errors
         if dec_count > 4:
-            errors.append(f"You've reached the gravity limit! Gravity decimal limit: 4 digits. Entered: {dec_count} numbers. Cause: {num_str}")
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
                 return Token(INTEL, int(num_str)), errors
