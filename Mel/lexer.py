@@ -236,6 +236,7 @@ class Lexer:
                     tokens.append(Token(PLUS, "+"))
                     if self.current_char not in (all_num + all_letters + LPAREN + space_delim):
                         errors.extend([f"Expected number or identifier! Cause: {self.current_char}"])
+                        self.advance()
                     
                     
                         
