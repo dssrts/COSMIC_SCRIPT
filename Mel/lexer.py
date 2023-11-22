@@ -421,7 +421,8 @@ class Lexer:
             if num_count == 9:
                 
                 if self.current_char in all_num or self.current_char:
-                    errors.append(f"Invalid character delimiter for'{num_str}'.")
+                    errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
+                    self.advance()
                     return Token(INTEL, int(num_str)), errors
                     
 
