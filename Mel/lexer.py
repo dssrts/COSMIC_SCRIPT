@@ -418,18 +418,28 @@ class Lexer:
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
+            if dec_count == 4:
+                if dot_count == 0:
+                    if self.current_char in all_num:
+                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
+                        self.advance()
+                        return Token(INTEL, int(num_str)), errors
+                    else:
+                        Token(INTEL, int(num_str)), errors
+                else:
+                    if self.current_char in all_num:
+                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
+                        self.advance()
+                        return Token(GRAVITY, float(num_str)), errors
+                    else:
+                        return Token(GRAVITY, float(num_str)), errors
             if num_count == 9:
                 
-                if self.current_char in all_num or self.current_char:
+                if self.current_char in all_num:
                     errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
                     self.advance()
                     return Token(INTEL, int(num_str)), errors
                     
-
-            '''
-            if num_count > 9:
-                reached_limit_intel = True
-            '''
             if self.current_char == '.':
                 if dot_count == 1: 
                     errors.append(f"Invalid character '{self.current_char}' in number.")
@@ -466,12 +476,7 @@ class Lexer:
                 return Token(INTEL, int(num_str)), errors
             else:
                 return Token(GRAVITY, float(num_str)), errors
-        if dec_count > 4:
-            if dot_count == 0:
-                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
-            else:
-                return Token(GRAVITY, float(num_str)), errors
+        
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
             return Token(INTEL, int(num_str)), errors
