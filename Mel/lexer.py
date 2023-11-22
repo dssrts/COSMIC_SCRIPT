@@ -418,7 +418,10 @@ class Lexer:
 
         while self.current_char is not None and self.current_char in all_num + '.':
             if num_count == 9:
-                break
+                if self.current_char in all_num or self.current_char:
+                    errors.append(f"Invalid character delimiter for'{num_str}'.")
+                    break
+
             '''
             if num_count > 9:
                 reached_limit_intel = True
