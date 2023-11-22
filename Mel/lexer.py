@@ -166,11 +166,12 @@ class Lexer:
                     
             elif self.current_char in all_num:
                 result, error = self.make_number()
-                if error:
-                    errors.extend(error)
+                
+                errors.extend(error)
+                tokens.append(result)
                     #break  # exit the loop if there are errors
-                else:
-                    tokens.append(result)
+                
+                    
                     
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=, ==)
                 self.advance()
@@ -418,9 +419,11 @@ class Lexer:
 
         while self.current_char is not None and self.current_char in all_num + '.':
             if num_count == 9:
+                
                 if self.current_char in all_num or self.current_char:
                     errors.append(f"Invalid character delimiter for'{num_str}'.")
-                    break
+                    return Token(INTEL, int(num_str)), errors
+                    
 
             '''
             if num_count > 9:
