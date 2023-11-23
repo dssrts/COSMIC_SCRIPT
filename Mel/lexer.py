@@ -168,6 +168,10 @@ class Lexer:
                 errors.extend(error)
                 tokens.append(result)
                     #break  # exit the loop if there are errors
+                self.advance()
+                if self.current_char in all_letters:
+                    errors.extend(["Invalid delimiter for {result}"])
+                    self.advance()
                 
                     
                     
