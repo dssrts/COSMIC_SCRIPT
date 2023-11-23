@@ -161,6 +161,12 @@ class Lexer:
                 
                 errors.extend(error)
                 tokens.append(result)
+                if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for {result}. Cause: {self.current_char}"])
+                if self.current_char in all_letters:
+                    errors.extend([f"Invalid delimiter for {result}. Cause: {self.current_char}"])
+                    self.advance()
+                    
                     
             elif self.current_char in all_num:
                 result, error = self.make_number()
@@ -168,10 +174,7 @@ class Lexer:
                 errors.extend(error)
                 tokens.append(result)
                     #break  # exit the loop if there are errors
-                self.advance()
-                if self.current_char in all_letters:
-                    errors.extend(["Invalid delimiter for {result}"])
-                    self.advance()
+                
                 
                     
                     
