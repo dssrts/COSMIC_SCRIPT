@@ -157,12 +157,10 @@ class Lexer:
                 tokens.append(Token(SPACE, "\" \""))
                 self.advance()
             elif self.current_char in all_letters:
-                result = self.make_word()
-                if isinstance(result, list):  # check if make_word returned errors
-                    errors.extend(result)
-                    #break  # exit the loop if there are errors
-                else:
-                    tokens.append(result)
+                result, error = self.make_word()
+                
+                errors.extend(error)
+                tokens.append(result)
                     
             elif self.current_char in all_num:
                 result, error = self.make_number()
@@ -493,6 +491,9 @@ class Lexer:
 
         
         while self.current_char != None :
+            if ident_count == 10:
+                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
+                return Token(IDENTIFIER, ident), errors
             
             if self.current_char == "b":
                 ident += self.current_char
@@ -1359,10 +1360,13 @@ class Lexer:
                     ident_count += 1
                     if ident_count > 10:
                         errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
-                        return errors
+                        
                        
             
             else:
+                if ident_count == 10:
+                    #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
+                    return Token(IDENTIFIER, ident), errors
                 
                 if self.current_char == None:
                     break
@@ -1392,15 +1396,16 @@ class Lexer:
                         return errors
                 
              
-        if ident_count > 10:
-            errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
+        if ident_count == 10:
+            #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
+            return Token(IDENTIFIER, ident), errors
 
         
-        if errors:
-            return errors
+        """ if errors:
+            return errors """
         #print(ident_count)
         # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
-        return Token(IDENTIFIER, ident)
+        return Token(IDENTIFIER, ident), errors
             
         
     def make_string(self):
