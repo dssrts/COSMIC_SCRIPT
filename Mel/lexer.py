@@ -535,7 +535,9 @@ class Lexer:
                 
                 
             if self.current_char == "e": #else, else if, entity
+                ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "l":
                     self.advance()
                     if self.current_char == "s":
