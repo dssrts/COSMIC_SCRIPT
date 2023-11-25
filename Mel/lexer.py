@@ -669,7 +669,7 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(FALSE, "false")
+                                return Token(FALSE, "false"), errors
                     
                 elif self.current_char == "o":
                     ident += self.current_char
@@ -687,13 +687,13 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(FORCE, "force")
+                                return Token(FORCE, "force"), errors
                             
                         elif self.current_char == "m":
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            return Token(FORM, "form")
+                            return Token(FORM, "form"), errors
                         
                             
             if self.current_char == "g": #gravity
@@ -724,7 +724,7 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(GRAVITY, "gravity")
+                                        return Token(GRAVITY, "gravity"), errors
                                 
             if self.current_char == "l": #landing, launch
                 ident += self.current_char
@@ -754,7 +754,7 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(LANDING, "landing")
+                                        return Token(LANDING, "landing"), errors
                                     
                     elif self.current_char == "u":
                         ident += self.current_char
@@ -772,7 +772,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(LAUNCH, "launch")
+                                    return Token(LAUNCH, "launch"), errors
                                 
             if self.current_char == "o": #outer
                 ident += self.current_char
@@ -794,7 +794,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(OUTER, "outer")
+                                return Token(OUTER, "outer"), errors
                             
             if self.current_char == "s": #saturn, shift, skip, star
                 ident += self.current_char
@@ -820,7 +820,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(SATURN, "saturn")
+                                    return Token(SATURN, "saturn"), errors
                 
                 elif self.current_char == "h":
                         ident += self.current_char
@@ -838,7 +838,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(SHIFT, "shift")
+                                    return Token(SHIFT, "shift"), errors
                                 
                 elif self.current_char == "k":
                         ident += self.current_char
@@ -852,7 +852,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(SKIP, "skip")
+                                return Token(SKIP, "skip"), errors
                             
                 elif self.current_char == "t":
                         ident += self.current_char
@@ -866,7 +866,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(STAR, "star")
+                                return Token(STAR, "star"), errors
                             
             if self.current_char == "t": #takeoff, trace, true
                 ident += self.current_char
@@ -896,7 +896,7 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(TAKEOFF, "takeoff")
+                                        return Token(TAKEOFF, "takeoff"), errors
                                     
                 elif self.current_char == "r":
                         ident += self.current_char
@@ -914,7 +914,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(TRACE, "trace")
+                                    return Token(TRACE, "trace"), errors
                                 
                                     
                         elif self.current_char == "u":
@@ -925,7 +925,7 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()     
                                 ident_count += 1    
-                                return Token(TRUE, "true")
+                                return Token(TRUE, "true"), errors
                             
             if self.current_char == "u": #universe
                 ident += self.current_char
