@@ -734,41 +734,21 @@ class Lexer:
                                     
                     
                 elif self.current_char == "r":
+                    self.advance()
+                    if self.current_char == "a":
                         self.advance()
-                        if self.current_char == "a":
+                        if self.current_char == "c":
                             self.advance()
-                            if self.current_char == "c":
-                                self.advance()
-                                if self.current_char == "e":
-                                    self.advance()
-                                    return Token(TRACE, "trace"), errors
-                                
-                        elif self.current_char == "u":
-                            ident += self.current_char
-                            self.advance()
-                            ident_count += 1
                             if self.current_char == "e":
-                                ident += self.current_char
-                                self.advance()     
-                                ident_count += 1    
-                                # catch if blast lang yung tinype ng user (for demo purposes)
-                                if self.current_char == None:
-                                    return Token(TRUE, "true")
-                            
-                                #delimiter ng bang defined in space_delim
-                                if self.current_char not in space_delim: 
-                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                        ident_count += 1
-                                        if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
-                                            return errors
-                                        ident += self.current_char
-                                        self.advance()
-                                        if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
-                                else:
-                                    return Token(TRUE, "true") 
-                
+                                self.advance()
+                                return Token(TRACE, "trace"), errors
+                                
+                    elif self.current_char == "u":
+                        self.advance()
+                        if self.current_char == "e":
+                            self.advance()     
+                            return Token(TRUE, "true"), errors
+                             
             if self.current_char == "u": #universe
                 ident += self.current_char
                 self.advance()
