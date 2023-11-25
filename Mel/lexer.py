@@ -161,11 +161,12 @@ class Lexer:
                 
                 errors.extend(error)
                 tokens.append(result)
-                if self.current_char == None:
-                        errors.extend([f"Invalid delimiter for {result}. Cause: {self.current_char}"])
-                if self.current_char in all_letters:
+                
+                if (self.current_char == None):
                     errors.extend([f"Invalid delimiter for {result}. Cause: {self.current_char}"])
                     self.advance()
+                    
+                
                     
                     
             elif self.current_char in all_num:
@@ -522,7 +523,7 @@ class Lexer:
                             ident_count += 1
                             # catch if bang lang yung tinype ng user (for demo purposes)
                             if self.current_char == None:
-                                return Token(BANG, ident)
+                                return Token(BANG, ident), errors
                             
                             #delimiter ng bang defined in space_delim
                             if self.current_char not in space_delim: 
@@ -534,9 +535,9 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     if self.current_char == None:
-                                        return Token(IDENTIFIER, ident)
+                                        return Token(IDENTIFIER, ident), errors
                             else:
-                                return Token(BANG, ident)
+                                return Token(BANG, ident), errors
                            
                 elif self.current_char == "l":
                     ident += self.current_char
@@ -556,7 +557,7 @@ class Lexer:
                                 ident_count += 1
                                 # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
-                                    return Token(BLAST, "blast")
+                                    return Token(BLAST, "blast"), errors
                             
                                 #delimiter ng bang defined in space_delim
                                 if self.current_char not in space_delim: 
@@ -568,9 +569,9 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
+                                            return Token(IDENTIFIER, ident), errors
                                 else:
-                                    return Token(BLAST, "blast")
+                                    return Token(BLAST, "blast"), errors
                 
             if self.current_char == "d": #do
                 ident += self.current_char
@@ -582,7 +583,7 @@ class Lexer:
                     ident_count += 1
                     # catch if blast lang yung tinype ng user (for demo purposes)
                     if self.current_char == None:
-                        return Token(DO, "do")
+                        return Token(DO, "do"), errors
                 
                     #delimiter ng bang defined in space_delim
                     if self.current_char not in space_delim: 
@@ -595,7 +596,7 @@ class Lexer:
                             self.advance()
                             if self.current_char == None:
                                 
-                                return Token(IDENTIFIER, ident)
+                                return Token(IDENTIFIER, ident), errors
                     else:
                         return Token(DO, "do")
                 
@@ -630,7 +631,7 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(ELSEIF, "elseif")
+                                    return Token(ELSEIF, "elseif"), errors
                         else:
                             return Token(ELSE, "else")
                 elif self.current_char == "n":
@@ -655,7 +656,7 @@ class Lexer:
                                     ident_count += 1
                                     # catch if blast lang yung tinype ng user (for demo purposes)
                                     if self.current_char == None:
-                                        return Token(ENTITY, "entity")
+                                        return Token(ENTITY, "entity"), errors
                                 
                                     #delimiter ng bang defined in space_delim
                                     if self.current_char not in space_delim: 
@@ -667,9 +668,9 @@ class Lexer:
                                                 return errors
                                             self.advance()
                                             if self.current_char == None:
-                                                return Token(IDENTIFIER, ident)
+                                                return Token(IDENTIFIER, ident), errors
                                     else:
-                                        return Token(ENTITY, "entity")
+                                        return Token(ENTITY, "entity"), errors
                 
             if self.current_char == "i": #if, inner, intel
                 ident += self.current_char
@@ -698,7 +699,7 @@ class Lexer:
                                 ident_count += 1
                                 # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
-                                    return Token(INNER, "inner")
+                                    return Token(INNER, "inner"), errors
                             
                                 #delimiter ng bang defined in space_delim
                                 if self.current_char not in space_delim: 
