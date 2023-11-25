@@ -175,6 +175,8 @@ class Lexer:
                 tokens.append(result)
                     #break  # exit the loop if there are errors
                 
+        
+                
                 
                     
                     
@@ -725,7 +727,7 @@ class Lexer:
                                 ident_count += 1
                                 # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
-                                    return Token(INTEL, "INTEL")
+                                    return Token(INTEL, "INTEL"), errors
                             
                                 #delimiter ng bang defined in space_delim
                                 if self.current_char not in space_delim: 
@@ -737,9 +739,9 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
+                                            return Token(IDENTIFIER, ident), errors
                                 else:
-                                    return Token(INTEL, "intel")
+                                    return Token(INTEL, "intel"), errors
                         
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
