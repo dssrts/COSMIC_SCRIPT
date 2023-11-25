@@ -506,23 +506,40 @@ class Lexer:
                 return Token(IDENTIFIER, ident), errors
             
             if self.current_char == "b":
+                ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "a":
+                    ident += self.current_char
                     self.advance()
+                    ident_count += 1
                     if self.current_char == "n":
+                        ident += self.current_char
                         self.advance()
+                        ident_count += 1
                         if self.current_char == "g":
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
                             return Token(BANG, "bang"), errors
 
                            
                 elif self.current_char == "l":
+                    ident += self.current_char
                     self.advance()
+                    ident_count += 1
                     if self.current_char == "a":
+                        ident += self.current_char
                         self.advance()
+                        ident_count += 1
                         if self.current_char == "s":
+                            ident += self.current_char
                             self.advance()
+                            ident_count += 1
                             if self.current_char == "t":
+                                ident += self.current_char
                                 self.advance()
+                                ident_count += 1
                                 return Token(BLAST, "blast"), errors
                     
                             
