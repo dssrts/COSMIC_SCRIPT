@@ -659,7 +659,7 @@ class Lexer:
                                 self.advance()
                                 if self.current_char == "h":
                                     self.advance()
-                                    return Token(LAUNCH, "launch")
+                                    return Token(LAUNCH, "launch"), errors
                 
             if self.current_char == "o": #outer
                 self.advance()
@@ -672,127 +672,41 @@ class Lexer:
                             self.advance()
                             if self.current_char == "r":
                                 self.advance()
-                                return Token(OUTER, "outer")
+                                return Token(OUTER, "outer"), errors
                             
-                                #delimiter ng bang defined in space_delim
-                                if self.current_char not in space_delim: 
-                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                        ident_count += 1
-                                        if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
-                                            return errors
-                                        ident += self.current_char
-                                        self.advance()
-                                        if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
-                                else:
-                                    return Token(OUTER, "outer")
                 
             if self.current_char == "s": #saturn, shift, skip, star
-                ident += self.current_char
                 self.advance()
-                ident_count += 1
                 if self.current_char == "a":
-                    ident += self.current_char
                     self.advance()
-                    ident_count += 1
                     if self.current_char == "t":
-                        ident += self.current_char
                         self.advance()
-                        ident_count += 1
                         if self.current_char == "u":
-                            ident += self.current_char
                             self.advance()
-                            ident_count += 1
                             if self.current_char == "r":
-                                ident += self.current_char
                                 self.advance()
-                                ident_count += 1
                                 if self.current_char == "n":
-                                    ident += self.current_char
                                     self.advance()
-                                    ident_count += 1
-                                    # catch if blast lang yung tinype ng user (for demo purposes)
-                                    if self.current_char == None:
-                                        return Token(SATURN, "saturn")
-                                
-                                    #delimiter ng bang defined in space_delim
-                                    if self.current_char not in space_delim: 
-                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                            ident_count += 1
-                                            if ident_count > 10:
-                                                errors.extend(["Exceeded identifier limit!"])
-                                                return errors
-                                            ident += self.current_char
-                                            self.advance()
-                                            if self.current_char == None:
-                                                return Token(IDENTIFIER, ident)
-                                    else:
-                                        return Token(SATURN, "saturn")
+                                    return Token(SATURN, "saturn"), errors
                 
                 elif self.current_char == "h":
-                        ident += self.current_char
                         self.advance()
-                        ident_count += 1
                         if self.current_char == "i":
-                            ident += self.current_char
                             self.advance()
-                            ident_count += 1
                             if self.current_char == "f":
-                                ident += self.current_char
                                 self.advance()
-                                ident_count += 1
                                 if self.current_char == "t":
-                                    ident += self.current_char
                                     self.advance()
-                                    ident_count += 1
-                                    # catch if blast lang yung tinype ng user (for demo purposes)
-                                    if self.current_char == None:
-                                        return Token(SHIFT, "shift")
+                                    return Token(SHIFT, "shift"), errors
                                 
-                                    #delimiter ng bang defined in space_delim
-                                    if self.current_char not in space_delim: 
-                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                            ident_count += 1
-                                            if ident_count > 10:
-                                                errors.extend(["Exceeded identifier limit!"])
-                                                return errors
-                                            ident += self.current_char
-                                            self.advance()
-                                            if self.current_char == None:
-                                                return Token(IDENTIFIER, ident)
-                                    else:
-                                        return Token(SHIFT, "shift")
 
                 elif self.current_char == "k":
-                        ident += self.current_char
                         self.advance()
-                        ident_count += 1
                         if self.current_char == "i":
-                            ident += self.current_char
                             self.advance()
-                            ident_count += 1
                             if self.current_char == "p":
-                                ident += self.current_char
                                 self.advance()
-                                ident_count += 1
-                                # catch if blast lang yung tinype ng user (for demo purposes)
-                                if self.current_char == None:
-                                    return Token(SKIP, "skip")
-                            
-                                #delimiter ng bang defined in space_delim
-                                if self.current_char not in space_delim: 
-                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                        ident_count += 1
-                                        if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
-                                            return errors
-                                        ident += self.current_char
-                                        self.advance()
-                                        if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
-                                else:
-                                    return Token(SKIP, "skip")
+                                return Token(SKIP, "skip"), errors
                 
                 elif self.current_char == "t":
                         ident += self.current_char
