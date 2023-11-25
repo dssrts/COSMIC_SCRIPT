@@ -528,10 +528,31 @@ class Lexer:
                             
                 
             if self.current_char == "d": #do
+                ident += self.current_char
                 self.advance()
+                ident_count += 1
                 if self.current_char == "o":
+                    ident += self.current_char
                     self.advance()
-                    return Token(DO, "do"), errors
+                    ident_count += 1
+                    # catch if blast lang yung tinype ng user (for demo purposes)
+                    if self.current_char == None:
+                        return Token(DO, "do"), errors
+                
+                    #delimiter ng bang defined in space_delim
+                    if self.current_char not in space_delim: 
+                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                            ident_count += 1
+                            if ident_count > 10:
+                                errors.extend(["Exceeded identifier limit!"])
+                                return errors
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == None:
+                                
+                                return Token(IDENTIFIER, ident), errors
+                    else:
+                        return Token(DO, "do")
                 
                 
             if self.current_char == "e": #else, else if, entity
@@ -558,18 +579,42 @@ class Lexer:
                         else:
                             return Token(ELSE, "else")
                 elif self.current_char == "n":
+                    ident += self.current_char
                     self.advance()
+                    ident_count += 1
                     if self.current_char == "t":
+                        ident += self.current_char
                         self.advance()
+                        ident_count += 1
                         if self.current_char == "i":
+                            ident += self.current_char
                             self.advance()
+                            ident_count += 1
                             if self.current_char == "t":
+                                ident += self.current_char
                                 self.advance()
+                                ident_count += 1
                                 if self.current_char == "y":
+                                    ident += self.current_char
                                     self.advance()
-                                    return Token(ENTITY, "entity"), errors
+                                    ident_count += 1
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(ENTITY, "entity"), errors
                                 
-
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        ident += self.current_char
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident), errors
+                                    else:
+                                        return Token(ENTITY, "entity"), errors
                 
             if self.current_char == "i": #if, inner, intel
                 self.advance()
