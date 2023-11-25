@@ -521,7 +521,11 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
+                            if self.current_char not in space_delim:
+                                errors.extend([f"Invalid delimiter for bang! Cause: {self.current_char}"])
+                                self.advance()
                             return Token(BANG, "bang"), errors
+
 
                            
                 elif self.current_char == "l":
