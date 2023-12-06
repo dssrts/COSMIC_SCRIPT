@@ -162,9 +162,16 @@ class Lexer:
                 errors.extend(error)
                 tokens.append(result)
                 
-                if (self.current_char == None):
-                    errors.extend([f"Invalid delimiter for {result}. Cause: {self.current_char}"])
-                    self.advance()
+                try:
+                    if (self.current_char not in space_delim+SEMICOLON):
+                        errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
+                except:
+                    errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
+                
+                    
+                
+                        
+                
                     
                 
                     
@@ -544,6 +551,9 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
+                                if self.current_char not in space_delim:
+                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}"])
+                                    self.advance()
                                 return Token(BLAST, "blast"), errors
                     
                             
@@ -556,6 +566,9 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
+                    if self.current_char not in space_delim:
+                        errors.extend([f"Invalid delimiter for do! Cause: {self.current_char}"])
+                        self.advance()
                     return Token(DO, "do"), errors
                 
                 
@@ -579,8 +592,9 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
+                                
                             else:
-                                return Token(ELSE, "else")
+                                return Token(ELSE, "else"), errors
                             if self.current_char == "i":
                                 ident += self.current_char
                                 self.advance()
@@ -591,7 +605,8 @@ class Lexer:
                                     ident_count += 1
                                     return Token(ELSEIF, "elseif"), errors
                         else:
-                            return Token(ELSE, "else")
+                            
+                            return Token(ELSE, "else"), errors
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
