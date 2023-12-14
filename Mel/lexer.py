@@ -159,34 +159,19 @@ class Lexer:
             elif self.current_char in all_letters:
                 result, error = self.make_word()
                 
-                #errors.extend(error)
-                #tokens.append(result)
-                
-                if errors:
-                    tokens.append(result)
-                    errors.extend(error)
-                try:
-                    if (self.current_char not in space_delim+SEMICOLON):
-                        errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
-                        
-                except:
-                    errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
+                errors.extend(error)
+                tokens.append(result)
                     
             elif self.current_char in all_num:
                 result, error = self.make_number()
                 
-                if errors:
-                    tokens.append(result)
-                    errors.extend(error)
+                errors.extend(error)
+                tokens.append(result)
                     #break  # exit the loop if there are errors
-                try:
-                    if (self.current_char not in space_delim+SEMICOLON):
-                        errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
-                        
-                except:
-                    errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
-        
-                
+                self.advance()
+                if self.current_char in all_letters:
+                    errors.extend(["Invalid delimiter for {result}"])
+                    self.advance()
                 
                     
                     
@@ -439,14 +424,14 @@ class Lexer:
                 if dot_count == 0:
                     if self.current_char in all_num:
                         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        
+                        self.advance()
                         return Token(INTEL, int(num_str)), errors
                     else:
                         Token(INTEL, int(num_str)), errors
                 else:
                     if self.current_char in all_num:
                         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        
+                        self.advance()
                         return Token(GRAVITY, float(num_str)), errors
                     else:
                         return Token(GRAVITY, float(num_str)), errors
@@ -454,7 +439,7 @@ class Lexer:
                 
                 if self.current_char in all_num:
                     errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                    
+                    self.advance()
                     return Token(INTEL, int(num_str)), errors
                     
             if self.current_char == '.':
@@ -530,12 +515,23 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            if self.current_char not in space_delim:
-                                errors.extend([f"Invalid delimiter for bang! Cause: {self.current_char}"])
-                                self.advance()
-                            return Token(BANG, "bang"), errors
-
-
+                            # catch if bang lang yung tinype ng user (for demo purposes)
+                            if self.current_char == None:
+                                return Token(BANG, ident)
+                            
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim: 
+                                while self.current_char in alphanum and self.current_char not in space_delim:
+                                    ident_count += 1
+                                    if ident_count > 10:
+                                        errors.extend(["Exceeded identifier limit!"])
+                                        return errors
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                            else:
+                                return Token(BANG, ident)
                            
                 elif self.current_char == "l":
                     ident += self.current_char
@@ -553,12 +549,23 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                if self.current_char not in space_delim:
-                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}"])
-                                    self.advance()
-                                return Token(BLAST, "blast"), errors
-                    
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(BLAST, "blast")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(BLAST, "blast")
                 
             if self.current_char == "d": #do
                 ident += self.current_char
@@ -568,10 +575,24 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
-                    if self.current_char not in space_delim:
-                        errors.extend([f"Invalid delimiter for do! Cause: {self.current_char}"])
-                        self.advance()
-                    return Token(DO, "do"), errors
+                    # catch if blast lang yung tinype ng user (for demo purposes)
+                    if self.current_char == None:
+                        return Token(DO, "do")
+                
+                    #delimiter ng bang defined in space_delim
+                    if self.current_char not in space_delim: 
+                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                            ident_count += 1
+                            if ident_count > 10:
+                                errors.extend(["Exceeded identifier limit!"])
+                                return errors
+                            ident += self.current_char
+                            self.advance()
+                            if self.current_char == None:
+                                
+                                return Token(IDENTIFIER, ident)
+                    else:
+                        return Token(DO, "do")
                 
                 
             if self.current_char == "e": #else, else if, entity
@@ -594,9 +615,8 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                
                             else:
-                                return Token(ELSE, "else"), errors
+                                return Token(ELSE, "else")
                             if self.current_char == "i":
                                 ident += self.current_char
                                 self.advance()
@@ -605,10 +625,9 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(ELSEIF, "elseif"), errors
+                                    return Token(ELSEIF, "elseif")
                         else:
-                            
-                            return Token(ELSE, "else"), errors
+                            return Token(ELSE, "else")
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
@@ -629,7 +648,23 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(ENTITY, "entity"), errors
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(ENTITY, "entity")
+                                
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        ident += self.current_char
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident)
+                                    else:
+                                        return Token(ENTITY, "entity")
                 
             if self.current_char == "i": #if, inner, intel
                 ident += self.current_char
@@ -656,7 +691,23 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(INNER, "inner"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(INNER, "inner")
+                            
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(INNER, "inner")
                     elif self.current_char == "t":
                         ident += self.current_char
                         self.advance()
@@ -669,7 +720,23 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(INTEL, "INTEL"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(INTEL, "INTEL")
+                            
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(INTEL, "intel")
                         
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
@@ -690,7 +757,23 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()
-                                return Token(FALSE, "false"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(FALSE, "false")
+                            
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(FALSE, "false")
                     
                 elif self.current_char == "o":
                     ident += self.current_char
@@ -708,15 +791,45 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(FORCE, "force"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(FORCE, "force")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(FORCE, "force")
                         elif self.current_char == "m":
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            return Token(FORM, "form"), errors
+                            # catch if blast lang yung tinype ng user (for demo purposes)
+                            if self.current_char == None:
+                                return Token(FORM, "form")
                         
-                            
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim: 
+                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                    ident_count += 1
+                                    if ident_count > 10:
+                                        errors.extend(["Exceeded identifier limit!"])
+                                        return errors
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                            else:
+                                return Token(FORM, "form")
+                
             if self.current_char == "g": #gravity
                 ident += self.current_char
                 self.advance()
@@ -745,8 +858,25 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(GRAVITY, "gravity"), errors
+                                        # catch if blast lang yung tinype ng user (for demo purposes)
+                                        if self.current_char == None:
+                                            return Token(GRAVITY, "gravity")
+                                    
+                                        #delimiter ng bang defined in space_delim
+                                        if self.current_char not in space_delim: 
+                                            while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                                ident_count += 1
+                                                if ident_count > 10:
+                                                    errors.extend(["Exceeded identifier limit!"])
+                                                    return errors
+                                                ident += self.current_char
+                                                self.advance()
+                                                if self.current_char == None:
+                                                    return Token(IDENTIFIER, ident)
+                                        else:
+                                            return Token(GRAVITY, "gravity")
                                 
+                
             if self.current_char == "l": #landing, launch
                 ident += self.current_char
                 self.advance()
@@ -775,8 +905,23 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(LANDING, "landing"), errors
+                                        # catch if blast lang yung tinype ng user (for demo purposes)
+                                        if self.current_char == None:
+                                            return Token(LANDING, "landing")
                                     
+                                        #delimiter ng bang defined in space_delim
+                                        if self.current_char not in space_delim: 
+                                            while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                                ident_count += 1
+                                                if ident_count > 10:
+                                                    errors.extend(["Exceeded identifier limit!"])
+                                                    return errors
+                                                ident += self.current_char
+                                                self.advance()
+                                                if self.current_char == None:
+                                                    return Token(IDENTIFIER, ident)
+                                        else:
+                                            return Token(LANDING, "landing")
                     elif self.current_char == "u":
                         ident += self.current_char
                         self.advance()
@@ -793,8 +938,24 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(LAUNCH, "launch"), errors
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(LAUNCH, "launch")
                                 
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            ident += self.current_char
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident)
+                                    else:
+                                        return Token(LAUNCH, "launch")
+                
             if self.current_char == "o": #outer
                 ident += self.current_char
                 self.advance()
@@ -815,8 +976,24 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(OUTER, "outer"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(OUTER, "outer")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(OUTER, "outer")
+                
             if self.current_char == "s": #saturn, shift, skip, star
                 ident += self.current_char
                 self.advance()
@@ -841,7 +1018,23 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(SATURN, "saturn"), errors
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(SATURN, "saturn")
+                                
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            ident += self.current_char
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident)
+                                    else:
+                                        return Token(SATURN, "saturn")
                 
                 elif self.current_char == "h":
                         ident += self.current_char
@@ -859,8 +1052,24 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(SHIFT, "shift"), errors
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(SHIFT, "shift")
                                 
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            ident += self.current_char
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident)
+                                    else:
+                                        return Token(SHIFT, "shift")
+
                 elif self.current_char == "k":
                         ident += self.current_char
                         self.advance()
@@ -873,8 +1082,24 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(SKIP, "skip"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(SKIP, "skip")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(SKIP, "skip")
+                
                 elif self.current_char == "t":
                         ident += self.current_char
                         self.advance()
@@ -887,8 +1112,26 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(STAR, "star"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(STAR, "star")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(STAR, "star")
+                
+                
+            
             if self.current_char == "t": #takeoff, trace, true
                 ident += self.current_char
                 self.advance()
@@ -917,8 +1160,24 @@ class Lexer:
                                         ident += self.current_char
                                         self.advance()
                                         ident_count += 1
-                                        return Token(TAKEOFF, "takeoff"), errors
+                                        # catch if blast lang yung tinype ng user (for demo purposes)
+                                        if self.current_char == None:
+                                            return Token(TAKEOFF, "takeoff")
                                     
+                                        #delimiter ng bang defined in space_delim
+                                        if self.current_char not in space_delim: 
+                                            while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                                ident_count += 1
+                                                if ident_count > 10:
+                                                    errors.extend(["Exceeded identifier limit!"])
+                                                    return errors
+                                                ident += self.current_char
+                                                self.advance()
+                                                if self.current_char == None:
+                                                    return Token(IDENTIFIER, ident)
+                                        else:
+                                            return Token(TAKEOFF, "takeoff")
+                    
                 elif self.current_char == "r":
                         ident += self.current_char
                         self.advance()
@@ -935,9 +1194,23 @@ class Lexer:
                                     ident += self.current_char
                                     self.advance()
                                     ident_count += 1
-                                    return Token(TRACE, "trace"), errors
+                                    # catch if blast lang yung tinype ng user (for demo purposes)
+                                    if self.current_char == None:
+                                        return Token(TRACE, "trace")
                                 
-                                    
+                                    #delimiter ng bang defined in space_delim
+                                    if self.current_char not in space_delim: 
+                                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                            ident_count += 1
+                                            if ident_count > 10:
+                                                errors.extend(["Exceeded identifier limit!"])
+                                                return errors
+                                            ident += self.current_char
+                                            self.advance()
+                                            if self.current_char == None:
+                                                return Token(IDENTIFIER, ident)
+                                    else:
+                                        return Token(TRACE, "trace")
                         elif self.current_char == "u":
                             ident += self.current_char
                             self.advance()
@@ -946,8 +1219,24 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()     
                                 ident_count += 1    
-                                return Token(TRUE, "true"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(TRUE, "true")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        if ident_count > 10:
+                                            errors.extend(["Exceeded identifier limit!"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                    return Token(TRUE, "true") 
+                
             if self.current_char == "u": #universe
                 ident += self.current_char
                 self.advance()
@@ -980,8 +1269,23 @@ class Lexer:
                                             ident += self.current_char
                                             self.advance()
                                             ident_count += 1
-                                            return Token(UNIVERSE, "universe"), errors
+                                            # catch if blast lang yung tinype ng user (for demo purposes)
+                                            if self.current_char == None:
+                                                return Token(UNIVERSE, "universe")
                                         
+                                            #delimiter ng bang defined in space_delim
+                                            if self.current_char not in space_delim: 
+                                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                                    ident_count += 1
+                                                    if ident_count > 10:
+                                                        errors.extend(["Exceeded identifier limit!"])
+                                                        return errors
+                                                    ident += self.current_char
+                                                    self.advance()
+                                                    if self.current_char == None:
+                                                        return Token(IDENTIFIER, ident)
+                                            else:
+                                                return Token(UNIVERSE, "universe") 
                 
             if self.current_char == "v": #void
                 ident += self.current_char
@@ -999,8 +1303,25 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            return Token(VOID, "void"), errors
+                            # catch if blast lang yung tinype ng user (for demo purposes)
+                            if self.current_char == None:
+                                return Token(VOID, "void")
                         
+                            #delimiter ng bang defined in space_delim
+                            if self.current_char not in space_delim: 
+                                while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                    ident_count += 1
+                                    if ident_count > 10:
+                                        errors.extend(["Exceeded identifier limit!"])
+                                        return errors
+                                    ident += self.current_char
+                                    self.advance()
+                                    if self.current_char == None:
+                                        return Token(IDENTIFIER, ident)
+                            else:
+                                return Token(VOID, "void")
+                  
+                            
             if self.current_char == "w": #whirl
                 ident += self.current_char
                 self.advance()
@@ -1021,8 +1342,24 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                return Token(WHIRL, "whirl"), errors
+                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                if self.current_char == None:
+                                    return Token(WHIRL, "whirl")
                             
+                                #delimiter ng bang defined in space_delim
+                                if self.current_char not in space_delim: 
+                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
+                                        ident_count += 1
+                                        print(ident_count)
+                                        if ident_count > 10:
+                                            errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
+                                            return errors
+                                        ident += self.current_char
+                                        self.advance()
+                                        if self.current_char == None:
+                                            return Token(IDENTIFIER, ident)
+                                else:
+                                   return Token(WHIRL, "whirl")
                 else:
                     ident_count += 1
                     if ident_count > 10:
@@ -1031,7 +1368,7 @@ class Lexer:
                        
             
             else:
-                if ident_count == 9:
+                if ident_count == 10:
                     #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
                     return Token(IDENTIFIER, ident), errors
                 
