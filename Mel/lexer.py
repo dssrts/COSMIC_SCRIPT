@@ -439,14 +439,14 @@ class Lexer:
                 if dot_count == 0:
                     if self.current_char in all_num:
                         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        self.advance()
+                        
                         return Token(INTEL, int(num_str)), errors
                     else:
                         Token(INTEL, int(num_str)), errors
                 else:
                     if self.current_char in all_num:
                         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        self.advance()
+                        
                         return Token(GRAVITY, float(num_str)), errors
                     else:
                         return Token(GRAVITY, float(num_str)), errors
