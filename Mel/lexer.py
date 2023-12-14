@@ -159,30 +159,32 @@ class Lexer:
             elif self.current_char in all_letters:
                 result, error = self.make_word()
                 
-                errors.extend(error)
-                tokens.append(result)
+                #errors.extend(error)
+                #tokens.append(result)
                 
+                if errors:
+                    tokens.append(result)
+                    errors.extend(error)
                 try:
                     if (self.current_char not in space_delim+SEMICOLON):
                         errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
+                        
                 except:
                     errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
-                
-                    
-                
-                        
-                
-                    
-                
-                    
                     
             elif self.current_char in all_num:
                 result, error = self.make_number()
                 
-                errors.extend(error)
-                tokens.append(result)
+                if errors:
+                    tokens.append(result)
+                    errors.extend(error)
                     #break  # exit the loop if there are errors
-                
+                try:
+                    if (self.current_char not in space_delim+SEMICOLON):
+                        errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
+                        
+                except:
+                    errors.extend([f"Invalid delimiter for {result.value}. Cause: {self.current_char}"])
         
                 
                 
@@ -452,7 +454,7 @@ class Lexer:
                 
                 if self.current_char in all_num:
                     errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                    self.advance()
+                    
                     return Token(INTEL, int(num_str)), errors
                     
             if self.current_char == '.':
@@ -1029,7 +1031,7 @@ class Lexer:
                        
             
             else:
-                if ident_count == 10:
+                if ident_count == 9:
                     #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
                     return Token(IDENTIFIER, ident), errors
                 
