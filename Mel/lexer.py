@@ -185,11 +185,7 @@ class Lexer:
                 
                 errors.extend(error)
                 tokens.append(result)
-                    #break  # exit the loop if there are errors
-                # self.advance()
-                # if self.current_char in all_letters:
-                #     errors.extend(["Invalid delimiter for {result}"])
-                #     self.advance()
+                
                 
                     
                     
@@ -518,7 +514,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
                     continue
-                if self.current_char not in lineEnd_delim+'),':
+                if self.current_char not in lineEnd_delim+'),' + delim0:
                     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(Q_MARK, "\""))
@@ -685,11 +681,11 @@ class Lexer:
                 #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
                 #self.advance()
                 ident += self.current_char
-                if self.current_char in space_delim:         
+                if self.current_char in space_delim + ident_delim + ';':         
                     return Token(IDENTIFIER, ident), errors
                 else:
-                    
                     errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}"])
+                    self.advance()
                     break
             
             if self.current_char == "b":
@@ -1305,6 +1301,13 @@ class Lexer:
                     if item in ident_special_chars:
                         errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
                         return [], errors
+                
+        
+        if self.current_char == None:
+            errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
+            return Token(IDENTIFIER, ident), errors
+       
+                    
                 
              
         # if ident_count == 10:
