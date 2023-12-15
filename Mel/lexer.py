@@ -7,12 +7,25 @@ ident_special_chars = "$:?@\^\"`~#"
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
+relational_operator = '><==!<=>=!='
 lineEnd_delim = " ;"
+newline_delim = '\n'
 symbols = ""
-ident_delim = ",+-*/%><!=&|)/{/}\'[]\"/~"
+ident_delim = " ,+-*/%><!=&|)/{/}\']\"/~" + arithmetic_operator
+closing_delim = arithmetic_operator + relational_operator + space_delim
+num_delim = arithmetic_operator + space_delim + ',' + ' &&||' + relational_operator + ")]"
 equal_delim = alphanum + "({"
 block_delim = '{ \n '
 loop_delim = ' ('
+inner_delim = '>> '
+outer_delim = '<< '
+bool_delim = space_delim + lineEnd_delim + '\n' + ')'
+delim0 = space_delim + alphanum
+delim1 = delim0 + '\"' + '('
+delim2 = delim0  + '('
+delim3 = delim0 + newline_delim
+
+
 
 #errors
 error = []
@@ -668,13 +681,13 @@ class Lexer:
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
-                                # catch if blast lang yung tinype ng user (for demo purposes)
                                 if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for inner! Cause: {self.current_char}'])
                                     return [], errors
-                                #TODO add delim for inner
+                                if self.current_char not in inner_delim:
+                                    errors.extend([f'Invalid delimiter for inner! Cause: {self.current_char}'])
+                                    return [], errors
                                 return Token(INNER, "inner"), errors
-                               
                         
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
@@ -695,23 +708,16 @@ class Lexer:
                             if self.current_char == "e":
                                 ident += self.current_char
                                 self.advance()
-                                # catch if blast lang yung tinype ng user (for demo purposes)
+                                ident_count += 1
                                 if self.current_char == None:
-                                    return Token(FALSE, "false")
+                                    errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
+                                    return [], errors
+                                if self.current_char not in bool_delim:
+                                    errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
+                                    return [], errors
+                                return Token(FALSE, "false"), errors
                             
-                                #delimiter ng bang defined in space_delim
-                                if self.current_char not in space_delim: 
-                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                        ident_count += 1
-                                        if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
-                                            return errors
-                                        ident += self.current_char
-                                        self.advance()
-                                        if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
-                                else:
-                                    return Token(FALSE, "false")
+                            
                     
                 elif self.current_char == "o":
                     ident += self.current_char
