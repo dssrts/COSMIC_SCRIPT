@@ -9,6 +9,7 @@ space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
+#TODO add ' as delim
 ident_delim = ",+-*/%><!=&|)/{/}[]\"/"
 equal_delim = alphanum + "({"
 
@@ -168,10 +169,10 @@ class Lexer:
                 errors.extend(error)
                 tokens.append(result)
                     #break  # exit the loop if there are errors
-                self.advance()
-                if self.current_char in all_letters:
-                    errors.extend(["Invalid delimiter for {result}"])
-                    self.advance()
+                # self.advance()
+                # if self.current_char in all_letters:
+                #     errors.extend(["Invalid delimiter for {result}"])
+                #     self.advance()
                 
                     
                     
@@ -462,17 +463,17 @@ class Lexer:
         
         # check if there are letters after the number
         if self.current_char is not None and self.current_char.isalpha():
-            while self.current_char is not None and self.current_char.isalpha():
-                num_str += self.current_char
-                #added this advance para maskip nya yung identifier if ever
-                self.advance()
-            errors.append(f"Identifiers cannot start with a number! Cause: {num_str}")    
+            # while self.current_char is not None and self.current_char.isalpha():
+            #     num_str += self.current_char
+            #     #added this advance para maskip nya yung identifier if ever
+            #     self.advance()
+            errors.append(f"Invalid delimiter for number: {num_str}")    
             if errors:
                 return [], errors
                
             
 
-       
+       #TODO need maread kapag may 0
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
                 return Token(INTEL, int(num_str)), errors
@@ -495,45 +496,22 @@ class Lexer:
 
         
         while self.current_char != None :
+            #FIXME here cinocontrol number ng identifiers
             if ident_count == 10:
-                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
-                return Token(IDENTIFIER, ident), errors
+                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
+                #self.advance()
+                if self.current_char in space_delim:         
+                    return Token(IDENTIFIER, ident), errors
+                else:
+                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}"])
+                    break
             
             if self.current_char == "b":
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
-                if self.current_char == "a":
-                    ident += self.current_char
-                    self.advance()
-                    ident_count += 1
-                    if self.current_char == "n":
-                        ident += self.current_char
-                        self.advance()
-                        ident_count += 1
-                        if self.current_char == "g":
-                            ident += self.current_char
-                            self.advance()
-                            ident_count += 1
-                            # catch if bang lang yung tinype ng user (for demo purposes)
-                            if self.current_char == None:
-                                return Token(BANG, ident)
-                            
-                            #delimiter ng bang defined in space_delim
-                            if self.current_char not in space_delim: 
-                                while self.current_char in alphanum and self.current_char not in space_delim:
-                                    ident_count += 1
-                                    if ident_count > 10:
-                                        errors.extend(["Exceeded identifier limit!"])
-                                        return errors
-                                    ident += self.current_char
-                                    self.advance()
-                                    if self.current_char == None:
-                                        return Token(IDENTIFIER, ident)
-                            else:
-                                return Token(BANG, ident)
-                           
-                elif self.current_char == "l":
+
+                if self.current_char == "l":
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
@@ -547,25 +525,14 @@ class Lexer:
                             ident_count += 1
                             if self.current_char == "t":
                                 ident += self.current_char
-                                self.advance()
+                                
                                 ident_count += 1
-                                # catch if blast lang yung tinype ng user (for demo purposes)
-                                if self.current_char == None:
-                                    return Token(BLAST, "blast")
+                                if self.current_char in alphanum:
+                                    errors.extend([f'Invalid delim for blast! Cause: {self.current_char}'])
+                                self.advance()
+                                return Token(BLAST, "blast"), errors
                             
-                                #delimiter ng bang defined in space_delim
-                                if self.current_char not in space_delim: 
-                                    while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                                        ident_count += 1
-                                        if ident_count > 10:
-                                            errors.extend(["Exceeded identifier limit!"])
-                                            return errors
-                                        ident += self.current_char
-                                        self.advance()
-                                        if self.current_char == None:
-                                            return Token(IDENTIFIER, ident)
-                                else:
-                                    return Token(BLAST, "blast")
+                                
                 
             if self.current_char == "d": #do
                 ident += self.current_char
@@ -1397,37 +1364,39 @@ class Lexer:
                 for item in ident:
                     if item in ident_special_chars:
                         errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
-                        return errors
+                        return [], errors
                 
              
-        if ident_count == 10:
-            #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
-            return Token(IDENTIFIER, ident), errors
+        # if ident_count == 10:
+        #     #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
+        #     return Token(IDENTIFIER, ident), errors
 
         
-        """ if errors:
-            return errors """
+        if errors:
+            return [], errors
+        else:
+            return Token(IDENTIFIER, ident), errors
         #print(ident_count)
         # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
-        return Token(IDENTIFIER, ident), errors
+        #
             
         
-    def make_string(self):
-        string = ""
-        errors = []
-        self.advance()
-        while self.current_char != "\"" and self.current_char != None :
+    # def make_string(self):
+    #     string = ""
+    #     errors = []
+    #     self.advance()
+    #     while self.current_char != "\"" and self.current_char != None :
             
-            string += self.current_char
-            self.advance()
-        if self.current_char == "\"":
-            return Token(STRING, f"\"{string}\"")
+    #         string += self.current_char
+    #         self.advance()
+    #     if self.current_char == "\"":
+    #         return Token(STRING, f"\"{string}\"")
     
-        elif self.current_char == None:
-            errors.append("Expected closing quotation mark!")
+    #     elif self.current_char == None:
+    #         errors.append("Expected closing quotation mark!")
 
-        if errors:
-            return errors
+    #     if errors:
+    #         return errors
         
         
        
