@@ -575,23 +575,27 @@ class Lexer:
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
-                            if self.current_char == " ":
-                                ident += self.current_char
-                                self.advance()
-                                ident_count += 1
-                            else:
-                                return Token(ELSE, "else")
                             if self.current_char == "i":
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
                                 if self.current_char == "f":
                                     ident += self.current_char
-                                    self.advance()
                                     ident_count += 1
-                                    return Token(ELSEIF, "elseif")
-                        else:
-                            return Token(ELSE, "else")
+                                    if self.current_char not in block_delim:
+                                        self.advance()
+                                        errors.extend([f'Invalid delimiter for elseif! Cause: {self.current_char}'])
+                                        return [], errors
+                                    
+                                    return Token(ELSEIF, "elseif"),errors
+                            else:
+                                if self.current_char == None:
+                                    errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
+                                    return [], errors
+                                if self.current_char not in block_delim:
+                                    errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
+                                    return [], errors
+                                return Token(ELSE, "else"),errors
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
