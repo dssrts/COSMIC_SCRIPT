@@ -551,13 +551,11 @@ class Lexer:
                 ident_count += 1
                 if self.current_char == "o":
                     ident += self.current_char
-                    
                     ident_count += 1
                     if self.current_char not in block_delim:
                         self.advance()
                         errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
                         return [], errors
-                    
                     return Token(DO, "do"), errors
                 
                 
