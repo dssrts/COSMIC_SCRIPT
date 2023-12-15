@@ -208,7 +208,6 @@ class Lexer:
                         
                     
                 else:
-                    
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' = '. Cause: ' {self.current_char} '"])
                         return [], errors
@@ -246,20 +245,30 @@ class Lexer:
             elif self.current_char == '+': #mathematical operator (+, -, *, /, %)
                 self.advance()
                 if self.current_char == '=': #for += symbol
-                    tokens.append(Token(PLUS_EQUAL, "+="))
                     self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' += '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in (delim1 + '['):
+                        errors.extend([f"Invalid delimiter for ' += '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(PLUS_EQUAL, "+=")) #for == symbol
+                    
                 elif self.current_char == '+': #for ++ incre
-                    tokens.append(Token(INCRE, "++"))
                     self.advance()
-                    if self.current_char not in (all_num + all_letters + LPAREN + space_delim):
-                        errors.extend([f"Expected number or identifier! Cause: {self.current_char}"])
-                        self.advance()
-                elif self.current_char == None:
-                    tokens.append(Token(PLUS, "+"))
-                    errors.extend([f"Expected number or identifier after ' + '! Cause: \\n"])
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' ++ '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in (lineEnd_delim + alphanum + ')'):
+                        errors.extend([f"Invalid delimiter for '++'. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(INCRE, "++")) #for == symbol
                 else:
-                    tokens.append(Token(PLUS, "+"))
-                    if self.current_char not in (all_num + all_letters + LPAREN + space_delim):
+                    self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Expected number or identifier after ' + '! Cause: \\n"])
+                        
+                    if self.current_char not in delim1:
                         errors.extend([f"Expected number or identifier! Cause: {self.current_char}"])
                         self.advance()
                     
