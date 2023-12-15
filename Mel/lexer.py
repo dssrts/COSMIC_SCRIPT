@@ -270,7 +270,7 @@ class Lexer:
                         return [], errors
                         
                     if self.current_char not in delim1:
-                        errors.extend([f"Invalid delimiter for! Cause: {self.current_char}"])
+                        errors.extend([f"Invalid delimiter for ' + ' ! Cause: {self.current_char}"])
                         return [], errors
                         
                     tokens.append(Token(PLUS, "+")) #for == symbol
@@ -280,33 +280,58 @@ class Lexer:
             elif self.current_char == '-': 
                 self.advance()
                 if self.current_char == '=': #for -=symbol
-                    tokens.append(Token(MINUS_EQUAL, "-="))
                     self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' -= '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' -= '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(MINUS_EQUAL, "-=")) 
                 elif self.current_char == '-': #for -- decre
-                    tokens.append(Token(DECRE, "--"))
                     self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' -- '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in (lineEnd_delim + alphanum + ')'):
+                        errors.extend([f"Invalid delimiter for ' -- '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(DECRE, "--")) 
                 elif self.current_char in all_num:
                     result, error = self.make_number()
                     result = Token(result.token, result.value * -1)
                     tokens.append(result)
                 else:
-                    tokens.append(Token(MINUS, "-"))
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(MINUS, "-")) 
                 
             elif self.current_char == '*': 
                 self.advance()
-                if self.current_char == '=': #for *= symbol
-                    tokens.append(Token(MUL_EQUAL, "*=")) #for *// ending comet
-                    self.advance()
-
-                elif self.current_char == "/":
+                if self.current_char == "/":
                     self.advance()
                     if self.current_char == "/":
-                        tokens.append(Token(M_END_COMET, "*//"))
                         self.advance()
-                    else:
-                        errors.extend(["Missing ending slash for multi line comment!"])
+                        if self.current_char == None:
+                            tokens.append(Token(M_END_COMET, "*//"))
                 else:
-                    tokens.append(Token(MUL, "*"))
+                    
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(MUL, "*"))    
+                        # if self.current_char not in newline_delim:
+                        #     errors.extend([f"Invalid delimiter for ' *// '. Cause: ' {self.current_char} '"])
+                        #     return [], errors
+                        # tokens.append(Token(M_END_COMET, "*//")) 
+                
                 
             elif self.current_char == '/': 
                 self.advance()
