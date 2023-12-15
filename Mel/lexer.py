@@ -538,7 +538,7 @@ class Lexer:
                                 ident_count += 1
                                 if self.current_char not in lineEnd_delim:
                                     self.advance()
-                                    errors.extend([f'Invalid delim for blast! Cause: {self.current_char}'])
+                                    errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
                                 self.advance()
                                 return Token(BLAST, "blast"), errors
