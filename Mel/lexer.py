@@ -336,11 +336,15 @@ class Lexer:
             elif self.current_char == '/': 
                 self.advance()
                 if self.current_char == '=': #for /= symbol
-                    tokens.append(Token(DIV_EQUAL, "/="))
+                    
                     self.advance()
-                    if self.current_char not in (alphanum + equal_delim + space_delim):
-                        errors.append(f"Invalid delimiter for /=. Cause: {self.current_char}")
-                        self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' /= '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' /= '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(DIV_EQUAL, "/="))
                 elif self.current_char == '/': #for 
                     self.advance()
                     if self.current_char == "*":
@@ -351,6 +355,13 @@ class Lexer:
                     self.advance()
                 
                 else:
+                    
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' / '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' / '. Cause: ' {self.current_char} '"])
+                        return [], errors
                     tokens.append(Token(DIV, "/"))
                 
             elif self.current_char == '%':
