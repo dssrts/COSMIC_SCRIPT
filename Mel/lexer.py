@@ -11,6 +11,7 @@ lineEnd_delim = " ;"
 symbols = ""
 ident_delim = ",+-*/%><!=&|)/{/}\'[]\"/~"
 equal_delim = alphanum + "({"
+block_delim = ' \n{'
 
 #errors
 error = []
@@ -534,13 +535,12 @@ class Lexer:
                             ident_count += 1
                             if self.current_char == "t":
                                 ident += self.current_char
-                                
                                 ident_count += 1
                                 if self.current_char not in lineEnd_delim:
                                     self.advance()
                                     errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
-                                self.advance()
+                                
                                 return Token(BLAST, "blast"), errors
                             
                                 
@@ -551,26 +551,14 @@ class Lexer:
                 ident_count += 1
                 if self.current_char == "o":
                     ident += self.current_char
-                    self.advance()
+                    
                     ident_count += 1
-                    # catch if blast lang yung tinype ng user (for demo purposes)
-                    if self.current_char == None:
-                        return Token(DO, "do")
-                
-                    #delimiter ng bang defined in space_delim
-                    if self.current_char not in space_delim: 
-                        while self.current_char in alphanum and self.current_char not in lineEnd_delim:
-                            ident_count += 1
-                            if ident_count > 10:
-                                errors.extend(["Exceeded identifier limit!"])
-                                return errors
-                            ident += self.current_char
-                            self.advance()
-                            if self.current_char == None:
-                                
-                                return Token(IDENTIFIER, ident)
-                    else:
-                        return Token(DO, "do")
+                    if self.current_char not in block_delim:
+                        self.advance()
+                        errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
+                        return [], errors
+                    
+                    return Token(DO, "do"), errors
                 
                 
             if self.current_char == "e": #else, else if, entity
