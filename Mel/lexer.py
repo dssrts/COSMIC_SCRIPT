@@ -9,8 +9,7 @@ space_delim = " "
 arithmetic_operator = "+-*/%"
 lineEnd_delim = " ;"
 symbols = ""
-#TODO add ' as delim
-ident_delim = ",+-*/%><!=&|)/{/}[]\"/"
+ident_delim = ",+-*/%><!=&|)/{/}\'[]\"/"
 equal_delim = alphanum + "({"
 
 #errors
@@ -94,6 +93,7 @@ N_TAB = '\\t'
 N_LINE = '\\n'
 SHARP = '##'
 Q_MARK = "\""
+SQ_MARK = "\'"
 S_COMET = '/*'
 M_OPEN_COMET = '//*'
 M_END_COMET =  '*//'
@@ -378,6 +378,9 @@ class Lexer:
                         errors.append("Invalid delimiter for string!")
                 '''
                 tokens.append(Token(Q_MARK, "\""))
+                self.advance()
+            elif self.current_char == '\'':
+                tokens.append(Token(SQ_MARK, "\'"))
                 self.advance()
             elif self.current_char == ',':
                 tokens.append(Token(COMMA, ","))
