@@ -264,14 +264,16 @@ class Lexer:
                         return [], errors
                     tokens.append(Token(INCRE, "++")) #for == symbol
                 else:
-                    self.advance()
+                    
                     if self.current_char == None:
-                        errors.extend([f"Expected number or identifier after ' + '! Cause: \\n"])
+                        errors.extend([f"Invalid delimiter for ' + '! Cause: {self.current_char}"])
+                        return [], errors
                         
                     if self.current_char not in delim1:
-                        errors.extend([f"Expected number or identifier! Cause: {self.current_char}"])
-                        self.advance()
-                    
+                        errors.extend([f"Invalid delimiter for! Cause: {self.current_char}"])
+                        return [], errors
+                        
+                    tokens.append(Token(PLUS, "+")) #for == symbol
                     
                         
                     
