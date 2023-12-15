@@ -12,6 +12,7 @@ symbols = ""
 ident_delim = ",+-*/%><!=&|)/{/}\'[]\"/~"
 equal_delim = alphanum + "({"
 block_delim = '{ \n '
+loop_delim = ' ('
 
 #errors
 error = []
@@ -644,7 +645,13 @@ class Lexer:
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
-                    return Token(IF, "if")
+                    if self.current_char == None:
+                        errors.extend([f'Invalid delimiter for if! Cause: {self.current_char}'])
+                        return [], errors
+                    if self.current_char not in loop_delim:
+                        errors.extend([f'Invalid delimiter for if! Cause: {self.current_char}'])
+                        return [], errors
+                    return Token(IF, "if"), errors
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
