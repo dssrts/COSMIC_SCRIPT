@@ -196,25 +196,26 @@ class Lexer:
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=, ==)
                 self.advance()
                 if self.current_char == '=':
-                    tokens.append(Token(E_EQUAL, "==")) #for == symbol
                     
+                    self.advance()
                     if self.current_char == None:
-                        tokens.append(Token(E_EQUAL, "=="))
-                    elif self.current_char not in (alphanum + equal_delim + space_delim):
-                        self.advance()
                         errors.extend([f"Invalid delimiter for ' == '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in (delim1 + '['):
+                        errors.extend([f"Invalid delimiter for ' == '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(E_EQUAL, "==")) #for == symbol
                         
                     
                 else:
                     
                     if self.current_char == None:
-                        errors.extend([f"Invalid delimiter for ' = '. Cause : ' {self.current_char} '"])
-                    elif self.current_char not in (alphanum + equal_delim + space_delim ):
-                        tokens.append(Token(EQUAL, "="))
-                        errors.extend([f"Invalid delimiter for ' = '. Cause : ' {self.current_char} '"])
-                        self.advance()
-                    else:
-                        tokens.append(Token(EQUAL, "="))
+                        errors.extend([f"Invalid delimiter for ' = '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    if self.current_char not in delim1:
+                        errors.extend([f"Invalid delimiter for ' = '. Cause: ' {self.current_char} '"])
+                        return [], errors
+                    tokens.append(Token(EQUAL, "=")) #for == symbol
                         
                     
                     
@@ -557,9 +558,7 @@ class Lexer:
                                 if self.current_char not in lineEnd_delim:
                                     errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
-                                
-                               
-                                
+
                                 return Token(BLAST, "blast"), errors
                             
                                 
