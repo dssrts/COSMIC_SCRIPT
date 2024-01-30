@@ -162,10 +162,10 @@ class Lexer:
         string = ""
 
         while self.current_char is not None:
-            if self.current_char in special_chars:
+            """ if self.current_char in special_chars:
                 errors.extend([f"Invalid symbol: {self.current_char}"])
-                self.advance()
-            elif self.current_char in '\t':
+                self.advance() """
+            if self.current_char in '\t':
                 tokens.append(Token(N_TAB, "\\t"))
                 self.advance()
             elif self.current_char  == '\n':
@@ -186,8 +186,6 @@ class Lexer:
                 errors.extend(error)
                 tokens.append(result)
                 
-                
-                    
                     
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=, ==)
                 self.advance()
@@ -474,10 +472,10 @@ class Lexer:
             elif self.current_char == '[':
                 self.advance()
                 if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' ) '. Cause: ' {self.current_char} '"])
+                    errors.extend([f"Invalid delimiter for ' [ '. Cause: ' {self.current_char} '"])
                     continue
                 if self.current_char not in delim0 + space_delim:
-                    errors.extend([f"Invalid delimiter for ' ) '. Cause: ' {self.current_char} '"])
+                    errors.extend([f"Invalid delimiter for ' [ '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SLBRACKET, "["))
             elif self.current_char == ']':
@@ -543,7 +541,7 @@ class Lexer:
                 if self.current_char == None:
                     tokens.append(Token(SEMICOLON, ";"))
                     continue
-                if self.current_char not in newline_delim + space_delim:
+                if self.current_char not in newline_delim + space_delim + '}':
                     errors.extend([f"Invalid delimiter for ' ; '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SEMICOLON, ";"))
@@ -568,6 +566,10 @@ class Lexer:
                     errors.extend([f"Invalid delimiter for ' ~ '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(TILDE, "~"))
+
+            else:
+                errors.extend([f"Invalid character: {self.current_char}"])
+                self.advance()
 
 
         '''
