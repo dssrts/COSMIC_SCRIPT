@@ -127,7 +127,46 @@ IDENTIFIER = 'IDENTI'
 COMMA = ','
 SPACE = "space"
 
+class Error:
+    def __init__ (self,pos_start, pos_end, error_name, details):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        self.error_name = error_name
+        self. details = details
 
+    def __repr__(self): 
+        result = f'{self.error_name}: {self.details}\n'
+        result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
+        return result
+
+class IllegalCharError(Error):
+    #the lexer comes across a character it doesn't support
+    def __init__(self,pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, 'Illegal Character ', details)
+
+class DelimiterError(Error):
+    def __init__(self,pos_start, pos_end, details, char):
+        super().__init__(pos_start, pos_end, f"Invalid Delimiter for '{char}'", "Cause -> " + str(details))
+
+class Position:
+    def __init__(self, idx, ln, col, fn, ftxt):
+        self.idx = idx
+        self.ln = ln
+        self.col = col
+        self.fn = fn
+        self.ftxt = ftxt
+
+    def advance (self, current_char):
+        self.idx += 1
+        self.col += 1
+
+        if current_char == "\n":
+            self.ln += 1
+            self.col = 0
+        
+        return self
+    def copy(self):
+        return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
 class Token:
     def __init__(self, token, value=None):
@@ -143,17 +182,17 @@ class Token:
 
 class Lexer:
     
-    def __init__(self, text):
-        
+    def __init__(self, fn, text):
+        self.fn = fn
         self.text = text
-        self.pos = -1
+        self.pos = Position(-1, 0, -1, fn, text)
         self.current_char = None
         self.advance()
 
     def advance(self):
-        self.pos += 1
+        self.pos.advance(self.current_char)
         # current char is the current pos if the pos is less than the length of the text
-        self.current_char = self.text[self.pos] if self.pos <= len(self.text)-1 else None
+        self.current_char = self.text[self.pos.idx] if self.pos.idx <= len(self.text)-1 else None
 
     def make_tokens(self):
         
@@ -395,7 +434,12 @@ class Lexer:
                 
                 self.advance()
                 if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
+                    #errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
+                    
+                    pos_start = self.pos.copy()
+                    char = self.current_char
+                    self.advance()
+                    errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
                     continue
                 if self.current_char not in delim2:
                     errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
@@ -568,8 +612,12 @@ class Lexer:
                 tokens.append(Token(TILDE, "~"))
 
             else:
-                errors.extend([f"Invalid character: {self.current_char}"])
+                #errors.extend([f"Invalid character: {self.current_char}"])
+                pos_start = self.pos.copy()
+                char = self.current_char
                 self.advance()
+                errors.extend([IllegalCharError(pos_start, self.pos, "'" + char  + "'" )])
+                #errors.extend(IllegalCharError("'" + char  + "'" ))
 
 
         '''
@@ -1370,8 +1418,8 @@ class Lexer:
        
   
 
-def run(text):
-    lexer = Lexer(text)
+def run(fn, text):
+    lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
     
     return tokens, error
