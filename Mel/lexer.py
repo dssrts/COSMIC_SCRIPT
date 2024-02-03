@@ -1391,7 +1391,7 @@ class BinOpNode:
 class Parser:
     def __init__(self, tokens) -> None:
         self.tokens = tokens
-        self.tok_idx = 1
+        self.tok_idx = -1
         self.advance()
 
     def advance(self):
@@ -1400,10 +1400,69 @@ class Parser:
             self.current_tok = self.tokens[self.tok_idx]
         return self.current_tok
     
-  
+    def parse(self):
+        #res = result
+        res = self.expr()
+        return res
+    
+    def factor(self):
+        tok = self.current_tok
 
+        if tok.token in (INTEL, GRAVITY):
+            self.advance()
+            return NumberNode(tok)
+    
+    def term(self):
+        return self.bin_op(self.factor, (MUL, DIV))
+    
+        #really this means:
+        '''
+        def bin_op(self, func, ops):
+            left = factor()
+
+            while self.current_tok in ops: # ops instead of (MUL, DIV)
+                op_tok = self.current_tok
+                right = factor()
+                left = BinOpNode(left, op_tok, right)
+
+            return left
+            
+        '''
+
+    def expr(self):
+        return self.bin_op(self.term, (PLUS, MINUS))
+    
+        #really this means:
+        '''
+        def bin_op(self, func, ops):
+            left = term()
+
+            while self.current_tok in ops: #ops instead of (PLUS, MINUS)
+                op_tok = self.current_tok
+                right = term()
+                left = BinOpNode(left, op_tok, right)
+
+            return left
+            
+        '''
+    
+    #func is rule (expr or term)
+    def bin_op(self, func, ops):
+        left = func() #instead of self.factor() or self.term()
+
+        while self.current_tok.token in ops: #instead of (MUL, DIV)
+            op_tok = self.current_tok
+            self.advance()
+            right = func() #instead of self.factor() or self.term()
+            left = BinOpNode(left, op_tok, right)
+
+        return left
+    
 def run(text):
     lexer = Lexer(text)
     tokens, error = lexer.make_tokens()
     
-    return tokens, error
+    #return tokens, error
+    parser = Parser(tokens)
+    ast = parser.parse()
+    return ast, error
