@@ -3,7 +3,7 @@ import lexer
 while True:
     text = input('cosmic script > ')
     #kaya dalawa kasi dalawa nirererturn ng make_tokens()
-    result, error = lexer.run(text)
+    result, error = lexer.run('<stdin>', text)
     
     print(result)
     """ for item in result:
