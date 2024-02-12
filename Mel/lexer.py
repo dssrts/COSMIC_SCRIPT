@@ -554,7 +554,7 @@ class Lexer:
                 if self.current_char not in newline_delim:
                     errors.extend([f"Invalid delimiter for ' : '. Cause: ' {self.current_char} '"])
                     continue
-                #TODO FIX DELIMITER
+                #TODO fix delimiter
                 tokens.append(Token(COLON, ":"))
             elif self.current_char == "~":
                 
@@ -677,7 +677,7 @@ class Lexer:
         errors = []
         
         while self.current_char != None:
-            #FIXME here cinocontrol number ng identifiers
+            #here cinocontrol number ng identifiers
             if ident_count == 10:
                 #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
                 ident += self.current_char
@@ -1445,7 +1445,8 @@ class Parser:
             return left
             
         '''
-    
+        
+    #TODO add parenthesis for term/factor
     #func is rule (expr or term)
     def bin_op(self, func, ops):
         left = func() #instead of self.factor() or self.term()
