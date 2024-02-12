@@ -442,7 +442,10 @@ class Lexer:
                     errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
                     continue
                 if self.current_char not in delim2:
-                    errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
+                    pos_start = self.pos.copy()
+                    char = self.current_char
+                    self.advance()
+                    errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
                     continue
                 tokens.append(Token(MODULUS, "%"))
                 
