@@ -433,39 +433,37 @@ class Lexer:
             elif self.current_char == '%':
                 
                 self.advance()
+                pos_start = self.pos.copy()
                 if self.current_char == None:
                     #errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
-                    
-                    pos_start = self.pos.copy()
-                    char = self.current_char
-                    self.advance()
-                    errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
+                    errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '%')])
+                    #self.advance()
                     continue
                 if self.current_char not in delim2:
-                    pos_start = self.pos.copy()
-                    char = self.current_char
-                    self.advance()
-                    errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
+                    errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '%')])
+                    
                     continue
                 tokens.append(Token(MODULUS, "%"))
                 
             elif self.current_char == '!': #logical operators (!, &&, ||)
                 self.advance()
+                pos_start = self.pos.copy()
                 if self.current_char == '=':  
                     self.advance()
+                    pos_start = self.pos.copy()
                     if self.current_char == None:
-                        errors.extend([f"Invalid delimiter for ' != '. Cause: ' {self.current_char} '"])
+                        errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!=')])
                         continue
                     if self.current_char not in delim2:
-                        errors.extend([f"Invalid delimiter for ' != '. Cause: ' {self.current_char} '"])
+                        errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!=')])
                         continue
                     tokens.append(Token(NOT_EQUAL, "!=")) #for != symbol
                 else:
                     if self.current_char == None:
-                        errors.extend([f"Invalid delimiter for ' ! '. Cause: ' {self.current_char} '"])
+                        errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!')])
                         continue
                     if self.current_char not in delim1:
-                        errors.extend([f"Invalid delimiter for ' ! '. Cause: ' {self.current_char} '"])
+                        errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!')])
                         continue
                     tokens.append(Token(NOT_OP, "!"))
                     
