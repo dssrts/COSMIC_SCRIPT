@@ -146,7 +146,7 @@ class IllegalCharError(Error):
 
 class DelimiterError(Error):
     def __init__(self,pos_start, pos_end, details, char):
-        super().__init__(pos_start, pos_end, f"Invalid Delimiter for '{char}'", "Cause -> " + str(details))
+        super().__init__(pos_start, pos_end, f"Invalid Delimiter for '{char}'", "Cause -> " + "'" + str(details) + "'")
 
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
@@ -429,7 +429,8 @@ class Lexer:
                         errors.extend([f"Invalid delimiter for ' / '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(DIV, "/"))
-                
+
+            #modulo  
             elif self.current_char == '%':
                 
                 self.advance()
@@ -442,10 +443,15 @@ class Lexer:
                     errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
                     continue
                 if self.current_char not in delim2:
-                    errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
+                    #errors.extend([f"Invalid delimiter for ' % '. Cause: ' {self.current_char} '"])
+                    pos_start = self.pos.copy()
+                    char = self.current_char
+                    self.advance()
+                    errors.extend([DelimiterError(pos_start, self.pos, char, '%')])
                     continue
                 tokens.append(Token(MODULUS, "%"))
-                
+
+            #exclamation point   
             elif self.current_char == '!': #logical operators (!, &&, ||)
                 self.advance()
                 if self.current_char == '=':  
