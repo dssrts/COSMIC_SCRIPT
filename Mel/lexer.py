@@ -128,6 +128,8 @@ IDENTIFIER = 'IDENTI'
 COMMA = ','
 SPACE = "space"
 
+EOF = 'EOF'
+
 class Error:
     def __init__ (self,pos_start, pos_end, error_name, details):
         self.pos_start = pos_start
@@ -135,8 +137,8 @@ class Error:
         self.error_name = error_name
         self. details = details
 
-    def as_string(self): 
-        result = f'{self.error_name}: {self.details}\n'
+    def as_string(self):
+        result  = f'{self.error_name}: {self.details}\n'
         result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
         result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
         return result
@@ -162,7 +164,7 @@ class Position:
         self.fn = fn
         self.ftxt = ftxt
 
-    def advance (self, current_char):
+    def advance (self, current_char=None):
         self.idx += 1
         self.col += 1
 
@@ -175,9 +177,17 @@ class Position:
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
 class Token:
-    def __init__(self, token, value=None):
+    def __init__(self, token, value=None, pos_start=None, pos_end=None):
         self.token = token
         self.value = value
+    
+        if pos_start:
+            self.pos_start = pos_start.copy()
+            self.pos_end = pos_start.copy()
+            self.pos_end.advance()
+
+        if pos_end:
+            self.pos_end = pos_end
     
     def __repr__(self):
         if self.value: return f'{self.value} : {self.token}'
@@ -210,15 +220,15 @@ class Lexer:
             """ if self.current_char in special_chars:
                 errors.extend([f"Invalid symbol: {self.current_char}"])
                 self.advance() """
-            if self.current_char in '\t':
-                tokens.append(Token(N_TAB, "\\t"))
+            # if self.current_char in ' \t':
+            #     tokens.append(Token(N_TAB, "\\t", pos_start = self.pos))
+            #     self.advance()
+            if self.current_char  == '\n':
+                tokens.append(Token(NEWLINE, "\\n", pos_start = self.pos))
                 self.advance()
-            elif self.current_char  == '\n':
-                tokens.append(Token(NEWLINE, "\\n"))
-                self.advance()
-            elif self.current_char in ' ':
-                tokens.append(Token(SPACE, "\" \""))
-                self.advance()
+            #elif self.current_char in ' ':
+              #  tokens.append(Token(SPACE, "\" \"", pos_start = self.pos))
+             #   self.advance()
             elif self.current_char in all_letters:
                 result, error = self.make_word()
                 
@@ -348,7 +358,7 @@ class Lexer:
                         errors.extend([f"Invalid delimiter for ' + ' ! Cause: {self.current_char}"])
                         continue
                         
-                    tokens.append(Token(PLUS, "+")) #for == symbol
+                    tokens.append(Token(PLUS, "+", pos_start = self.pos)) #for == symbol
                     
                         
                     
@@ -644,7 +654,7 @@ class Lexer:
             return [], errors
         else:
         '''
-
+        tokens.append(Token(EOF, pos_start = self.pos))
         return tokens, errors       
 
     def make_number(self):
@@ -655,6 +665,7 @@ class Lexer:
         errors = []
         #not used ata to
         reached_limit_intel = False
+        pos_start = self.pos.copy()
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
@@ -665,14 +676,14 @@ class Lexer:
                         
                         return [], errors
                     else:
-                        Token(INTEL, int(num_str)), errors
+                        Token(INTEL, int(num_str), pos_start, self.pos), errors
                 else:
                     if self.current_char in all_num:
                         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
                         
                         return [], errors
                     else:
-                        return Token(GRAVITY, float(num_str)), errors
+                        return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
             if num_count == 9:
                 
                 if self.current_char in all_num:
@@ -713,15 +724,15 @@ class Lexer:
        #TODO need maread kapag may 0
             if dot_count == 0:
                 #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
+                return Token(INTEL, int(num_str), pos_start, self.pos), errors
             else:
-                return Token(GRAVITY, float(num_str)), errors
+                return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
         
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-            return Token(INTEL, int(num_str)), errors
+            return Token(INTEL, int(num_str), pos_start, self.pos), errors
         else:
-            return Token(GRAVITY, float(num_str)), errors
+            return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
        
         
     #takes in the input character by character then translates them into words then tokens
@@ -1439,7 +1450,29 @@ class BinOpNode:
 
     def __repr__(self):
         return f'({self.left_node}, {self.op_tok}, {self.right_node})'
+
+#PARSE RESULT
+
+class ParseResult:
+    def __init__(self):
+        self.error = None
+        self.node = None
+
+    def register(self, res):
+        if isinstance(res, ParseResult):
+            if res.error:
+                self.error = res.error
+            return res.node
+        
+        return res
     
+    def success(self, node):
+        self.node = node
+        return self
+
+    def failure(self, error):
+        self.error = error
+        return self
 
 #PARSER
     
@@ -1458,14 +1491,20 @@ class Parser:
     def parse(self):
         #res = result
         res = self.expr()
+        if not res.error and self.current_tok.token != EOF:
+            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
         return res
     
     def factor(self):
+        res = ParseResult()
         tok = self.current_tok
+        
 
         if tok.token in (INTEL, GRAVITY):
-            self.advance()
-            return NumberNode(tok)
+            res.register(self.advance())
+            return res.success(NumberNode(tok))
+        
+        return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))
     
     def term(self):
         return self.bin_op(self.factor, (MUL, DIV))
@@ -1504,15 +1543,20 @@ class Parser:
     #TODO add parenthesis for term/factor
     #func is rule (expr or term)
     def bin_op(self, func, ops):
-        left = func() #instead of self.factor() or self.term()
+        res = ParseResult()
+        left = res.register(func()) #instead of self.factor() or self.term()
+        if res.error:
+            return res
 
         while self.current_tok.token in ops: #instead of (MUL, DIV)
             op_tok = self.current_tok
-            self.advance()
-            right = func() #instead of self.factor() or self.term()
+            res.register(self.advance())
+            right = res.register(func()) #instead of self.factor() or self.term()
+            if res.error:
+                return res
             left = BinOpNode(left, op_tok, right)
 
-        return left
+        return res.success(left)
     
 def run(text):
     lexer = Lexer(text)
@@ -1526,4 +1570,4 @@ def run(fn, text):
     #return tokens, error
     parser = Parser(tokens)
     ast = parser.parse()
-    return ast, error
+    return ast.node, ast.error
