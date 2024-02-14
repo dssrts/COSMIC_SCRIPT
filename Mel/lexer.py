@@ -134,7 +134,7 @@ class Error:
         self.error_name = error_name
         self. details = details
 
-    def __repr__(self): 
+    def as_string(self): 
         result = f'{self.error_name}: {self.details}\n'
         result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
         return result
