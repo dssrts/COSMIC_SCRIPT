@@ -600,12 +600,12 @@ class Lexer:
                 
                 self.advance()
                 if self.current_char == None:
-                    tokens.append(Token(SEMICOLON, ";"))
+                    tokens.append(Token(SEMICOLON, ";", pos_start = self.pos))
                     continue
                 if self.current_char not in newline_delim + space_delim + '}':
                     errors.extend([f"Invalid delimiter for ' ; '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(SEMICOLON, ";"))
+                tokens.append(Token(SEMICOLON, ";", pos_start = self.pos))
             elif self.current_char == ":":
                 
                 self.advance()
@@ -654,7 +654,7 @@ class Lexer:
             return [], errors
         else:
         '''
-        tokens.append(Token(EOF, pos_start = self.pos))
+        #tokens.append(Token(EOF, pos_start = self.pos))
         return tokens, errors       
 
     def make_number(self):
@@ -761,7 +761,7 @@ class Lexer:
             
             if self.current_char == "b":
                 if ident_count == 10:
-                        break
+                    break
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1491,7 +1491,7 @@ class Parser:
     def parse(self):
         #res = result
         res = self.expr()
-        if not res.error and self.current_tok.token != EOF:
+        if not res.error and self.current_tok.token != SEMICOLON:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
         return res
     
