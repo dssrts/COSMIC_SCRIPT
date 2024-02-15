@@ -796,7 +796,7 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
 
-                                return Token(BLAST, "blast"), errors
+                                return Token(BLAST, "blast", pos_start = self.pos), errors
                             
                                 
                 
@@ -1396,10 +1396,6 @@ class Lexer:
             errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
             return [], errors
 
-        
-       
-                    
-                
              
         # if ident_count == 10:
         #     #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
