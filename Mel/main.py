@@ -14,7 +14,7 @@ while True:
     if error: 
         print(error.as_string())
     else: 
-        print(result)
+        print("Success!", "\n", result)
         
     """ for item in result:
         print(item)
