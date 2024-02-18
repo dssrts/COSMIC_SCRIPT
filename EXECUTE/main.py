@@ -70,6 +70,7 @@ def run_syntax():
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
     errors_text.delete(0, tk.END)
+    print(result)
     if error:
         errorResult, fileDetail, arrowDetail, arrows = error.as_string()
         errors_text.insert(tk.END, errorResult)

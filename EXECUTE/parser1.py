@@ -130,6 +130,8 @@ SPACE = "space"
 
 EOF = 'EOF'
 
+
+
 class Error:
     def __init__ (self,pos_start, pos_end, error_name, details):
         self.pos_start = pos_start
@@ -261,7 +263,7 @@ class Lexer:
                     if self.current_char not in delim1:
                         errors.extend([f"Invalid delimiter for ' = '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(EQUAL, "=")) #for == symbol
+                    tokens.append(Token(EQUAL, "=", pos_start = self.pos)) #for == symbol
                         
                     
                     
@@ -568,15 +570,16 @@ class Lexer:
                 tokens.append(Token(CRBRACKET, "}"))
             
             elif self.current_char == "\"":
-                
+                string = self.make_string()
+                tokens.append(Token(STRING, f"{string}", pos_start = self.pos))
                 self.advance()
-                if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
-                    continue
-                if self.current_char not in lineEnd_delim+'),' + delim0:
-                    errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
-                    continue
-                tokens.append(Token(Q_MARK, "\""))
+                # if self.current_char == None:
+                #     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
+                #     continue
+                # if self.current_char not in lineEnd_delim+'),' + delim0:
+                #     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
+                #     continue
+                # tokens.append(Token(Q_MARK, "\""))
             elif self.current_char == '\'':
                 self.advance()
                 if self.current_char == None:
@@ -1317,7 +1320,7 @@ class Lexer:
                         if self.current_char not in space_delim:
                             errors.extend([f'Invalid delimiter for var! Cause: {self.current_char}'])
                             return [], errors
-                        return Token(VAR, "var"), errors
+                        return Token(VAR, "var", pos_start = self.pos), errors
                   
                             
             if self.current_char == "w": #whirl
@@ -1410,23 +1413,24 @@ class Lexer:
         # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
         #
             
-        
-    # def make_string(self):
-    #     string = ""
-    #     errors = []
-    #     self.advance()
-    #     while self.current_char != "\"" and self.current_char != None :
+    def make_string(self):
+        pos_start = self.pos.copy()
+        string = ""
+        errors = []
+        self.advance()
+        while self.current_char != "\"" and self.current_char != None :
             
-    #         string += self.current_char
-    #         self.advance()
-    #     if self.current_char == "\"":
-    #         return Token(STRING, f"\"{string}\"")
-    
-    #     elif self.current_char == None:
-    #         errors.append("Expected closing quotation mark!")
+            string += self.current_char
+            self.advance()
+        if self.current_char == "\"":
+            return Token(STRING, f"\"{string}\"")
 
-    #     if errors:
-    #         return errors
+        elif self.current_char == None:
+            errors.append("Expected closing quotation mark!")
+
+        if errors:
+            return errors 
+   
         
         
 #NODES
@@ -1495,6 +1499,11 @@ class Parser:
     def parse(self):
         #res = result
         res = self.expr()
+        if self.current_tok.token in STRING:
+            return res
+        
+        if self.current_tok.token in VAR:
+            return res
         if not res.error and self.current_tok.token != SEMICOLON:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
         return res
@@ -1502,6 +1511,12 @@ class Parser:
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
+        
+        if tok.token in STRING:
+            return res.success(tok.value)
+        
+        if tok.token in IDENTIFIER:
+            return res.success(tok.token)
         
         if tok.token in (PLUS, MINUS):
             res.register(self.advance())
@@ -1525,7 +1540,7 @@ class Parser:
 					self.current_tok.pos_start, self.current_tok.pos_end,
 					"Expected ')'"
 				))
-        return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))
+        #return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))
     
     def term(self):
         return self.bin_op(self.factor, (MUL, DIV))
