@@ -1447,6 +1447,14 @@ class BinOpNode:
     def __repr__(self):
         return f'({self.left_node}, {self.op_tok}, {self.right_node})'
 
+class UnaryOpNode:
+	def __init__(self, op_tok, node):
+		self.op_tok = op_tok
+		self.node = node
+
+	def __repr__(self):
+		return f'({self.op_tok}, {self.node})'
+
 #PARSE RESULT
 
 class ParseResult:
@@ -1495,11 +1503,28 @@ class Parser:
         res = ParseResult()
         tok = self.current_tok
         
+        if tok.token in (PLUS, MINUS):
+            res.register(self.advance())
+            factor = res.register(self.factor())
+            if res.error: return res
+            return res.success(UnaryOpNode(tok, factor))
 
         if tok.token in (INTEL, GRAVITY):
             res.register(self.advance())
             return res.success(NumberNode(tok))
         
+        elif tok.token == LPAREN:
+            res.register(self.advance())
+            expr = res.register(self.expr())
+            if res.error: return res
+            if self.current_tok.token == RPAREN:
+                res.register(self.advance())
+                return res.success(expr)
+            else:
+                return res.failure(InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ')'"
+				))
         return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))
     
     def term(self):
