@@ -1534,6 +1534,7 @@ class Parser:
         self.advance()
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
+            print("current tok: ", self.current_tok.token)
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
         else:
             print("u good")
