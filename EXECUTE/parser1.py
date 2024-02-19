@@ -598,7 +598,7 @@ class Lexer:
                 if self.current_char not in delim0:
                     errors.extend([f"Invalid delimiter for ' , '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(COMMA, ","))
+                tokens.append(Token(COMMA, ",", pos_start = self.pos))
             elif self.current_char == ";":
                 
                 self.advance()
@@ -1509,6 +1509,7 @@ class Parser:
             res, error = self.var_dec()
             #print("parse error: ", error)
         
+        
         # if self.current_tok.token in STRING:
         #     return res
         
@@ -1530,9 +1531,40 @@ class Parser:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
         else:
             print("u good")
+            self.advance()
+            if self.current_tok.token == EQUAL:
+                assign, a_error = self.assign_val()
+                if assign == True:
+                    self.advance()
+                    if self.current_tok.token == COMMA:
+                        self.advance()
+                        print("there's a comma here")
+                        if self.current_tok.token != IDENTIFIER:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+                    else:
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+
+                        #go back to declaring
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                #maghahanap dapat sha ng number, ng arithmetic, ng function
+            else:
+                pass
             res.append("SUCCESS!")
+        
+        #var a = 10; 
+        #after the a look for an equal token, then look for a binary operation token
 
         return res, error
+    
+    def assign_val(self):
+        self.advance()
+        if self.current_tok.token == INTEL:
+            print("theres  a number here")
+            return True, False
+        return False, False
+        
             
 
     def factor(self):
@@ -1627,9 +1659,13 @@ class Parser:
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
-    
+
+    for item in tokens:
+        if isinstance(item, list):
+            tokens.remove(item)
     #return tokens, error
     parser = Parser(tokens)
     result, parseError = parser.parse()
+    
     print("parseError: ", parseError)
     return result, parseError
