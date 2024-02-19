@@ -77,6 +77,7 @@ def run_syntax():
 
     if temp:
         errors_text.insert(tk.END, "LEXICAL ERROR")
+        errors_text.insert(tk.END, temp)
     
     else:
         if error:
