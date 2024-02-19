@@ -1543,18 +1543,6 @@ class Parser:
                 assign, a_error = self.assign_val()
                 if assign == True:
                     self.advance()
-                    # if self.current_tok.token == COMMA:
-                    #     print("there's a comma here")
-                    #     declare, d_error = self.declare_more()
-                    #     if declare == False:
-                    #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
-                    #     else:
-                    #         self.advance()
-                    # else:
-                    #     if self.current_tok.token != SEMICOLON:
-                    #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-
-                    #     #go back to declaring
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
             if self.current_tok.token == COMMA:
