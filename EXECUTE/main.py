@@ -73,7 +73,7 @@ def run_syntax():
     token_text.delete(0, tk.END)
     errors_text.delete(0, tk.END)
     print(result)
-    print("error: ",error)
+    #print("error: ",error)
 
     if temp:
         errors_text.insert(tk.END, "LEXICAL ERROR")

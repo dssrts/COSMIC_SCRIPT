@@ -657,7 +657,7 @@ class Lexer:
             return [], errors
         else:
         '''
-        #tokens.append(Token(EOF, pos_start = self.pos))
+        tokens.append(Token(EOF, pos_start = self.pos))
         return tokens, errors       
 
     def make_number(self):
@@ -1499,7 +1499,11 @@ class Parser:
     def parse(self):
         #res = result
         #res = self.expr()
+
         
+        if self.current_tok.token == NEWLINE:
+            self.advance()
+
         if self.current_tok.token in INTEL:
             res = self.expr()
             print("this is a binary operation")
@@ -1537,6 +1541,7 @@ class Parser:
         res = []
         error = []
         self.advance()
+        
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
             print("current tok: ", self.current_tok.token)

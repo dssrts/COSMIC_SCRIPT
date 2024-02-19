@@ -126,6 +126,7 @@ TILDE = "~"
 IDENTIFIER = 'IDENTI'
 COMMA = ','
 SPACE = "space"
+EOF = 'EOF'
 
 class Error:
     def __init__ (self,pos_start, pos_end, error_name, details):
@@ -638,7 +639,7 @@ class Lexer:
             return [], errors
         else:
         '''
-
+        tokens.append(Token(EOF, "EOF"))
         return tokens, errors       
 
     def make_number(self):
