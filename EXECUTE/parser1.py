@@ -1499,14 +1499,16 @@ class Parser:
     def parse(self):
         #res = result
         #res = self.expr()
-
+        msg = ""
+        error = ""
+        
         if self.current_tok.token in (INTEL):
             res = self.expr()
             print("this is a binary operation")
         
         if self.current_tok.token in VAR:
-            res = self.var_dec()
             print("this is a var token")
+            res = self.var_dec()
         
         # if self.current_tok.token in STRING:
         #     return res
@@ -1521,7 +1523,13 @@ class Parser:
         '''
         return res
     def var_dec(self):
-        pass
+        self.advance()
+        if self.current_tok.token != IDENTIFIER:
+            print("bro put an identifier!")
+        else:
+            print("u good")
+            
+
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
