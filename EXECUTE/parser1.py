@@ -1498,25 +1498,39 @@ class Parser:
     
     def parse(self):
         #res = result
-        res = self.expr()
-        if self.current_tok.token in STRING:
-            return res
+        #res = self.expr()
+
+        if self.current_tok.token in (INTEL):
+            res = self.expr()
+            print("this is a binary operation")
         
         if self.current_tok.token in VAR:
-            return res
+            res = self.var_dec()
+            print("this is a var token")
+        
+        # if self.current_tok.token in STRING:
+        #     return res
+        
+        # if self.current_tok.token in VAR:
+        #     return res
+
+        #made for terminal tong line na to
+        '''
         if not res.error and self.current_tok.token != SEMICOLON:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
+        '''
         return res
-    
+    def var_dec(self):
+        pass
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
         
-        if tok.token in STRING:
-            return res.success(tok.value)
+        # if tok.token in STRING:
+        #     return res.success(tok.value)
         
-        if tok.token in IDENTIFIER:
-            return res.success(tok.token)
+        # if tok.token in IDENTIFIER:
+        #     return res.success(tok.token)
         
         if tok.token in (PLUS, MINUS):
             res.register(self.advance())
