@@ -1499,40 +1499,41 @@ class Parser:
     def parse(self):
         #res = result
         #res = self.expr()
+        while self.current_tok.token != EOF:
+            if self.current_tok.token == SEMICOLON:
+                print("semicolon")
+                self.advance()
+            if self.current_tok.token == NEWLINE:
+                self.advance()
 
-        
-        if self.current_tok.token == NEWLINE:
-            self.advance()
+            if self.current_tok.token in INTEL:
+                res = self.expr()
+                print("this is a binary operation")
 
-        if self.current_tok.token in INTEL:
-            res = self.expr()
-            print("this is a binary operation")
-
-        if self.current_tok.token == IDENTIFIER:
-            res = []
-            error = []
-            self.advance()
-            if self.current_tok.token == EQUAL:
-                assign, a_error = self.assign_val()
-                if assign == True:
-                    self.advance()
-                    if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+            if self.current_tok.token == IDENTIFIER:
+                res = []
+                error = []
+                self.advance()
+                if self.current_tok.token == EQUAL:
+                    assign, a_error = self.assign_val()
+                    if assign == True:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append("SUCCESS! from assign")
                     else:
-                        res.append("SUCCESS!")
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-            else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                
-            return res, error    
                     
-        if self.current_tok.token in VAR:
-            print("this is a var token")
-            res, error = self.var_dec()
+                return res, error    
+                        
+            if self.current_tok.token in VAR:
+                print("this is a var token")
+                res, error = self.var_dec()
             
-            if self.current_tok.token != SEMICOLON:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+            
             #print("parse error: ", error)
         
         
@@ -1561,10 +1562,12 @@ class Parser:
                 if c_error:
                     for err in c_error:
                         error.append(err)
+            if self.current_tok.token != SEMICOLON:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
             
     
-            res.append("SUCCESS!")
+            res.append("SUCCESS! from parser")
 
             
         #var a = 10; 
