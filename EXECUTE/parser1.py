@@ -1507,7 +1507,7 @@ class Parser:
         if self.current_tok.token in VAR:
             print("this is a var token")
             res, error = self.var_dec()
-            print("parse error: ", error)
+            #print("parse error: ", error)
         
         # if self.current_tok.token in STRING:
         #     return res
