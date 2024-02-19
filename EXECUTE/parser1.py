@@ -1507,7 +1507,7 @@ class Parser:
             print("this is a binary operation")
         
         if self.current_tok.token in VAR:
-            print("this is a var token")
+            msg += "this is a var token"
             res = self.var_dec()
         
         # if self.current_tok.token in STRING:
@@ -1525,9 +1525,9 @@ class Parser:
     def var_dec(self):
         self.advance()
         if self.current_tok.token != IDENTIFIER:
-            print("bro put an identifier!")
+            error += "bro put an identifier!"
         else:
-            print("u good")
+            msg += "u good"
             
 
     def factor(self):
@@ -1627,5 +1627,5 @@ def run(fn, text):
     
     #return tokens, error
     parser = Parser(tokens)
-    ast = parser.parse()
-    return ast.node, ast.error
+    ast, error = parser.parse()
+    return ast, error
