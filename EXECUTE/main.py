@@ -72,6 +72,8 @@ def run_syntax():
     errors_text.delete(0, tk.END)
     print(result)
     print("error: ",error)
+
+    
     if error:
         for err in error:
             errorResult, fileDetail, arrowDetail, arrows = err.as_string()

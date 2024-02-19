@@ -753,7 +753,7 @@ class Lexer:
                 self.advance()
                 if self.current_char in space_delim + ident_delim + ';' +'(,':  
                        
-                    return Token(IDENTIFIER, ident), errors
+                    return Token(IDENTIFIER, ident, pos_start = self.pos), errors
                 else:
                     
                     errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}"])
@@ -1408,7 +1408,7 @@ class Lexer:
         if errors:
             return [], errors
         else:
-            return Token(IDENTIFIER, ident), errors
+            return Token(IDENTIFIER, ident, pos_start = self.pos), errors
         #print(ident_count)
         # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
         #
@@ -1507,6 +1507,16 @@ class Parser:
         if self.current_tok.token in VAR:
             print("this is a var token")
             res, error = self.var_dec()
+            if self.current_tok.token == COMMA:
+                print("there's a comma here")
+                comma, c_error = self.var_dec()
+                if c_error:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
+                
+            self.advance()
+            if self.current_tok.token != SEMICOLON:
+                
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
             #print("parse error: ", error)
         
         
@@ -1536,23 +1546,27 @@ class Parser:
                 assign, a_error = self.assign_val()
                 if assign == True:
                     self.advance()
-                    if self.current_tok.token == COMMA:
-                        self.advance()
-                        print("there's a comma here")
-                        if self.current_tok.token != IDENTIFIER:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
-                    else:
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                    # if self.current_tok.token == COMMA:
+                    #     print("there's a comma here")
+                    #     declare, d_error = self.declare_more()
+                    #     if declare == False:
+                    #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+                    #     else:
+                    #         self.advance()
+                    # else:
+                    #     if self.current_tok.token != SEMICOLON:
+                    #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
 
-                        #go back to declaring
+                    #     #go back to declaring
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
-            else:
-                pass
+            
+    
             res.append("SUCCESS!")
-        
+
+            
         #var a = 10; 
         #after the a look for an equal token, then look for a binary operation token
 
@@ -1560,12 +1574,18 @@ class Parser:
     
     def assign_val(self):
         self.advance()
-        if self.current_tok.token == INTEL:
+        if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
             print("theres  a number here")
             return True, False
         return False, False
-        
-            
+    
+    def declare_more(self):
+        self.advance()
+        if self.current_tok.token != IDENTIFIER:
+            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+            return False, False
+        else:
+            self.var_dec()
 
     def factor(self):
         res = ParseResult()
@@ -1659,11 +1679,14 @@ class Parser:
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
-
+    
     for item in tokens:
         if isinstance(item, list):
             tokens.remove(item)
     #return tokens, error
+    if error:
+        print("Lexical Error!")
+        
     parser = Parser(tokens)
     result, parseError = parser.parse()
     
