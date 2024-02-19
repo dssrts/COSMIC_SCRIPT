@@ -1522,6 +1522,7 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                         else:
                             res.append("SUCCESS! from assign")
+                            continue
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                 else:
