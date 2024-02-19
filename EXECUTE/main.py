@@ -66,24 +66,29 @@ def run_lexer():
 
 def run_syntax():
     input_text_str = input_text.get("1.0", "end-1c")
+    error_checker, temp = lexer.run("<stdin>",input_text_str)
     result, error = parser1.run("<stdin>",input_text_str)
+    
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
     errors_text.delete(0, tk.END)
     print(result)
     print("error: ",error)
 
+    if temp:
+        errors_text.insert(tk.END, "LEXICAL ERROR")
     
-    if error:
-        for err in error:
-            errorResult, fileDetail, arrowDetail, arrows = err.as_string()
-            errors_text.insert(tk.END, errorResult)
-            errors_text.insert(tk.END, fileDetail)
-            errors_text.insert(tk.END, arrowDetail)
-            errors_text.insert(tk.END, arrows)
     else:
-        errors_text.insert(tk.END, result)
-        #token_text.insert(tk.END, item.token)
+        if error:
+            for err in error:
+                errorResult, fileDetail, arrowDetail, arrows = err.as_string()
+                errors_text.insert(tk.END, errorResult)
+                errors_text.insert(tk.END, fileDetail)
+                errors_text.insert(tk.END, arrowDetail)
+                errors_text.insert(tk.END, arrows)
+        else:
+            errors_text.insert(tk.END, result)
+            #token_text.insert(tk.END, item.token)
 
 #create main canvas
 root = tk.Tk()
