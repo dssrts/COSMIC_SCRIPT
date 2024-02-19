@@ -71,14 +71,16 @@ def run_syntax():
     token_text.delete(0, tk.END)
     errors_text.delete(0, tk.END)
     print(result)
+    print("error: ",error)
     if error:
-        errorResult, fileDetail, arrowDetail, arrows = error.as_string()
-        errors_text.insert(tk.END, errorResult)
-        errors_text.insert(tk.END, fileDetail)
-        errors_text.insert(tk.END, arrowDetail)
-        errors_text.insert(tk.END, arrows)
+        for err in error:
+            errorResult, fileDetail, arrowDetail, arrows = err.as_string()
+            errors_text.insert(tk.END, errorResult)
+            errors_text.insert(tk.END, fileDetail)
+            errors_text.insert(tk.END, arrowDetail)
+            errors_text.insert(tk.END, arrows)
     else:
-        errors_text.insert(tk.END, "Success!", result)
+        errors_text.insert(tk.END, result)
         #token_text.insert(tk.END, item.token)
 
 #create main canvas

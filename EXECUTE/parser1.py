@@ -1499,16 +1499,15 @@ class Parser:
     def parse(self):
         #res = result
         #res = self.expr()
-        msg = ""
-        error = ""
         
         if self.current_tok.token in (INTEL):
             res = self.expr()
             print("this is a binary operation")
         
         if self.current_tok.token in VAR:
-            msg += "this is a var token"
-            res = self.var_dec()
+            print("this is a var token")
+            res, error = self.var_dec()
+            print("parse error: ", error)
         
         # if self.current_tok.token in STRING:
         #     return res
@@ -1521,13 +1520,19 @@ class Parser:
         if not res.error and self.current_tok.token != SEMICOLON:
             return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
         '''
-        return res
+        return res, error
     def var_dec(self):
+        res = []
+        error = []
         self.advance()
         if self.current_tok.token != IDENTIFIER:
-            error += "bro put an identifier!"
+            print("bro put an identifier!")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
         else:
-            msg += "u good"
+            print("u good")
+            res.append("SUCCESS!")
+
+        return res, error
             
 
     def factor(self):
@@ -1616,8 +1621,6 @@ class Parser:
 
         return res.success(left)
     
-def run(text):
-    lexer = Lexer(text)
        
   
 
@@ -1627,5 +1630,6 @@ def run(fn, text):
     
     #return tokens, error
     parser = Parser(tokens)
-    ast, error = parser.parse()
-    return ast, error
+    result, parseError = parser.parse()
+    print("parseError: ", parseError)
+    return result, parseError
