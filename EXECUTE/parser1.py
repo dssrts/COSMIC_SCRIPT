@@ -1507,11 +1507,7 @@ class Parser:
         if self.current_tok.token in VAR:
             print("this is a var token")
             res, error = self.var_dec()
-            if self.current_tok.token == COMMA:
-                print("there's a comma here")
-                comma, c_error = self.var_dec()
-                if c_error:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
+            
                 
             self.advance()
             if self.current_tok.token != SEMICOLON:
@@ -1560,7 +1556,11 @@ class Parser:
                     #     #go back to declaring
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                
+            if self.current_tok.token == COMMA:
+                print("there's a comma here")
+                comma, c_error = self.var_dec()
+                if c_error:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
             
     
