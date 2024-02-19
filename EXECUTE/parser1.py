@@ -1500,33 +1500,38 @@ class Parser:
         #res = result
         #res = self.expr()
         
-        if self.current_tok.token in (INTEL):
+        if self.current_tok.token in INTEL:
             res = self.expr()
             print("this is a binary operation")
-        
+
+        if self.current_tok.token == IDENTIFIER:
+            res = []
+            error = []
+            self.advance()
+            if self.current_tok.token == EQUAL:
+                assign, a_error = self.assign_val()
+                if assign == True:
+                    self.advance()
+                    if self.current_tok.token != SEMICOLON:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                    else:
+                        res.append("SUCCESS!")
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                
+            return res, error    
+                    
         if self.current_tok.token in VAR:
             print("this is a var token")
             res, error = self.var_dec()
             
-                
-            self.advance()
             if self.current_tok.token != SEMICOLON:
-                
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
             #print("parse error: ", error)
         
         
-        # if self.current_tok.token in STRING:
-        #     return res
-        
-        # if self.current_tok.token in VAR:
-        #     return res
-
-        #made for terminal tong line na to
-        '''
-        if not res.error and self.current_tok.token != SEMICOLON:
-            return res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, * or /"))
-        '''
         return res, error
     def var_dec(self):
         res = []
