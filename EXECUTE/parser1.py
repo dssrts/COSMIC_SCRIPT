@@ -1535,7 +1535,7 @@ class Parser:
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
             print("current tok: ", self.current_tok.token)
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER "))
         else:
             print("u good")
             self.advance()
@@ -1549,7 +1549,8 @@ class Parser:
                 print("there's a comma here")
                 comma, c_error = self.var_dec()
                 if c_error:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER"))
+                    for err in c_error:
+                        error.append(err)
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
             
     
@@ -1568,13 +1569,7 @@ class Parser:
             return True, False
         return False, False
     
-    def declare_more(self):
-        self.advance()
-        if self.current_tok.token != IDENTIFIER:
-            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
-            return False, False
-        else:
-            self.var_dec()
+    
 
     def factor(self):
         res = ParseResult()
