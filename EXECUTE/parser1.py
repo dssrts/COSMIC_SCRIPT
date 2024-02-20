@@ -1538,9 +1538,7 @@ class Parser:
                 print("youve got a form token")
                 res, error = self.init_form()
 
-            if self.current_tok.token == CLBRACKET:
-                print("left curly bracket here")
-                self.advance()
+            
             #print("parse error: ", error)
             
         
@@ -1618,8 +1616,12 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                         self.advance()
                     else: 
-                        res.append("SUCCESS from form!")
+                        #res.append("SUCCESS from form!")
                         self.advance()
+                        if self.current_tok.token == CLBRACKET:
+                            print("left curly bracket")
+                            res.append("SUCCESS from form!")
+                            self.advance()
                     # if self.current_tok.token == COMMA:
                     #     print("FOUND MORE PARAMETERS COMMA")
                     #res.append("SUCCESS")
