@@ -562,7 +562,7 @@ class Lexer:
             elif self.current_char == '}':
                 self.advance()
                 if self.current_char == None:
-                    tokens.append(Token(CRBRACKET, "}"))
+                    tokens.append(Token(CRBRACKET, "}", pos_start = self.pos))
                     continue
                 if self.current_char not in delim3:
                     errors.extend([f"Invalid delimiter for 'closing curly bracket'. Cause: ' {self.current_char} '"])
@@ -1620,7 +1620,20 @@ class Parser:
                         self.advance()
                         if self.current_tok.token == CLBRACKET:
                             print("left curly bracket")
-                            res.append("SUCCESS from form!")
+                            
+                            self.advance()
+
+                            while self.current_tok.token == NEWLINE:
+                                self.advance()
+                            print("bracket token: ", self.current_tok.token)
+                            if self.current_tok.token != CRBRACKET:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid form scope!"))
+                                self.advance()
+                            else:
+                                res.append("SUCCESS from form!")
+                                self.advance()
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                             self.advance()
                     # if self.current_tok.token == COMMA:
                     #     print("FOUND MORE PARAMETERS COMMA")
