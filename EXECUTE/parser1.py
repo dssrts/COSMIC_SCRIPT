@@ -531,7 +531,7 @@ class Lexer:
                 if self.current_char not in closing_delim + '{' + ';' + space_delim + '\n' + ')':
                     errors.extend([f"Invalid delimiter for ' ) '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(RPAREN, ")"))
+                tokens.append(Token(RPAREN, ")", pos_start = self.pos))
             elif self.current_char == '[':
                 self.advance()
                 if self.current_char == None:
@@ -1524,9 +1524,9 @@ class Parser:
                             res.append("SUCCESS! from assign")
                             continue
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
                     
                 return res, error    
                         
@@ -1534,7 +1534,10 @@ class Parser:
                 print("this is a var token")
                 res, error = self.var_dec()
             
-            
+            if self.current_tok.token == FORM:
+                print("youve got a form token")
+                res, error = self.init_form()
+
             #print("parse error: ", error)
         
         
@@ -1579,12 +1582,33 @@ class Parser:
     def assign_val(self):
         self.advance()
         if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
-            print("theres  a number here")
+            print("theres  a number/identifier here here")
             return True, False
         return False, False
     
-    
+    def init_form(self):
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token == IDENTIFIER:
+            print("form name found")
+            self.advance()
+            if self.current_tok.token == LPAREN:
+                self.advance()
+                if self.current_tok.token != IDENTIFIER:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
+                else:
+                    self.advance()
+                    res.append("SUCCESS")
+            
+            
+            #form add(a, b)
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form identifier!"))
 
+        
+        return res, error
+    
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
@@ -1682,8 +1706,8 @@ def run(fn, text):
         if isinstance(item, list):
             tokens.remove(item)
     #return tokens, error
-    if error:
-        print("Lexical Error!")
+    # if error:
+    #     print("Lexical Error!")
         
     parser = Parser(tokens)
     result, parseError = parser.parse()
