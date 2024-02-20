@@ -1538,7 +1538,9 @@ class Parser:
                 print("youve got a form token")
                 res, error = self.init_form()
 
-            
+            if self.current_tok.token == CLBRACKET:
+                print("left curly bracket here")
+                self.advance()
             #print("parse error: ", error)
             
         
