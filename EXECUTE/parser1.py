@@ -1539,7 +1539,7 @@ class Parser:
                 res, error = self.init_form()
 
             #print("parse error: ", error)
-        
+            
         
         return res, error
     def var_dec(self):
@@ -1590,25 +1590,54 @@ class Parser:
         res = []
         error = []
         self.advance()
+        #print("init form tok:  ", self.current_tok.token)
         if self.current_tok.token == IDENTIFIER:
             print("form name found")
             self.advance()
             if self.current_tok.token == LPAREN:
+                print("found left paren")
                 self.advance()
                 if self.current_tok.token != IDENTIFIER:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
                 else:
+                    #self.advance()
+                    print("current token from form is: ", self.current_tok.token)
                     self.advance()
-                    res.append("SUCCESS")
-            
+                    if self.current_tok.token == COMMA:
+                        print("you found a comma in the params!")
+                        #if comma yung current, find identifier, next, then if comma, next, and repeat
+                        c_error = self.comma()
+                        if c_error:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                        else:
+                            res.append("SUCCESS from form!")
+                            self.advance()
+                    # if self.current_tok.token == COMMA:
+                    #     print("FOUND MORE PARAMETERS COMMA")
+                    #res.append("SUCCESS")
+                    
             
             #form add(a, b)
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parentheses for parameters!"))
         else:
+            print("FORM TOK: ", self.current_tok)
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form identifier!"))
 
         
         return res, error
     
+    def comma(self):
+        error = False
+        while self.current_tok.token  == COMMA:
+            self.advance()
+            if self.current_tok.token == IDENTIFIER:
+                self.advance()
+            else:
+                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                error = True
+        return error
+
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
