@@ -1539,10 +1539,49 @@ class Parser:
                 res, error = self.init_form()
 
             
-            #print("parse error: ", error)
-            
         
         return res, error
+    def parse_indiv(self):
+        if self.current_tok.token == SEMICOLON:
+            print("semicolon")
+            self.advance()
+        if self.current_tok.token == NEWLINE:
+            self.advance()
+
+        if self.current_tok.token in INTEL:
+            res = self.expr()
+            print("this is a binary operation")
+
+        if self.current_tok.token == IDENTIFIER:
+            res = []
+            error = []
+            self.advance()
+            if self.current_tok.token == EQUAL:
+                assign, a_error = self.assign_val()
+                if assign == True:
+                    self.advance()
+                    if self.current_tok.token != SEMICOLON:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                    else:
+                        res.append("SUCCESS! from assign")
+                        self.advance()
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
+                
+            return res, error    
+                    
+        if self.current_tok.token in VAR:
+            print("this is a var token")
+            res, error = self.var_dec()
+        
+        if self.current_tok.token == FORM:
+            print("youve got a form token")
+            res, error = self.init_form()
+            
+        return res, error
+    
     def var_dec(self):
         res = []
         error = []
@@ -1625,7 +1664,13 @@ class Parser:
 
                             while self.current_tok.token == NEWLINE:
                                 self.advance()
+                            res, error = self.parse_indiv()
+                            if error:
+                                print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
                             print("bracket token: ", self.current_tok.token)
+                            self.advance()
+                            if self.current_tok.token == NEWLINE:
+                                self.advance()
                             if self.current_tok.token != CRBRACKET:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid form scope!"))
                                 self.advance()
