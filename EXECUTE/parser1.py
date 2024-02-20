@@ -558,7 +558,7 @@ class Lexer:
                 if self.current_char not in delim3:
                     errors.extend([f"Invalid delimiter for 'opening curly bracket'. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(CLBRACKET, "{"))
+                tokens.append(Token(CLBRACKET, "{", pos_start = self.pos))
             elif self.current_char == '}':
                 self.advance()
                 if self.current_char == None:
@@ -567,7 +567,7 @@ class Lexer:
                 if self.current_char not in delim3:
                     errors.extend([f"Invalid delimiter for 'closing curly bracket'. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(CRBRACKET, "}"))
+                tokens.append(Token(CRBRACKET, "}", pos_start = self.pos))
             
             elif self.current_char == "\"":
                 string = self.make_string()
@@ -1538,6 +1538,7 @@ class Parser:
                 print("youve got a form token")
                 res, error = self.init_form()
 
+            
             #print("parse error: ", error)
             
         
@@ -1609,9 +1610,14 @@ class Parser:
                         c_error = self.comma()
                         if c_error:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                        else:
-                            res.append("SUCCESS from form!")
-                            self.advance()
+                        
+                        print("current token after comma: ", self.current_tok.token)
+                    if self.current_tok.token != RPAREN:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                        self.advance()
+                    else: 
+                        res.append("SUCCESS from form!")
+                        self.advance()
                     # if self.current_tok.token == COMMA:
                     #     print("FOUND MORE PARAMETERS COMMA")
                     #res.append("SUCCESS")
