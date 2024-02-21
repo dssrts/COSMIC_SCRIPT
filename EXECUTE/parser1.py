@@ -1567,6 +1567,7 @@ class Parser:
             if assign == True:
                 
                 print("init var: ",self.current_tok )
+                
                 if self.current_tok.token != SEMICOLON:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                 else:
