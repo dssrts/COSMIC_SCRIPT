@@ -553,7 +553,7 @@ class Lexer:
                 tokens.append(Token(CRBRACKET, "}"))
             
             elif self.current_char == "\"":
-                string = self.make_string()
+                string, error = self.make_string()
                 tokens.append(Token(STRING, f"{string}"))
                 self.advance()
                 # if self.current_char == None:
@@ -563,6 +563,8 @@ class Lexer:
                 #     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
                 #     continue
                 # tokens.append(Token(Q_MARK, "\""))
+                
+                errors.extend(error)
             elif self.current_char == '\'':
                 self.advance()
                 if self.current_char == None:
@@ -1411,13 +1413,11 @@ class Lexer:
             string += self.current_char
             self.advance()
         if self.current_char == "\"":
-            return Token(STRING, f"\"{string}\"")
+            return string, errors
 
-        elif self.current_char == None:
+        else:
             errors.append("Expected closing quotation mark!")
-
-        if errors:
-            return errors 
+            return [], errors
         
         
        
