@@ -1497,12 +1497,14 @@ class Parser:
         return self.current_tok
     
     def parse(self):
-        #res = result
-        #res = self.expr()
-        while self.current_tok.token != EOF:
-            if self.current_tok.token == SEMICOLON:
-                print("semicolon")
-                self.advance()
+        res =  []
+        error = []
+
+        
+        while self.current_tok.token != CRBRACKET:
+            # if self.current_tok.token == SEMICOLON:
+            #     print("semicolon")
+            #     self.advance()
             if self.current_tok.token == NEWLINE:
                 self.advance()
 
@@ -1532,15 +1534,21 @@ class Parser:
                         
             if self.current_tok.token in VAR:
                 print("this is a var token")
-                res, error = self.var_dec()
+                res, var_error = self.var_dec()
+                if var_error:
+                    error.extend(var_error)
+                    break
             
             if self.current_tok.token == FORM:
                 print("youve got a form token")
                 res, error = self.init_form()
 
-            
-        
+            if self.current_tok.token == EOF:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
+                break
+
         return res, error
+    
     def parse_indiv(self):
         if self.current_tok.token == SEMICOLON:
             print("semicolon")
@@ -1610,12 +1618,9 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
             
-    
-            res.append("SUCCESS! from parser")
-
-            
-        #var a = 10; 
-        #after the a look for an equal token, then look for a binary operation token
+            else:
+                res.append("SUCCESS! from parser")
+                self.advance()
 
         return res, error
     
