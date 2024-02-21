@@ -1610,9 +1610,10 @@ class Parser:
     
     def assign_val(self):
         self.advance()
-        # if self.current_tok.token == IDENTIFIER:
-        #     print("theres  an identifier here here")
-        #     return True
+        if self.current_tok.token == STRING:
+            print("string here")
+            self.advance()
+            return True
         if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
             print("theres  a number/identifier here here")
             self.advance()
@@ -1629,7 +1630,7 @@ class Parser:
         else:
             return False
         
-        return False
+        
     
     def init_form(self):
         res = []
