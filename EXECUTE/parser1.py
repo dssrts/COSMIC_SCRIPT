@@ -1562,6 +1562,13 @@ class Parser:
                     error.extend(var_error)
                     break
                 res.append(var)
+                #self.advance()
+                print("current token from var dec parse: ", self.current_tok)
+                
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
+                else:
+                    self.advance()
             
             #functions
             if self.current_tok.token == FORM:
@@ -1628,21 +1635,23 @@ class Parser:
             if self.current_tok.token == COMMA:
                 print("there's a comma here")
                 comma, c_error = self.var_dec()
+                print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
+                
                 if c_error:
                     for err in c_error:
                         error.append(err)
-                        
-            if self.current_tok.token != SEMICOLON:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                #maghahanap dapat sha ng number, ng arithmetic, ng function
-            
+                else:
+                    for c in comma:
+                        res.append(c)
+                 
             else:
                 res.append("SUCCESS! from variable declaration")
-                self.advance()
+                #self.advance()
 
         return res, error
     
     def assign_val(self):
+        print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
         self.advance()
         if self.current_tok.token == STRING:
             print("string here")
@@ -1717,7 +1726,7 @@ class Parser:
                             
                             print("CURRENT TOK FROM FORM: ", self.current_tok)
                             if self.current_tok.token != CRBRACKET:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in form!"))
                                 
                             else:
                                 res.append("SUCCESS from form!")
@@ -1846,14 +1855,14 @@ class Parser:
                                                         self.advance()
                                                         if self.current_tok.token != RPAREN:
                                                             print("no rparen")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                                                         else:
                                                             #res.append("SUCCESS!")
 
                                                             self.advance()
 
                                                             if self.current_tok.token != CLBRACKET:
-                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Force scope!"))
                                                                 return [], error
                                                             else:
                                                                 self.advance()
@@ -1887,7 +1896,7 @@ class Parser:
                                                         self.advance()
                                                         if self.current_tok.token != RPAREN:
                                                             print("no rparen")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                                                         else:
                                                             res.append("SUCCESS!")
                                                 else:
