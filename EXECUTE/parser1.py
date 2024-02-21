@@ -1522,6 +1522,7 @@ class Parser:
                 res = self.expr()
                 print("this is a binary operation")
 
+            #INITIALIZATION
             if self.current_tok.token == IDENTIFIER:
                 print("initialize the variable")
                 assign, a_error = self.init_var()
@@ -1531,18 +1532,24 @@ class Parser:
                     break
                 res.append(assign)
 
-             #ADDED force and inner
+            #LOOPS
             if self.current_tok.token in FORCE:
                 print("this is a force statement")
                 res, error = self.force_stmt()
                 self.advance()
 
+            if self.current_tok.token in WHIRL:
+                print("this is a do statement")
+                res, error = self.whirl_stmt()
+                self.advance()
+            
+            #INPUT OUTPUT
             if self.current_tok.token in INNER:
                 print("this is an inner statement")
                 res, error = self.inner_stmt()
                 self.advance()
                      
-                        
+            #VAR DECLARATION            
             if self.current_tok.token in VAR:
                 print("this is a var token")
                 var, var_error = self.var_dec()
@@ -1651,8 +1658,6 @@ class Parser:
         else:
             return False
         
-        
-    
     def init_form(self):
         res = []
         error = []
@@ -1797,8 +1802,8 @@ class Parser:
                     else:
                         self.advance()    
                         if self.current_tok.token != INTEL:
-                                print("not an intel")
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
+                            print("not an intel")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
                         else: 
                             self.advance()
                             if self.current_tok.token != SEMICOLON:
@@ -1909,8 +1914,53 @@ class Parser:
 
         return res, error
 
-    #assign value for force 
-    def assign_val_force(self):
+    #function of whirl:
+
+    def whirl_stmt(self):
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token != LPAREN:
+            print("no lparen")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+        else:
+            self.advance()
+            if self.current_tok.token != IDENTIFIER:
+                print("no ident")
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+            else: 
+                self.advance()
+                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
+                    print("no condition")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
+                else:
+                    self.advance()
+                    if self.current_tok.token != INTEL:
+                        print("not an intel")
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
+                    else: 
+                        self.advance()
+                        if self.current_tok.token != RPAREN:
+                            print("no rparen")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                        else:
+                            self.advance()
+                            if self.current_tok.token != SEMICOLON:
+                                print("no semicolon")
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                            else:
+                                res.append("SUCCESS")
+        return res, error
+
+    # #assign value for force 
+    # def assign_val_force(self):
+    #     self.advance()
+    #     if self.current_tok.token == INTEL:
+    #         print("theres  a number here")
+    #         return True
+    #     return False
+    
+    def assign_val_whirl(self):
         self.advance()
         if self.current_tok.token == INTEL:
             print("theres  a number here")
