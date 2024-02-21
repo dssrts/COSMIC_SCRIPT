@@ -241,7 +241,12 @@ class Lexer:
                 result, error = self.make_number()
                 
                 errors.extend(error)
-                tokens.append(result)
+                
+                
+                if self.current_char == None or self.current_char == EOF:
+                    errors.extend([f"Invalid delimiter for {result.value}. Cause: ' {self.current_char} '"])
+                else:
+                    tokens.append(result)
                 
                     
             elif self.current_char == '=': #assignment operator (=, +=, -=, *=, /=, ==)
