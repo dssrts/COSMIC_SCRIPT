@@ -1701,11 +1701,15 @@ class Parser:
                                 for f_res in form_res:
                                     res.extend(f_res)
                                     print("f res: ", f_res)
-                                self.advance()
-                            while self.current_tok.token == NEWLINE:
-                                self.advance()
+                                
+                            
+                            print("CURRENT TOK FROM FORM: ", self.current_tok)
+                            if self.current_tok.token != CRBRACKET:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                                
                             else:
                                 res.append("SUCCESS from form!")
+                                self.advance()
                                 
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
@@ -1731,12 +1735,15 @@ class Parser:
                             for f_res in form_res:
                                 res.extend(f_res)
                                 print("f res: ", f_res)
-                            self.advance()
-                        while self.current_tok.token == NEWLINE:
-                            self.advance()
-                        else:
-                            res.append("SUCCESS from form!")
-                            self.advance()
+                                
+                            
+                            print("CURRENT TOK FROM FORM: ", self.current_tok)
+                            if self.current_tok.token != CRBRACKET:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                                
+                            else:
+                                res.append("SUCCESS from form!")
+                                self.advance()
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                         self.advance()
@@ -1766,86 +1773,115 @@ class Parser:
         return error
 
     def force_stmt(self):
-            res = []
-            error = []
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token != LPAREN:
+            print("no lparen")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+        else: 
             self.advance()
-            if self.current_tok.token != LPAREN:
-                print("no lparen")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-            else: 
+            if self.current_tok.token != VAR:
+                print("no var")
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing var!"))
+            else:
                 self.advance()
-                if self.current_tok.token != VAR:
-                    print("no var")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing var!"))
-                else:
+                if self.current_tok.token != IDENTIFIER:
+                    print("no ident")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+                else: 
                     self.advance()
-                    if self.current_tok.token != IDENTIFIER:
-                        print("no ident")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                    else: 
-                        self.advance()
-                        if self.current_tok.token != EQUAL:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                        else:
-                            self.advance()    
-                            if self.current_tok.token != INTEL:
-                                    print("not an intel")
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                            else: 
+                    if self.current_tok.token != EQUAL:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                    else:
+                        self.advance()    
+                        if self.current_tok.token != INTEL:
+                                print("not an intel")
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
+                        else: 
+                            self.advance()
+                            if self.current_tok.token != SEMICOLON:
+                                print("no semicolon")
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                            else:
                                 self.advance()
-                                if self.current_tok.token != SEMICOLON:
-                                    print("no semicolon")
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                                else:
+                                if self.current_tok.token != IDENTIFIER:
+                                    print("no ident")
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+                                else: 
                                     self.advance()
-                                    if self.current_tok.token != IDENTIFIER:
-                                        print("no ident")
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                                    else: 
+                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
+                                        print("no condition")
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
+                                    else:
                                         self.advance()
-                                        if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
-                                            print("no condition")
-                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
-                                        else:
+                                        if self.current_tok.token != INTEL:
+                                            print("not an intel")
+                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
+                                        else: 
                                             self.advance()
-                                            if self.current_tok.token != INTEL:
-                                                print("not an intel")
-                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                                            else: 
+                                            if self.current_tok.token != SEMICOLON:
+                                                print("no semicolon")
+                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                                            else:
                                                 self.advance()
-                                                if self.current_tok.token != SEMICOLON:
-                                                    print("no semicolon")
-                                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                                                else:
+                                                if self.current_tok.token not in (INCRE, DECRE) and self.current_tok.token == IDENTIFIER:
                                                     self.advance()
-                                                    if self.current_tok.token not in (INCRE, DECRE) and self.current_tok.token == IDENTIFIER:
-                                                        self.advance()
-                                                        if self.current_tok.token not in (INCRE, DECRE):
-                                                            print("no unary op")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid operation!"))
-                                                        else:
-                                                            self.advance()
-                                                            if self.current_tok.token != RPAREN:
-                                                                print("no rparen")
-                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-                                                            else:
-                                                                res.append("SUCCESS!")
-                                                    elif self.current_tok.token in (INCRE, DECRE) and self.current_tok.token != IDENTIFIER:
-                                                        self.advance()
-                                                        if self.current_tok.token != IDENTIFIER:
-                                                            print("no ident")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                                                        else:
-                                                            self.advance()
-                                                            if self.current_tok.token != RPAREN:
-                                                                print("no rparen")
-                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-                                                            else:
-                                                                res.append("SUCCESS!")
+                                                    if self.current_tok.token not in (INCRE, DECRE):
+                                                        print("no unary op")
+                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid operation!"))
                                                     else:
-                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Syntax Error!"))
-                                                        #next is yung new line, curly brackerts and stamements
-            return res, error
+                                                        self.advance()
+                                                        if self.current_tok.token != RPAREN:
+                                                            print("no rparen")
+                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                        else:
+                                                            #res.append("SUCCESS!")
+
+                                                            self.advance()
+
+                                                            if self.current_tok.token != CLBRACKET:
+                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                                return [], error
+                                                            else:
+                                                                self.advance()
+                                                                force_res, force_error = self.parse()
+                                                                print("force res: ", res)
+                                                                if force_error:
+                                                                    print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
+                                                                    for err in force_error:
+                                                                        error.append(err)
+                                                                    return [], error
+                                                                else:
+                                                                    print("successful form!")
+                                                                    for f_res in force_res:
+                                                                        res.append(f_res)
+                                                                        print("f res: ", f_res)
+                                                                    res.append(["SUCCESS from force"])
+                                                                    
+
+                                                                    if self.current_tok.token != CRBRACKET:
+                                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                                                                        return [], error
+                                                                    
+                                                                    
+                                                    
+                                                elif self.current_tok.token in (INCRE, DECRE) and self.current_tok.token != IDENTIFIER:
+                                                    self.advance()
+                                                    if self.current_tok.token != IDENTIFIER:
+                                                        print("no ident")
+                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+                                                    else:
+                                                        self.advance()
+                                                        if self.current_tok.token != RPAREN:
+                                                            print("no rparen")
+                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                                                        else:
+                                                            res.append("SUCCESS!")
+                                                else:
+                                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Syntax Error!"))
+                                                    #next is yung new line, curly brackerts and stamements
+        return res, error
 
     #function ng inner
     def inner_stmt(self):
