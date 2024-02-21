@@ -1508,6 +1508,7 @@ class Parser:
             if self.current_tok.token == NEWLINE:
                 self.advance()
 
+            #not working yung intel
             if self.current_tok.token in INTEL:
                 res = self.expr()
                 print("this is a binary operation")
@@ -1531,6 +1532,7 @@ class Parser:
                     break
                 res.append(var)
             
+            #functions
             if self.current_tok.token == FORM:
                 print("youve got a form token")
                 form_res, form_error = self.init_form()
@@ -1565,13 +1567,12 @@ class Parser:
                 else:
                     res.append("SUCCESS! from assign")
                     self.advance()
-                    
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
-        # else:
-        #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
-        
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from initialize variable"))
         return res, error
+    
     def var_dec(self):
         res = []
         error = []
@@ -1667,7 +1668,7 @@ class Parser:
                                 self.advance()
                             else:
                                 res.append("SUCCESS from form!")
-                                self.advance()
+                                
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                             self.advance()
