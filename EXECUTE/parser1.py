@@ -522,7 +522,7 @@ class Lexer:
                 if self.current_char not in delim1 + ')' + alphanum + '':
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(LPAREN, "("))
+                tokens.append(Token(LPAREN, "(",  pos_start = self.pos ))
             elif self.current_char == ')':
                 self.advance()
                 if self.current_char == None:
@@ -1624,9 +1624,8 @@ class Parser:
             if self.current_tok.token == LPAREN:
                 print("found left paren")
                 self.advance()
-                if self.current_tok.token != IDENTIFIER:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
-                else:
+                
+                if self.current_tok.token == IDENTIFIER:
                     #self.advance()
                     print("current token from form is: ", self.current_tok.token)
                     self.advance()
@@ -1672,15 +1671,46 @@ class Parser:
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                             self.advance()
-                    
-                    
-            
+                elif self.current_tok.token == RPAREN:
+                    self.advance()
+                    if self.current_tok.token == CLBRACKET:
+                        print("left curly bracket")
+                        
+                        self.advance()
+
+                        while self.current_tok.token == NEWLINE:
+                            self.advance()
+                        form_res, form_error = self.parse()
+                        print("form res: ", res)
+                        if form_error:
+                            print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
+                            for err in form_error:
+                                error.append(err)
+                            return [], error
+                        else:
+                            print("successful form!")
+                            for f_res in form_res:
+                                res.extend(f_res)
+                                print("f res: ", f_res)
+                            self.advance()
+                        while self.current_tok.token == NEWLINE:
+                            self.advance()
+                        else:
+                            res.append("SUCCESS from form!")
+                            self.advance()
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
+                        self.advance()
+
+                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))   
             #form add(a, b)
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parentheses for parameters!"))
+                return res, error
         else:
             print("FORM TOK: ", self.current_tok)
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form identifier!"))
+            return res, error
 
         
         return res, error
