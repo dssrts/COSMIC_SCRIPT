@@ -89,7 +89,8 @@ def run_syntax():
                 errors_text.insert(tk.END, arrowDetail)
                 errors_text.insert(tk.END, arrows)
         else:
-            errors_text.insert(tk.END, result)
+            for res in result:
+                errors_text.insert(tk.END, res)
             #token_text.insert(tk.END, item.token)
 
 #create main canvas

@@ -1501,7 +1501,7 @@ class Parser:
         error = []
 
         
-        while self.current_tok.token != CRBRACKET:
+        while True:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()
@@ -1534,17 +1534,21 @@ class Parser:
                         
             if self.current_tok.token in VAR:
                 print("this is a var token")
-                res, var_error = self.var_dec()
+                var, var_error = self.var_dec()
                 if var_error:
                     error.extend(var_error)
                     break
+                res.append(var)
             
             if self.current_tok.token == FORM:
                 print("youve got a form token")
                 res, error = self.init_form()
+            
+            if self.current_tok.token == CRBRACKET:
+                break
 
             if self.current_tok.token == EOF:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
+                # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
                 break
 
         return res, error
