@@ -1513,24 +1513,15 @@ class Parser:
                 print("this is a binary operation")
 
             if self.current_tok.token == IDENTIFIER:
-                res = []
-                error = []
-                self.advance()
-                if self.current_tok.token == EQUAL:
-                    assign, a_error = self.assign_val()
-                    if assign == True:
-                        self.advance()
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                        else:
-                            res.append("SUCCESS! from assign")
-                            continue
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
-                    
-                return res, error    
+                print("initialize the variable")
+                assign, a_error = self.init_var()
+
+                if a_error:
+                    error.extend(a_error)
+                    break
+                res.append(assign)
+
+                     
                         
             if self.current_tok.token in VAR:
                 print("this is a var token")
@@ -1560,47 +1551,27 @@ class Parser:
 
         return res, error
     
-    def parse_indiv(self):
-        if self.current_tok.token == SEMICOLON:
-            print("semicolon")
-            self.advance()
-        if self.current_tok.token == NEWLINE:
-            self.advance()
-
-        if self.current_tok.token in INTEL:
-            res = self.expr()
-            print("this is a binary operation")
-
-        if self.current_tok.token == IDENTIFIER:
-            res = []
-            error = []
-            self.advance()
-            if self.current_tok.token == EQUAL:
-                assign, a_error = self.assign_val()
-                if assign == True:
-                    self.advance()
-                    if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                    else:
-                        res.append("SUCCESS! from assign")
-                        self.advance()
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
-            else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
-                
-            return res, error    
-                    
-        if self.current_tok.token in VAR:
-            print("this is a var token")
-            res, error = self.var_dec()
+    def init_var(self):
         
-        if self.current_tok.token == FORM:
-            print("youve got a form token")
-            res, error = self.init_form()
-            
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token == EQUAL:
+            assign = self.assign_val()
+            if assign == True:
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                else:
+                    res.append("SUCCESS! from assign")
+                    self.advance()
+                    
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
+        # else:
+        #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from parse identifier path"))
+        
         return res, error
-    
     def var_dec(self):
         res = []
         error = []
@@ -1630,7 +1601,7 @@ class Parser:
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
             
             else:
-                res.append("SUCCESS! from parser")
+                res.append("SUCCESS! from variable declaration")
                 self.advance()
 
         return res, error
@@ -1639,8 +1610,8 @@ class Parser:
         self.advance()
         if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
             print("theres  a number/identifier here here")
-            return True, False
-        return False, False
+            return True
+        return False
     
     def init_form(self):
         res = []
