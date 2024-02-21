@@ -1542,7 +1542,14 @@ class Parser:
             
             if self.current_tok.token == FORM:
                 print("youve got a form token")
-                res, error = self.init_form()
+                form_res, form_error = self.init_form()
+
+                if form_error:
+                    for err in form_error:
+                        error.append(err)
+                    break
+                else:
+                    res.extend(form_res)
             
             if self.current_tok.token == CRBRACKET:
                 break
@@ -1673,15 +1680,20 @@ class Parser:
 
                             while self.current_tok.token == NEWLINE:
                                 self.advance()
-                            res, error = self.parse_indiv()
-                            if error:
+                            form_res, form_error = self.parse()
+                            print("form res: ", res)
+                            if form_error:
                                 print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
-                            print("bracket token: ", self.current_tok.token)
-                            self.advance()
-                            if self.current_tok.token == NEWLINE:
+                                for err in form_error:
+                                    error.append(err)
+                                return [], error
+                            else:
+                                print("successful form!")
+                                for f_res in form_res:
+                                    res.extend(f_res)
+                                    print("f res: ", f_res)
                                 self.advance()
-                            if self.current_tok.token != CRBRACKET:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid form scope!"))
+                            while self.current_tok.token == NEWLINE:
                                 self.advance()
                             else:
                                 res.append("SUCCESS from form!")
@@ -1689,9 +1701,7 @@ class Parser:
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                             self.advance()
-                    # if self.current_tok.token == COMMA:
-                    #     print("FOUND MORE PARAMETERS COMMA")
-                    #res.append("SUCCESS")
+                    
                     
             
             #form add(a, b)
