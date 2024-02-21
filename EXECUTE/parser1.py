@@ -293,11 +293,11 @@ class Lexer:
                         continue
                     tokens.append(Token(OUT, "<<"))
                 else:
-                    self.advance()
+                    
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' < '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in (delim2 + space_delim):
+                    if self.current_char not in (delim2 + space_delim+alphanum):
                         errors.extend([f"Invalid delimiter for ' < '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(LESS_THAN, "<"))
@@ -328,7 +328,7 @@ class Lexer:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' > '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in all_letters + '(' + space_delim:
+                    if self.current_char not in alphanum + '(' + space_delim:
                         errors.extend([f"Invalid delimiter for ' > '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(GREATER_THAN, ">"))
@@ -1930,7 +1930,7 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
             else: 
                 self.advance()
-                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
+                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
                     print("no condition")
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                 else:
