@@ -1561,7 +1561,8 @@ class Parser:
         if self.current_tok.token == EQUAL:
             assign = self.assign_val()
             if assign == True:
-                self.advance()
+                
+                print("init var: ",self.current_tok )
                 if self.current_tok.token != SEMICOLON:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                 else:
@@ -1609,9 +1610,25 @@ class Parser:
     
     def assign_val(self):
         self.advance()
+        # if self.current_tok.token == IDENTIFIER:
+        #     print("theres  an identifier here here")
+        #     return True
         if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
             print("theres  a number/identifier here here")
+            self.advance()
+            print("operator", self.current_tok)
+            while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
+                print("IN THE OPERATORS LOOP")
+                self.advance()
+                if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL:
+                    self.advance()
+                else:
+                    #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                    return False
             return True
+        else:
+            return False
+        
         return False
     
     def init_form(self):
