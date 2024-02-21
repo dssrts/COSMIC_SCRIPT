@@ -553,15 +553,16 @@ class Lexer:
                 tokens.append(Token(CRBRACKET, "}"))
             
             elif self.current_char == "\"":
-                
+                string = self.make_string()
+                tokens.append(Token(STRING, f"{string}"))
                 self.advance()
-                if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
-                    continue
-                if self.current_char not in lineEnd_delim+'),' + delim0:
-                    errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
-                    continue
-                tokens.append(Token(Q_MARK, "\""))
+                # if self.current_char == None:
+                #     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
+                #     continue
+                # if self.current_char not in lineEnd_delim+'),' + delim0:
+                #     errors.extend([f"Invalid delimiter for ' \" '. Cause: ' {self.current_char} '"])
+                #     continue
+                # tokens.append(Token(Q_MARK, "\""))
             elif self.current_char == '\'':
                 self.advance()
                 if self.current_char == None:
@@ -1400,22 +1401,23 @@ class Lexer:
         #
             
         
-    # def make_string(self):
-    #     string = ""
-    #     errors = []
-    #     self.advance()
-    #     while self.current_char != "\"" and self.current_char != None :
+    def make_string(self):
+        pos_start = self.pos.copy()
+        string = ""
+        errors = []
+        self.advance()
+        while self.current_char != "\"" and self.current_char != None :
             
-    #         string += self.current_char
-    #         self.advance()
-    #     if self.current_char == "\"":
-    #         return Token(STRING, f"\"{string}\"")
-    
-    #     elif self.current_char == None:
-    #         errors.append("Expected closing quotation mark!")
+            string += self.current_char
+            self.advance()
+        if self.current_char == "\"":
+            return Token(STRING, f"\"{string}\"")
 
-    #     if errors:
-    #         return errors
+        elif self.current_char == None:
+            errors.append("Expected closing quotation mark!")
+
+        if errors:
+            return errors 
         
         
        
