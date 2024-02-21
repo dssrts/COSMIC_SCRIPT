@@ -916,7 +916,7 @@ class Lexer:
                     if self.current_char not in loop_delim:
                         errors.extend([f'Invalid delimiter for if! Cause: {self.current_char}'])
                         return [], errors
-                    return Token(IF, "if"), errors
+                    return Token(IF, "if", pos_start = self.pos), errors
                 elif self.current_char == "n":
                     ident += self.current_char
                     self.advance()
@@ -1542,7 +1542,12 @@ class Parser:
                 print("this is a do statement")
                 res, error = self.whirl_stmt()
                 self.advance()
-            
+            #CONDITIONAL
+            if self.current_tok.token in IF:
+                print("this is an if statement")
+                res, error = self.if_stmt()
+                self.advance() 
+
             #INPUT OUTPUT
             if self.current_tok.token in INNER:
                 print("this is an inner statement")
@@ -1626,6 +1631,7 @@ class Parser:
                 if c_error:
                     for err in c_error:
                         error.append(err)
+                        
             if self.current_tok.token != SEMICOLON:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                 #maghahanap dapat sha ng number, ng arithmetic, ng function
@@ -1952,6 +1958,63 @@ class Parser:
                                 res.append("SUCCESS")
         return res, error
 
+    #CONDITIONAL
+    def if_stmt(self):
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token != LPAREN:
+            print("no lparen")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+        else: 
+            self.advance()
+            if self.current_tok.token != IDENTIFIER:
+                print("no ident after left paren")
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+            else: 
+                self.advance()
+                if self.current_tok.token != EQUAL:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                else:
+                    self.advance()    
+                    if self.current_tok.token != INTEL:
+                        print("not an intel")
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
+                    else: 
+                        self.advance()
+                        if self.current_tok.token != RPAREN:
+                            print("no rparen")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                        else:
+                            self.advance()
+                            if self.current_tok.token != CLBRACKET:
+                                
+                                # print("no semicolon")
+                                # print("current tok in if: ", self.current_tok.token)
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected If Scope!"))
+                            else:
+                                self.advance()
+                                if_res, if_error = self.parse()
+                                print("if res: ", res)
+                                if if_error:
+                                    print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                                    for err in if_error:
+                                        error.append(err)
+                                    return [], error
+                                else:
+                                    print("successful form!")
+                                    for f_res in if_res:
+                                        res.append(f_res)
+                                        print("f res: ", f_res)
+                                    res.append(["SUCCESS from if"])
+                                    
+
+                                    if self.current_tok.token != CRBRACKET:
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                                        return [], error
+                                    
+                        #next is yung new line, curly brackerts and stamements
+        return res, error
     # #assign value for force 
     # def assign_val_force(self):
     #     self.advance()
