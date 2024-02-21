@@ -270,11 +270,11 @@ class Lexer:
                         continue
                     tokens.append(Token(OUT, "<<"))
                 else:
-                    self.advance()
+                    
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' < '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in delim2:
+                    if self.current_char not in (delim2 + space_delim):
                         errors.extend([f"Invalid delimiter for ' < '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(LESS_THAN, "<"))
@@ -305,7 +305,7 @@ class Lexer:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' > '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in all_letters + '(':
+                    if self.current_char not in (alphanum + '(' + space_delim):
                         errors.extend([f"Invalid delimiter for ' > '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(GREATER_THAN, ">"))
