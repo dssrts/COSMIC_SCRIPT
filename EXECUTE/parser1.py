@@ -1535,8 +1535,19 @@ class Parser:
             #LOOPS
             if self.current_tok.token in FORCE:
                 print("this is a force statement")
-                res, error = self.force_stmt()
+                force_res, force_error = self.force_stmt()
                 self.advance()
+
+                if force_error:
+                    error.extend(force_error)
+                    break
+                else:
+                    for fres in force_res:
+                        res.append(fres)
+                        #self.advance()
+                        print("current token from force dec parse: ", self.current_tok)
+                
+                
 
             if self.current_tok.token in WHIRL:
                 print("this is a do statement")
@@ -1810,6 +1821,7 @@ class Parser:
                 if self.current_tok.token != IDENTIFIER:
                     print("no ident")
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+                    
                 else: 
                     self.advance()
                     if self.current_tok.token != EQUAL:
