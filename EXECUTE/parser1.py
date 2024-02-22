@@ -614,7 +614,7 @@ class Lexer:
                 if self.current_char == None:
                     tokens.append(Token(SEMICOLON, ";", pos_start = self.pos))
                     continue
-                if self.current_char not in newline_delim + space_delim + '}' + alphanum:
+                if self.current_char not in newline_delim + space_delim + '}' + alphanum + "-+":
                     errors.extend([f"Invalid delimiter for ' ; '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SEMICOLON, ";", pos_start = self.pos))
@@ -1910,7 +1910,33 @@ class Parser:
                                                             print("no rparen")
                                                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                                                         else:
-                                                            res.append("SUCCESS!")
+                                                            #res.append("SUCCESS!")
+
+                                                            self.advance()
+
+                                                            if self.current_tok.token != CLBRACKET:
+                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Force scope!"))
+                                                                return [], error
+                                                            else:
+                                                                self.advance()
+                                                                force_res, force_error = self.parse()
+                                                                print("force res: ", res)
+                                                                if force_error:
+                                                                    print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
+                                                                    for err in force_error:
+                                                                        error.append(err)
+                                                                    return [], error
+                                                                else:
+                                                                    print("successful form!")
+                                                                    for f_res in force_res:
+                                                                        res.append(f_res)
+                                                                        print("f res: ", f_res)
+                                                                    res.append(["SUCCESS from force"])
+                                                                    
+
+                                                                    if self.current_tok.token != CRBRACKET:
+                                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                                                                        return [], error
                                                 else:
                                                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Syntax Error!"))
                                                     #next is yung new line, curly brackerts and stamements

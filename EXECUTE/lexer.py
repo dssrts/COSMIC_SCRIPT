@@ -595,7 +595,7 @@ class Lexer:
                 if self.current_char == None:
                     tokens.append(Token(SEMICOLON, ";"))
                     continue
-                if self.current_char not in newline_delim + space_delim + '}' + alphanum:
+                if self.current_char not in newline_delim + space_delim + '}' + alphanum + "-+":
                     errors.extend([f"Invalid delimiter for ' ; '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SEMICOLON, ";"))
