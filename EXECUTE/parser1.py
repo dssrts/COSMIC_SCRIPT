@@ -1994,7 +1994,7 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
             else: 
                 self.advance()
-                if self.current_tok.token != EQUAL:
+                if self.current_tok.token != E_EQUAL:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                 else:
                     self.advance()    
