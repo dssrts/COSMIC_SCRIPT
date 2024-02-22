@@ -8,8 +8,8 @@ import lexer
 import sys
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Melissa\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Melissa\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -58,7 +58,6 @@ def run_lexer():
             output_text.insert(tk.END, item.value)
             token_text.insert(tk.END, item.token)
     
-
     # if error:
     #     errors_text.insert(tk.END, error.as_string())
     # else:
@@ -67,38 +66,44 @@ def run_lexer():
 
 def run_syntax():
     input_text_str = input_text.get("1.0", "end-1c")
-    error_checker, temp = lexer.run("<stdin>",input_text_str)
-    result, error = parser1.run("<stdin>",input_text_str)
     
+    # Run lexer
+    lexer_result, lexer_error = lexer.run("<stdin>", input_text_str)
+    
+    # Display lexer output
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
-    errors_text.delete(0, tk.END)
-    print(result)
-    #print("error: ",error)
-
-    if temp:
-        errors_text.insert(tk.END, "LEXICAL ERROR")
-        errors_text.insert(tk.END, temp)
+    for item in lexer_result:
+        if item:
+            output_text.insert(tk.END, item.value)
+            token_text.insert(tk.END, item.token)
     
+    # Display lexer errors
+    errors_text.delete(0, tk.END)
+    if lexer_error:
+        for err in lexer_error:
+            errors_text.insert(tk.END, err)
     else:
-        if error:
-            for err in error:
+        # If lexer is successful, run syntax parser
+        syntax_result, syntax_error = parser1.run("<stdin>", input_text_str)
+        if syntax_error:
+            for err in syntax_error:
                 errorResult, fileDetail, arrowDetail, arrows = err.as_string()
                 errors_text.insert(tk.END, errorResult)
                 errors_text.insert(tk.END, fileDetail)
                 errors_text.insert(tk.END, arrowDetail)
                 errors_text.insert(tk.END, arrows)
         else:
-            for res in result:
+            for res in syntax_result:
                 errors_text.insert(tk.END, res)
             #token_text.insert(tk.END, item.token)
-
+        
 #create main canvas
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
-ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
-#ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\logo-automata.png')
+#ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
 root.wm_iconphoto(False, photo)
 root.title("Cosmic Script")
