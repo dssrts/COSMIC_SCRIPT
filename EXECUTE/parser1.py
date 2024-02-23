@@ -1566,7 +1566,7 @@ class Parser:
                 self.advance()
                      
             #VAR DECLARATION            
-            if self.current_tok.token in VAR:
+            if self.current_tok.token in VAR: 
                 print("this is a var token")
                 var, var_error = self.var_dec()
                 if var_error:
@@ -1636,6 +1636,8 @@ class Parser:
         else:
             print("u good")
             self.advance()
+
+            #var a, b
             if self.current_tok.token == EQUAL:
                 assign = self.assign_val()
                 if assign == True:
