@@ -763,7 +763,7 @@ class Lexer:
                 #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
                 ident += self.current_char
                 self.advance()
-                if self.current_char in space_delim + ident_delim + ';' +'(,':  
+                if self.current_char in space_delim + ident_delim + ';' +'(,' + '\n':  
                        
                     return Token(IDENTIFIER, ident, pos_start = self.pos), errors
                 else:
@@ -1407,7 +1407,7 @@ class Lexer:
                 
                 if self.current_char == None:
                     break
-                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':'):
+                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n'):
                     break
                
                 
@@ -1438,9 +1438,7 @@ class Lexer:
             errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
             return [], errors
         
-        if self.current_char == '\n':
-            errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
-            return [], errors
+        
 
              
         # if ident_count == 10:
@@ -1548,6 +1546,16 @@ class Parser:
 
         while self.current_tok.token == NEWLINE:
             self.advance()
+            
+        if self.current_tok.token == S_COMET:
+            
+            print("FOUND A COMMENT TOKEN IN PARSE")
+            self.advance()
+            while self.current_tok.token != NEWLINE:
+                self.advance()
+            self.advance()
+        print("after comment:", self.current_tok)
+                
         
         #TODO: CHECK IF MAY TAKEOFF SA START
         if self.current_tok.token != TAKEOFF:
@@ -1576,6 +1584,15 @@ class Parser:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()
+            if self.current_tok.token == S_COMET:
+            
+                print("FOUND A COMMENT TOKEN IN PARSE")
+                self.advance()
+                while self.current_tok.token != NEWLINE:
+                    self.advance()
+                self.advance()
+            print("after comment:", self.current_tok)
+        
             if self.current_tok.token == TAKEOFF:
                 self.advance()
                 if self.current_tok.token == SEMICOLON:
@@ -1768,6 +1785,10 @@ class Parser:
         # * basically yung parse lang pero walang form
 
         while True:
+            if self.current_tok.token == S_COMET:
+                self.advance()
+                while self.current_tok.token != NEWLINE:
+                    self.advance()
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()

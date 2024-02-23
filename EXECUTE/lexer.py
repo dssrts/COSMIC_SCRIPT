@@ -742,7 +742,7 @@ class Lexer:
                 #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
                 ident += self.current_char
                 self.advance()
-                if self.current_char in space_delim + ident_delim + ';' +'(,':  
+                if self.current_char in space_delim + ident_delim + ';' +'(,' + newline_delim:  
                        
                     return Token(IDENTIFIER, ident), errors
                 else:
@@ -1418,9 +1418,7 @@ class Lexer:
             errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
             return [], errors
         
-        if self.current_char == '\n':
-            errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
-            return [], errors
+        
 
         
        
