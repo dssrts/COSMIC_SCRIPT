@@ -1584,6 +1584,12 @@ class Parser:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()
+            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax before galaxy!"))
+                break
+            else:
+                self.advance()
+                
             if self.current_tok.token == S_COMET:
             
                 print("FOUND A COMMENT TOKEN IN PARSE")
@@ -1593,12 +1599,7 @@ class Parser:
                 self.advance()
             print("after comment:", self.current_tok)
         
-            if self.current_tok.token == TAKEOFF:
-                self.advance()
-                if self.current_tok.token == SEMICOLON:
-                    self.advance()
-            if self.current_tok.token == NEWLINE:
-                self.advance()
+            
                      
             #VAR DECLARATION  DAT MAY GLOBAL
             if self.current_tok.token in UNIVERSE:
@@ -1968,12 +1969,16 @@ class Parser:
 
             #var a, b
             if self.current_tok.token == EQUAL:
+                print("value after equal: ", self.current_tok)
                 assign = self.assign_val()
                 if assign == True:
                     
                     print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
+                    
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                    #self.advance()
+                    
             if self.current_tok.token == COMMA:
                 print("there's a comma here")
                 comma, c_error = self.var_dec()
