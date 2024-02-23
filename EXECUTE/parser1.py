@@ -1042,7 +1042,7 @@ class Lexer:
                                     if self.current_char not in "( " + space_delim:
                                         errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}'])
                                         return [], errors
-                                    return Token(GALAXY, "galaxy"), errors               
+                                    return Token(GALAXY, "galaxy", pos_start = self.pos), errors               
                 
             if self.current_char == "l": #landing, launch
                 ident += self.current_char
@@ -1966,11 +1966,10 @@ class Parser:
         else:
             print("u good")
             self.advance()
-
-            #var a, b
-            if self.current_tok.token == EQUAL:
-                print("value after equal: ", self.current_tok)
-                assign = self.assign_val()
+            if self.current_tok.token == EQUAL or self.current_tok.token == COMMA:
+                if self.current_tok.token == EQUAL:
+                    print("value after equal: ", self.current_tok)
+                    assign = self.assign_val()
                 if assign == True:
                     
                     print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
@@ -1979,20 +1978,24 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                     #self.advance()
                     
-            if self.current_tok.token == COMMA:
-                print("there's a comma here")
-                comma, c_error = self.var_dec()
-                print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
-                
-                if c_error:
-                    for err in c_error:
-                        error.append(err)
-                else:
-                    for c in comma:
-                        res.append(c)
-                 
-            else:
+                if self.current_tok.token == COMMA:
+                    print("there's a comma here")
+                    comma, c_error = self.var_dec()
+                    print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
+                    
+                    if c_error:
+                        for err in c_error:
+                            error.append(err)
+                    else:
+                        for c in comma:
+                            res.append(c)
                 res.append("SUCCESS! from variable declaration")
+            #var a, b
+
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization, no equal sign after identifier!"))
+                
+               
                 #self.advance()
 
         return res, error
