@@ -1714,7 +1714,7 @@ class Parser:
                         
                         print("CURRENT TOK FROM FORM: ", self.current_tok)
                         if self.current_tok.token != CRBRACKET:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in galaxy!"))
                             
                         else:
                             res.append("SUCCESS from GALAXY!")
@@ -2155,7 +2155,7 @@ class Parser:
                                                                 return [], error
                                                             else:
                                                                 self.advance()
-                                                                force_res, force_error = self.parse()
+                                                                force_res, force_error = self.body()
                                                                 print("force res: ", res)
                                                                 if force_error:
                                                                     print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
@@ -2196,7 +2196,7 @@ class Parser:
                                                                 return [], error
                                                             else:
                                                                 self.advance()
-                                                                force_res, force_error = self.parse()
+                                                                force_res, force_error = self.body()
                                                                 print("force res: ", res)
                                                                 if force_error:
                                                                     print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
@@ -2338,7 +2338,7 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected If Scope!"))
                         else:
                             self.advance()
-                            if_res, if_error = self.parse()
+                            if_res, if_error = self.body()
                             print("if res: ", res)
                             if if_error:
                                 print("THERES  AN ERROR INSIDE THE IF SCOPE")
@@ -2396,7 +2396,7 @@ class Parser:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected elif Scope!"))
                             else:
                                 self.advance()
-                                elif_res, elif_error = self.parse()
+                                elif_res, elif_error = self.body()
                                 print("if res: ", res)
                                 if elif_error:
                                     print("THERES  AN ERROR INSIDE THE IF SCOPE")
@@ -2433,7 +2433,7 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
             else:
                 self.advance()
-                else_res, else_error = self.parse()
+                else_res, else_error = self.body()
                 print("if res: ", res)
                 if else_error:
                     print("THERES  AN ERROR INSIDE THE IF SCOPE")
