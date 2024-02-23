@@ -1243,7 +1243,7 @@ class Lexer:
                                         if self.current_char not in lineEnd_delim:
                                             errors.extend([f'Invalid delimiter for takeoff! Cause: {self.current_char}'])
                                             return [], errors
-                                        return Token(TAKEOFF, "takeoff"), errors
+                                        return Token(TAKEOFF, "takeoff", pos_start=self.pos), errors
                     
                 elif self.current_char == "r":
                         ident += self.current_char
@@ -1323,7 +1323,7 @@ class Lexer:
                                             if self.current_char not in space_delim:
                                                 errors.extend([f'Invalid delimiter for universe! Cause: {self.current_char}'])
                                                 return [], errors
-                                            return Token(UNIVERSE, "universe"), errors
+                                            return Token(UNIVERSE, "universe", pos_start =self.pos), errors
                 
             if self.current_char == "v": #void
                 ident += self.current_char
@@ -1546,13 +1546,23 @@ class Parser:
         res =  []
         error = []
 
+        while self.current_tok.token == NEWLINE:
+            self.advance()
         
         #TODO: CHECK IF MAY TAKEOFF SA START
-        while self.current_tok.token != TAKEOFF:
+        if self.current_tok.token != TAKEOFF:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Type 'takeoff' start the program!"))
+            return [], error
+        else:
             self.advance()
-            print("is this eof? :", self.current_tok.token)
-            if self.current_tok.token == EOF:
-                return [], []
+            if self.current_tok.token != SEMICOLON:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                return [], error
+            else:
+                self.advance()
+                
+            
+                
         #TODO: CHECK IF MAY UNIVERSE DECLARATION
 
         #TODO: CHECK FOR FORM
