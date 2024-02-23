@@ -1566,6 +1566,12 @@ class Parser:
                 print("this is a do statement")
                 res, error = self.whirl_stmt()
                 self.advance()
+            
+            if self.current_tok.token in OUTER:
+                print("this is an outer statement")
+                res, error = self.outer_stmt()
+                self.advance()
+
             #CONDITIONAL
             if self.current_tok.token in IF:
                 print("this is an if statement")
@@ -2021,6 +2027,30 @@ class Parser:
 
         return res, error
 
+    #FUNC NG OUTER
+    def outer_stmt(self):
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token != OUT:
+            print("no <<")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected '<<' symbol!"))
+        else: 
+            self.advance()
+            if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
+                print("no string")
+                print("current tok from outer: ", self.current_tok.token)
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal or identifier!"))
+                self.advance()
+            else: 
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    print("no semicolon")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
+                else:
+                    res.append("SUCCESS from outer")
+        
+        return res, error
     #function of whirl:
 
     def whirl_stmt(self):
