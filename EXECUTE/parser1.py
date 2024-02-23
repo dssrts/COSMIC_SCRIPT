@@ -857,7 +857,7 @@ class Lexer:
                                     if self.current_char == None:
                                         errors.extend([f'Invalid delimiter for elseif! Cause: {self.current_char}'])
                                         return [], errors
-                                    if self.current_char not in block_delim:
+                                    if self.current_char not in block_delim + "(":
                                         errors.extend([f'Invalid delimiter for elseif! Cause: {self.current_char}'])
                                         return [], errors
                                     return Token(ELSEIF, "elseif"), errors
@@ -1498,6 +1498,8 @@ class Parser:
         self.tokens = tokens
         self.tok_idx = -1
         self.advance()
+        self.if_stmt_encountered = False
+
 
     def advance(self):
         self.tok_idx += 1
@@ -1509,7 +1511,18 @@ class Parser:
         res =  []
         error = []
 
-        
+        # while self.current_tok.tok != TAKEOFF:
+        #     self.advance()
+        #     if self.current_tok.tok == EOF:
+        #         break
+        #TODO: CHECK IF MAY TAKEOFF SA START
+
+        #TODO: CHECK IF MAY UNIVERSE DECLARATION
+
+        # TODO: CHECK FOR FORM
+
+        #TODO IF MAY GALAXY, VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
+
         while True:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
@@ -1556,8 +1569,47 @@ class Parser:
             #CONDITIONAL
             if self.current_tok.token in IF:
                 print("this is an if statement")
-                res, error = self.if_stmt()
+                if_res, if_error = self.if_stmt()
                 self.advance() 
+
+                if if_error:
+                    error.extend(if_error)
+                    break
+                else:
+                    for fres in if_res:
+                        res.append(fres)
+                        #self.advance()
+                        print("current token from if parse: ", self.current_tok)
+
+            if self.current_tok.token in ELSE:
+                print("this is an else statement")
+                else_res, else_error = self.else_stmt()
+                self.advance()
+
+                if else_error:
+                    error.extend(else_error)
+                    break
+                else:
+                    for fres in else_res:
+                        res.append(fres)
+                        self.advance()
+                        print("current token from if parse: ", self.current_tok)
+
+            if self.current_tok.token in ELSEIF:
+                print("this is an elif statement")
+                elif_res, elif_error = self.elif_stmt()
+                self.advance()
+
+                if elif_error:
+                    error.extend(elif_error)
+                    break
+                else:
+                    for fres in elif_res:
+                        res.append(fres)
+                        self.advance()
+                        print("current token from elseif parse: ", self.current_tok)
+                    self.advance()
+
 
             #INPUT OUTPUT
             if self.current_tok.token in INNER:
@@ -2008,6 +2060,7 @@ class Parser:
         return res, error
 
     #CONDITIONAL
+    #FUNC FOR IF, ELSE, ELSEIF
     def if_stmt(self):
         res = []
         error = []
@@ -2022,15 +2075,68 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
             else: 
                 self.advance()
-                if self.current_tok.token != E_EQUAL:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
+                    print("no condition")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                 else:
-                    self.advance()    
-                    if self.current_tok.token != INTEL:
-                        print("not an intel")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                    else: 
+                    self.advance()
+                    assign = self.assign_val()
+                    assign == True   
+                    if self.current_tok.token != RPAREN:
+                        print("no rparen")
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                    else:
                         self.advance()
+                        if self.current_tok.token != CLBRACKET:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected If Scope!"))
+                        else:
+                            self.advance()
+                            if_res, if_error = self.parse()
+                            print("if res: ", res)
+                            if if_error:
+                                print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                                for err in if_error:
+                                    error.append(err)
+                                return [], error
+                            else:
+                                print("successful form!")
+                                for f_res in if_res:
+                                    res.append(f_res)
+                                    print("f res: ", f_res)
+                                res.append(["SUCCESS from if"])
+                                self.if_stmt_encountered = True
+
+                                if self.current_tok.token != CRBRACKET:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                                    return [], error
+        return res, error
+    
+    def elif_stmt(self):
+        res = []
+        error = []
+        if self.if_stmt_encountered is not True:
+            print("this is the error")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "elif without preceding if statement!"))
+            return res, error
+        else: 
+            self.advance()
+            if self.current_tok.token != LPAREN:
+                print("no lparen")
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+            else: 
+                self.advance()
+                if self.current_tok.token != IDENTIFIER:
+                    print("no ident after left paren")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
+                else: 
+                    self.advance()
+                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
+                        print("no condition")
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
+                    else:
+                        self.advance()
+                        assign = self.assign_val()
+                        assign == True   
                         if self.current_tok.token != RPAREN:
                             print("no rparen")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
@@ -2040,37 +2146,67 @@ class Parser:
                                 
                                 # print("no semicolon")
                                 # print("current tok in if: ", self.current_tok.token)
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected If Scope!"))
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected elif Scope!"))
                             else:
                                 self.advance()
-                                if_res, if_error = self.parse()
+                                elif_res, elif_error = self.parse()
                                 print("if res: ", res)
-                                if if_error:
+                                if elif_error:
                                     print("THERES  AN ERROR INSIDE THE IF SCOPE")
-                                    for err in if_error:
+                                    for err in elif_error:
                                         error.append(err)
                                     return [], error
                                 else:
-                                    print("successful form!")
-                                    for f_res in if_res:
+                                    print("successful elif!")
+                                    for f_res in elif_res:
                                         res.append(f_res)
                                         print("f res: ", f_res)
-                                    res.append(["SUCCESS from if"])
+                                    res.append(["SUCCESS from elif"])
+                                    self.if_stmt_encountered = True
                                     
 
                                     if self.current_tok.token != CRBRACKET:
                                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
                                         return [], error
-                                    
-                        #next is yung new line, curly brackerts and stamements
+                                    pass
+                                
+                    #next is yung new line, curly brackerts and stamements
         return res, error
-    # #assign value for force 
-    # def assign_val_force(self):
-    #     self.advance()
-    #     if self.current_tok.token == INTEL:
-    #         print("theres  a number here")
-    #         return True
-    #     return False
+    
+    def else_stmt(self):
+        res = []
+        error = []
+        if self.if_stmt_encountered is not True:
+            print("this is the error")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "else without preceding if or elseif statement!"))
+            return res, error
+        else: 
+            self.advance()
+            if self.current_tok.token != CLBRACKET:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+            else:
+                self.advance()
+                else_res, else_error = self.parse()
+                print("if res: ", res)
+                if else_error:
+                    print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                    for err in else_error:
+                        error.append(err)
+                    return [], error
+                else:
+                    print("successful else!")
+                    for f_res in else_res:
+                        res.append(f_res)
+                        print("f res: ", f_res)
+                    res.append(["SUCCESS from else"])
+                    
+
+                    if self.current_tok.token != CRBRACKET:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                        return [], error
+                                
+                    #next is yung new line, curly brackerts and stamements
+        return res, error
     
     def assign_val_whirl(self):
         self.advance()
