@@ -1593,7 +1593,11 @@ class Parser:
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
                     self.advance()
-
+            
+            if self.current_tok.token in VAR:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global declaration!"))
+                break
+            
             
 
             #functions
@@ -1625,6 +1629,8 @@ class Parser:
             if self.current_tok.token == EOF:
                 # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
                 break
+
+            
             
 
 
