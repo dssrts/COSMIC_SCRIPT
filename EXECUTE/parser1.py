@@ -1163,7 +1163,7 @@ class Lexer:
                                     if self.current_char not in lineEnd_delim:
                                         errors.extend([f'Invalid delimiter for saturn! Cause: {self.current_char}'])
                                         return [], errors
-                                    return Token(SATURN, "saturn"), errors
+                                    return Token(SATURN, "saturn", pos_start = self.pos), errors
                 
                 elif self.current_char == "h":
                         ident += self.current_char
@@ -1868,6 +1868,21 @@ class Parser:
             if self.current_tok.token in FORM:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
                 break
+            
+            if self.current_tok.token == SATURN:
+                self.advance()
+                if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
+                    break
+                else:
+                    self.advance()
+                    if self.current_tok.token != SEMICOLON:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                    else:
+                        res.append(["SUCCESS! from saturn"])
+                        self.advance()
+                    
+
 
             if self.current_tok.token == CRBRACKET:
                 break
