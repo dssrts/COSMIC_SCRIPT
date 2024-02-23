@@ -35,6 +35,8 @@ error = []
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
+
+GALAXY = 'galaxy'
 #data types
 INTEL = 'intel'
 GRAVITY = 'gravity'
@@ -989,7 +991,38 @@ class Lexer:
                                 return [], errors
                             return Token(FORM, "form"), errors
                         
-                                
+            if self.current_char == "g": #landing, launch
+                ident += self.current_char
+                self.advance()
+                ident_count += 1
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    ident_count += 1
+                    if self.current_char == "l":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "a":
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
+                            if self.current_char == "x":
+                                ident += self.current_char
+                                self.advance()
+                                ident_count += 1
+                                if self.current_char == "y":
+                                    ident += self.current_char
+                                    self.advance()
+                                    ident_count += 1
+                                    
+                                    if self.current_char == None:
+                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}'])
+                                        return [], errors
+                                    if self.current_char not in "( " + space_delim:
+                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}'])
+                                        return [], errors
+                                    return Token(GALAXY, "galaxy"), errors                     
                 
             if self.current_char == "l": #landing, launch
                 ident += self.current_char

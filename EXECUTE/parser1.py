@@ -36,6 +36,9 @@ error = []
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
+
+GALAXY = 'galaxy()'
+
 #data types
 INTEL = 'intel'
 GRAVITY = 'gravity'
@@ -1006,9 +1009,40 @@ class Lexer:
                             if self.current_char not in space_delim:
                                 errors.extend([f'Invalid delimiter for form! Cause: {self.current_char}'])
                                 return [], errors
-                            return Token(FORM, "form"), errors
+                            return Token(FORM, "form", pos_start = self.pos), errors
                         
-                                
+            if self.current_char == "g": #landing, launch
+                ident += self.current_char
+                self.advance()
+                ident_count += 1
+                if self.current_char == "a":
+                    ident += self.current_char
+                    self.advance()
+                    ident_count += 1
+                    if self.current_char == "l":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "a":
+                            ident += self.current_char
+                            self.advance()
+                            ident_count += 1
+                            if self.current_char == "x":
+                                ident += self.current_char
+                                self.advance()
+                                ident_count += 1
+                                if self.current_char == "y":
+                                    ident += self.current_char
+                                    self.advance()
+                                    ident_count += 1
+                                    
+                                    if self.current_char == None:
+                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}'])
+                                        return [], errors
+                                    if self.current_char not in "( " + space_delim:
+                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}'])
+                                        return [], errors
+                                    return Token(GALAXY, "galaxy"), errors               
                 
             if self.current_char == "l": #landing, launch
                 ident += self.current_char
@@ -1499,6 +1533,7 @@ class Parser:
         self.tok_idx = -1
         self.advance()
         self.if_stmt_encountered = False
+        self.in_galaxy = False
 
 
     def advance(self):
@@ -1511,17 +1546,197 @@ class Parser:
         res =  []
         error = []
 
-        # while self.current_tok.tok != TAKEOFF:
-        #     self.advance()
-        #     if self.current_tok.tok == EOF:
-        #         break
+        
         #TODO: CHECK IF MAY TAKEOFF SA START
-
+        
         #TODO: CHECK IF MAY UNIVERSE DECLARATION
 
-        # TODO: CHECK FOR FORM
+        #TODO: CHECK FOR FORM
 
-        #TODO IF MAY GALAXY, VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
+        #TODO IF MAY GALAXY
+
+        #TODO VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
+        # * basically yung parse lang pero walang form
+
+        while True:
+            # if self.current_tok.token == SEMICOLON:
+            #     print("semicolon")
+            #     self.advance()
+            if self.current_tok.token == NEWLINE:
+                self.advance()
+                     
+            #VAR DECLARATION  DAT MAY GLOBAL
+            if self.current_tok.token in UNIVERSE:
+                self.advance()          
+                if self.current_tok.token in VAR: 
+                    print("this is a var token")
+                    var, var_error = self.var_dec()
+                    if var_error:
+                        error.extend(var_error)
+                        break
+                    res.append(var)
+                    #self.advance()
+                    print("current token from var dec parse: ", self.current_tok)
+                    
+                    if self.current_tok.token != SEMICOLON:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
+                    else:
+                        self.advance()
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
+                    self.advance()
+
+            if self.current_tok.token == GALAXY:
+                print("youve got a galaxy token")
+                g_res, g_error = self.galaxy()
+
+                if g_error:
+                    for err in g_error:
+                        error.append(err)
+                    break
+                else:
+                    res.extend(g_res)
+
+            #functions
+            if self.current_tok.token == FORM:
+                print("youve got a form token")
+                form_res, form_error = self.init_form()
+
+                if form_error:
+                    for err in form_error:
+                        error.append(err)
+                    break
+                else:
+                    res.extend(form_res)
+            
+            if self.current_tok.token == CRBRACKET:
+                break
+
+            if self.current_tok.token == EOF:
+                # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
+                break
+            
+
+
+        return res, error
+    def galaxy(self):
+        res = []
+        error = []
+        self.advance()
+        #print("init form tok:  ", self.current_tok.token)
+        
+        if self.current_tok.token == LPAREN:
+            print("found left paren")
+            self.advance()
+            
+            if self.current_tok.token == IDENTIFIER:
+                #self.advance()
+                print("current token from form is: ", self.current_tok.token)
+                self.advance()
+                if self.current_tok.token == COMMA:
+                    print("you found a comma in the params!")
+                    #if comma yung current, find identifier, next, then if comma, next, and repeat
+                    c_error = self.comma()
+                    if c_error:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                    
+                    print("current token after comma: ", self.current_tok.token)
+                if self.current_tok.token != RPAREN:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                    self.advance()
+                else: 
+                    #res.append("SUCCESS from form!")
+                    self.advance()
+                    if self.current_tok.token == CLBRACKET:
+                        print("left curly bracket")
+                        
+                        self.advance()
+
+                        while self.current_tok.token == NEWLINE:
+                            self.advance()
+                        form_res, form_error = self.body()
+                        print("form res: ", res)
+                        if form_error:
+                            print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
+                            for err in form_error:
+                                error.append(err)
+                            return [], error
+                        else:
+                            print("successful galaxy!")
+                            for f_res in form_res:
+                                res.extend(f_res)
+                                print("f res: ", f_res)
+                            
+                        
+                        print("CURRENT TOK FROM GALAXY: ", self.current_tok)
+                        if self.current_tok.token != CRBRACKET:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in galaxy!"))
+                            
+                        else:
+                            res.append("SUCCESS from GALAXY!")
+                            self.advance()
+                            
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Galaxy definition missing!"))
+                        self.advance()
+            elif self.current_tok.token == RPAREN:
+                self.advance()
+                if self.current_tok.token == CLBRACKET:
+                    print("left curly bracket")
+                    
+                    self.advance()
+
+                    while self.current_tok.token == NEWLINE:
+                        self.advance()
+                    form_res, form_error = self.body()
+                    print("form res: ", form_res)
+                    if form_error:
+                        print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
+                        for err in form_error:
+                            error.append(err)
+                        return [], error
+                    else:
+                        print("successful galaxy!")
+                        for f_res in form_res:
+                            res.extend(f_res)
+                            print("f res: ", f_res)
+                            
+                        
+                        print("CURRENT TOK FROM FORM: ", self.current_tok)
+                        if self.current_tok.token != CRBRACKET:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                            
+                        else:
+                            res.append("SUCCESS from GALAXY!")
+                            self.advance()
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Galaxy definition missing!"))
+                    self.advance()
+
+            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))   
+        #form add(a, b)
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parentheses for parameters!"))
+            return res, error
+    
+        return res, error
+
+
+    def body(self):
+        res =  []
+        error = []
+
+        
+        #TODO: CHECK IF MAY TAKEOFF SA START
+        
+        #TODO: CHECK IF MAY UNIVERSE DECLARATION
+
+        #TODO: CHECK FOR FORM
+
+        #TODO IF MAY GALAXY
+
+        #TODO VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
+        # * basically yung parse lang pero walang form
 
         while True:
             # if self.current_tok.token == SEMICOLON:
@@ -1639,18 +1854,11 @@ class Parser:
                 else:
                     self.advance()
             
-            #functions
-            if self.current_tok.token == FORM:
-                print("youve got a form token")
-                form_res, form_error = self.init_form()
-
-                if form_error:
-                    for err in form_error:
-                        error.append(err)
-                    break
-                else:
-                    res.extend(form_res)
             
+            if self.current_tok.token in FORM:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
+                break
+
             if self.current_tok.token == CRBRACKET:
                 break
 
@@ -1659,7 +1867,6 @@ class Parser:
                 break
 
         return res, error
-    
     def init_var(self):
         
         res = []
@@ -1781,7 +1988,7 @@ class Parser:
 
                             while self.current_tok.token == NEWLINE:
                                 self.advance()
-                            form_res, form_error = self.parse()
+                            form_res, form_error = self.body()
                             print("form res: ", res)
                             if form_error:
                                 print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
@@ -1815,8 +2022,8 @@ class Parser:
 
                         while self.current_tok.token == NEWLINE:
                             self.advance()
-                        form_res, form_error = self.parse()
-                        print("form res: ", res)
+                        form_res, form_error = self.body()
+                        print("form res: ", form_res)
                         if form_error:
                             print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
                             for err in form_error:
@@ -2048,7 +2255,7 @@ class Parser:
                     print("no semicolon")
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
                 else:
-                    res.append("SUCCESS from outer")
+                    res.append(["SUCCESS from outer"])
         
         return res, error
     #function of whirl:
