@@ -1839,7 +1839,6 @@ class Parser:
                         res.append(fres)
                         self.advance()
                         print("current token from elseif parse: ", self.current_tok)
-                    self.advance()
 
 
             #INPUT OUTPUT
@@ -2415,7 +2414,6 @@ class Parser:
                                     if self.current_tok.token != CRBRACKET:
                                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
                                         return [], error
-                                    pass
                                 
                     #next is yung new line, curly brackerts and stamements
         return res, error

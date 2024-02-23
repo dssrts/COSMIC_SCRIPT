@@ -8,9 +8,9 @@ import lexer
 import sys
 
 OUTPUT_PATH = Path(__file__).parent
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Melissa\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -103,9 +103,9 @@ def run_syntax():
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
-#ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\logo-automata.png')
-ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
+#ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
 root.wm_iconphoto(False, photo)
 root.title("Cosmic Script")
