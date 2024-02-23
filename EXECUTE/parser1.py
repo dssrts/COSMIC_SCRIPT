@@ -1548,7 +1548,11 @@ class Parser:
 
         
         #TODO: CHECK IF MAY TAKEOFF SA START
-        
+        while self.current_tok.token != TAKEOFF:
+            self.advance()
+            print("is this eof? :", self.current_tok.token)
+            if self.current_tok.token == EOF:
+                return [], []
         #TODO: CHECK IF MAY UNIVERSE DECLARATION
 
         #TODO: CHECK FOR FORM
@@ -1562,6 +1566,10 @@ class Parser:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()
+            if self.current_tok.token == TAKEOFF:
+                self.advance()
+                if self.current_tok.token == SEMICOLON:
+                    self.advance()
             if self.current_tok.token == NEWLINE:
                 self.advance()
                      
@@ -1586,16 +1594,7 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
                     self.advance()
 
-            if self.current_tok.token == GALAXY:
-                print("youve got a galaxy token")
-                g_res, g_error = self.galaxy()
-
-                if g_error:
-                    for err in g_error:
-                        error.append(err)
-                    break
-                else:
-                    res.extend(g_res)
+            
 
             #functions
             if self.current_tok.token == FORM:
@@ -1608,6 +1607,17 @@ class Parser:
                     break
                 else:
                     res.extend(form_res)
+
+            if self.current_tok.token == GALAXY:
+                print("youve got a galaxy token")
+                g_res, g_error = self.galaxy()
+
+                if g_error:
+                    for err in g_error:
+                        error.append(err)
+                    break
+                else:
+                    res.extend(g_res)
             
             if self.current_tok.token == CRBRACKET:
                 break
