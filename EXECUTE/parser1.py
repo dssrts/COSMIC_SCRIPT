@@ -1823,8 +1823,8 @@ class Parser:
                 else:
                     for fres in else_res:
                         res.append(fres)
-                        self.advance()
                         print("current token from if parse: ", self.current_tok)
+                    self.advance()
 
             if self.current_tok.token in ELSEIF:
                 print("this is an elif statement")
@@ -1837,8 +1837,8 @@ class Parser:
                 else:
                     for fres in elif_res:
                         res.append(fres)
-                        self.advance()
                         print("current token from elseif parse: ", self.current_tok)
+                    self.advance()
 
 
             #INPUT OUTPUT
