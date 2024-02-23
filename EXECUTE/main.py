@@ -12,6 +12,8 @@ OUTPUT_PATH = Path(__file__).parent
 # ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Melissa\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 # ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+# List to store the history of input text changes
+input_history = []
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -23,6 +25,17 @@ def input_entry(widget):
 def input_out(widget):
     input_text.configure(bg="#817ACD")
     input_text.configure(bd=0)
+    
+# Function to undo changes in the input_text widget
+def clear():
+    global last_input_text
+    input_text.delete("1.0", tk.END)
+    input_text.insert(tk.END, last_input_text)
+
+# Function to save the current input text for undo functionality
+def save_changes(event):
+    global last_input_text
+    last_input_text = input_text.get("1.0", tk.END)
 
 # def remove_player(videoplayer,window):
 #     videoplayer.destroy()
@@ -104,7 +117,7 @@ def run_syntax():
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
-ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+#ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\logo-automata.png')
 #ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
@@ -203,6 +216,15 @@ semantic_button.configure(relief="flat")
 syntax_button = tk.Button(root, text="Syntax", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=run_syntax)
 syntax_button.place(x=348.0, y=437.0, width=123.0, height=39.0)
 syntax_button.configure(relief="flat")
+
+# Undo button to undo changes
+clear_button = tk.Button(root, text="Clear", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=clear)
+clear_button.place(x=1100.0, y=437.0, width=123.0, height=39.0)
+clear_button.configure(relief="flat")
+
+# Save the initial input text for undo functionality
+last_input_text = ""
+input_text.bind("<FocusOut>", save_changes)
 
 # Redirect error output to the errors window
 class ErrorOutput(object):
