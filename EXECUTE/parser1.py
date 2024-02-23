@@ -1585,7 +1585,7 @@ class Parser:
             #     print("semicolon")
             #     self.advance()
             if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax before galaxy!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
                 break
             else:
                 self.advance()
@@ -1694,6 +1694,8 @@ class Parser:
                 else: 
                     #res.append("SUCCESS from form!")
                     self.advance()
+                    if self.current_tok.token in NEWLINE:
+                        self.advance()
                     if self.current_tok.token == CLBRACKET:
                         print("left curly bracket")
                         
@@ -1728,6 +1730,8 @@ class Parser:
                         self.advance()
             elif self.current_tok.token == RPAREN:
                 self.advance()
+                if self.current_tok.token in NEWLINE:
+                    self.advance()
                 if self.current_tok.token == CLBRACKET:
                     print("left curly bracket")
                     
