@@ -1613,6 +1613,7 @@ class Parser:
                     res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
+                self.in_galaxy == True
                 print("youve got a galaxy token")
                 g_res, g_error = self.galaxy()
 
@@ -1623,9 +1624,7 @@ class Parser:
                 else:
                     res.extend(g_res)
 
-            else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID SYNTAX BEFORE GALAXY"))
-                break
+            
             
             if self.current_tok.token == CRBRACKET:
                 break
@@ -2264,7 +2263,7 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon"))
 
                 else:
-                    res.append("SUCCESS!")
+                    res.append(["SUCCESS from inner!"])
 
         return res, error
 
