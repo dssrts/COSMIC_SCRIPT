@@ -1622,6 +1622,10 @@ class Parser:
                     break
                 else:
                     res.extend(g_res)
+
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID SYNTAX BEFORE GALAXY"))
+                break
             
             if self.current_tok.token == CRBRACKET:
                 break
