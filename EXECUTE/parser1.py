@@ -1985,7 +1985,7 @@ class Parser:
                 print("init var: ",self.current_tok )
                 
                 if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
                 else:
                     res.append("SUCCESS! from assign")
                     self.advance()
@@ -2042,25 +2042,63 @@ class Parser:
         return res, error
     
     def assign_val(self):
+        is_function = False
         print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
         self.advance()
         if self.current_tok.token == STRING:
             print("string here")
             self.advance()
-            return True
-        if self.current_tok.token == INTEL or self.current_tok.token == IDENTIFIER:
-            print("theres  a number/identifier here here")
-            self.advance()
             print("operator", self.current_tok)
-            while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
-                print("IN THE OPERATORS LOOP")
+            while self.current_tok.token in PLUS:
+                print("IN THE STRING LOOP for concatenation")
                 self.advance()
-                if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL:
+                if self.current_tok.token == STRING:
                     self.advance()
                 else:
                     #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
                     return False
             return True
+        if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
+            if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+                print("theres  a number here here")
+                self.advance()
+                print("operator", self.current_tok)
+                while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
+                    print("IN THE OPERATORS LOOP")
+                    self.advance()
+                    if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+                        self.advance()
+                    else:
+                        #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                        return False
+                return True
+            
+            elif self.current_tok.token == IDENTIFIER:
+                print("we assigned a function call to a variable")
+                self.advance()
+                if self.current_tok.token == LPAREN:
+                    c_form, call_form_error = self.call_form()
+                    print("token after call form in assign val: ", self.current_tok.token)
+                    #self.advance()
+                    print('call form result in assign val:', c_form)
+                    if call_form_error:
+                        return False
+                    else:
+                        return True
+                else:
+                    print("theres  an identifier here here")
+                    self.advance()
+                    print("operator", self.current_tok)
+                    while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
+                        print("IN THE OPERATORS LOOP")
+                        self.advance()
+                        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL:
+                            self.advance()
+                        else:
+                            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                            return False
+                    return True
+
         else:
             return False
         
@@ -2207,21 +2245,21 @@ class Parser:
 
                         print("current token from no error function call: ", self.current_tok.token)
                         if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from call form!"))
                         
                         else:
                             
                             res.append(["SUCCESS from function call!"])
-                            self.advance()
+                            
             elif self.current_tok.token == RPAREN:
                 print("found no arguments in function call")
                 self.advance()
                 if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
             
                 else: 
                     res.append(["SUCCESS from function call!"])
-                    self.advance()
+                    
 
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
@@ -2233,11 +2271,11 @@ class Parser:
             print("found no arguments in function call")
             self.advance()
             if self.current_tok.token != SEMICOLON:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
         
             else: 
                 res.append(["SUCCESS from function call!"])
-                self.advance()
+                
 
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))

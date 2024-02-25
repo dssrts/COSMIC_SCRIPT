@@ -102,7 +102,7 @@ def run_syntax():
             errors_text.insert(tk.END, err)
     else:
         # If lexer is successful, run syntax parser
-        syntax_result, syntax_error = parser1.run("<stdin>", input_text_str)
+        syntax_result, syntax_error = parser1.run("<cosmic script>", input_text_str)
         if syntax_error:
             for err in syntax_error:
                 errorResult, fileDetail, arrowDetail, arrows = err.as_string()
