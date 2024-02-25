@@ -1531,7 +1531,7 @@ class Parser:
         self.tok_idx = -1
         self.advance()
         self.if_stmt_encountered = False
-        self.in_galaxy = False
+        self.landing = False
 
 
     def advance(self):
@@ -1636,7 +1636,7 @@ class Parser:
                     res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
-                self.in_galaxy == True
+                
                 print("youve got a galaxy token")
                 g_res, g_error = self.galaxy()
 
@@ -1647,7 +1647,13 @@ class Parser:
                 else:
                     res.extend(g_res)
 
-            
+            if self.current_tok.token == LANDING:
+                self.advance()
+                if self.current_tok.token == SEMICOLON:
+                    self.landing = True
+                    return res, error
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Semicolon expected for 'landing'!"))
             
             if self.current_tok.token == CRBRACKET:
                 break
@@ -1656,10 +1662,13 @@ class Parser:
                 # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
                 break
 
-            
+        if self.current_tok.token == EOF:
+            if self.landing ==  True:
+                return res, error
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected 'landing' to end the program!"))
+                return res, error
 
-            
-            
 
 
         return res, error
@@ -1775,15 +1784,6 @@ class Parser:
         error = []
 
         
-        #TODO: CHECK IF MAY TAKEOFF SA START
-        
-        #TODO: CHECK IF MAY UNIVERSE DECLARATION
-
-        #TODO: CHECK FOR FORM
-
-        #TODO IF MAY GALAXY
-
-        #TODO VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
         # * basically yung parse lang pero walang form
 
         while True:
@@ -1947,7 +1947,13 @@ class Parser:
                             res.append(["SUCCESS! from saturn"])
                             self.advance()
                         
-
+                if self.current_tok.token == LANDING:
+                    self.advance()
+                    if self.current_tok.token == SEMICOLON:
+                        self.landing = True
+                        return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Semicolon expected for 'landing'!"))
 
                 if self.current_tok.token == CRBRACKET:
                     break
