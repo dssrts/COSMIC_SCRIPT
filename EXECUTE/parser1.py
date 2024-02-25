@@ -2197,6 +2197,20 @@ class Parser:
                             
                             res.append(["SUCCESS from function call!"])
                             self.advance()
+            elif self.current_tok.token == RPAREN:
+                print("found no arguments in function call")
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+            
+                else: 
+                    res.append(["SUCCESS from function call!"])
+                    self.advance()
+
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
+
+
 
 
         elif self.current_tok.token == RPAREN:
