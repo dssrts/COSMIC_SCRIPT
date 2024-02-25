@@ -1809,51 +1809,16 @@ class Parser:
             if self.current_tok.token == IDENTIFIER:
                 self.advance()
                 if self.current_tok.token == LPAREN:
+                    c_form, call_form_error = self.call_form()
+                    print("token after call form: ", self.current_tok.token)
                     self.advance()
-                    if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or GRAVITY:
-                    # ! THIS PART IS BROKEN
-                        print("current token from callform is: ", self.current_tok.token)
-                        self.advance()
-                        if self.current_tok.token == COMMA:
-                            print("you found a comma in the function call!")
-                            #if comma yung current, find identifier, next, then if comma, next, and repeat
-                            a_error = self.arguments()
-                            print("current token after comma: ", self.current_tok.token)
-                            if a_error:
-                                print("THERES AN ERROR IN THE FUNCTION ARGS")
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal after comma!"))
-                            
-                            else:
-                                print("NO ERROR IN THE FUNCTION ARGS")
-                                if self.current_tok.token != RPAREN:
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
-                                    self.advance()
-                                else: 
-                                    #res.append("SUCCESS from form!")
-
-                                    self.advance()
-
-                                    print("current token from no error function call: ", self.current_tok.token)
-                                    if self.current_tok.token != SEMICOLON:
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                                        
-                                        
-                                    
-                                    else:
-                                        res.append(["SUCCESS from function call!"])
-                                        self.advance()
-
-
-                    elif self.current_tok.token == RPAREN:
-                        self.advance()
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                    print('call form result:', c_form)
+                    if call_form_error:
+                        error.extend(call_form_error)
+                        break
+                    res.append(c_form)
                     
-                        else: 
-                            res.append("SUCCESS from function call!")
-
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
+                    
                     
                     
                 elif self.current_tok.token == EQUAL:
@@ -2191,6 +2156,63 @@ class Parser:
             return res, error
 
         
+        return res, error
+    
+
+    #* CALLING A FORM
+    def call_form(self):
+        res = []
+        error = []
+        
+        self.advance()
+        print("CURRENT TOKEN AFTER LPAREN IN CALL FORM: ", self.current_tok)
+        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token == GRAVITY:
+        
+            print("current token from callform is: ", self.current_tok.token)
+            self.advance()
+            if self.current_tok.token == COMMA:
+                print("you found a comma in the function call!")
+                #if comma yung current, find identifier, next, then if comma, next, and repeat
+                a_error = self.arguments()
+                print("current token after comma: ", self.current_tok.token)
+                if a_error:
+                    print("THERES AN ERROR IN THE FUNCTION ARGS")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal after comma!"))
+                
+                else:
+                    print("NO ERROR IN THE FUNCTION ARGS")
+                    if self.current_tok.token != RPAREN:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                        self.advance()
+                    else: 
+                        #res.append("SUCCESS from form!")
+
+                        self.advance()
+
+                        print("current token from no error function call: ", self.current_tok.token)
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                        
+                        else:
+                            
+                            res.append(["SUCCESS from function call!"])
+                            self.advance()
+
+
+        elif self.current_tok.token == RPAREN:
+            print("found no arguments in function call")
+            self.advance()
+            if self.current_tok.token != SEMICOLON:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+        
+            else: 
+                res.append(["SUCCESS from function call!"])
+                self.advance()
+
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
+
+        print("RES FROM CALL FROM FUNCTION: ", res)
         return res, error
     
     def comma(self):
