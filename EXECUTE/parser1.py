@@ -1920,7 +1920,7 @@ class Parser:
                     if var_error:
                         error.extend(var_error)
                         break
-                    res.append(var)
+                    #res.append(var)
                     #self.advance()
                     print("current token from var dec parse: ", self.current_tok)
                     
@@ -1928,6 +1928,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec body!"))
                     else:
                         self.advance()
+                        res.append(["SUCCESS from variable declaration!"])
                 
                 
                 if self.current_tok.token in FORM:
@@ -2014,15 +2015,14 @@ class Parser:
                 if self.current_tok.token == EQUAL:
                     print("value after equal: ", self.current_tok)
                     assign = self.assign_val()
-                if assign == True:
+                    if assign == True:
+                        print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
+                        
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                        #self.advance()
                     
-                    print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
-                    
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                    #self.advance()
-                    
-                if self.current_tok.token == COMMA:
+                elif self.current_tok.token == COMMA:
                     print("there's a comma here")
                     comma, c_error = self.var_dec()
                     print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
@@ -2034,6 +2034,7 @@ class Parser:
                         for c in comma:
                             res.append(c)
                 res.append("SUCCESS! from variable declaration")
+            
             #var a, b
 
             # else:
@@ -2061,7 +2062,7 @@ class Parser:
                     #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
                     return False
             return True
-        if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
+        elif self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 print("theres  a number here here")
                 self.advance()
