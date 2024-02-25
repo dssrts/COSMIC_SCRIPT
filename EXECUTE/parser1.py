@@ -1570,14 +1570,7 @@ class Parser:
                 self.advance()
                 
             
-                
-        #TODO: CHECK IF MAY UNIVERSE DECLARATION
 
-        #TODO: CHECK FOR FORM
-
-        #TODO IF MAY GALAXY
-
-        #TODO VAR, INNER, OUTER, ASSIGN, IF, ELSE SHIFT, FORCE, WHIRL, DO
         # * basically yung parse lang pero walang form
 
         while True:
@@ -1610,18 +1603,20 @@ class Parser:
                     if var_error:
                         error.extend(var_error)
                         break
-                    res.append(var)
+                    #res.append(var)
                     #self.advance()
-                    print("current token from var dec parse: ", self.current_tok)
+                    print("current token from global var dec parse: ", self.current_tok)
                     
                     if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec parse!"))
                     else:
                         self.advance()
+                        res.append(["SUCCESS from global dec!"])
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
                     break
-            
+
+            # ? pwede i-bring back pag need specific
             # if self.current_tok.token in VAR:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global declaration!"))
             #     break
@@ -1928,7 +1923,7 @@ class Parser:
                     print("current token from var dec parse: ", self.current_tok)
                     
                     if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec body!"))
                     else:
                         self.advance()
                 
@@ -2033,8 +2028,8 @@ class Parser:
                 res.append("SUCCESS! from variable declaration")
             #var a, b
 
-            else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization, no equal sign after identifier!"))
+            # else:
+            #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization, no equal sign after identifier!"))
                 
                
                 #self.advance()
