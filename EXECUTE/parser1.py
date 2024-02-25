@@ -1850,9 +1850,41 @@ class Parser:
                     
                     
                 if self.current_tok.token in WHIRL:
-                    print("this is a do statement")
-                    res, error = self.whirl_stmt()
                     self.advance()
+                    w_res, w_error = self.whirl()
+                    print("token after whirl:", self.current_tok)
+                    if w_error:
+                        for err in w_error:
+                            error.append(err)
+                        return [], error
+                    else:
+                        #res.append(w_res)
+                        self.advance()
+                        if self.current_tok.token == CLBRACKET:
+                            self.advance()
+                            w_result, w_err = self.body()
+                            print("w res: ", res)
+                            if w_err:
+                                print("THERES  AN ERROR INSIDE THE WHIRL SCOPE")
+                                for err in w_err:
+                                    error.append(err)
+                                return [], error
+                            else:
+                                print("successful whirl!")
+                                for w in w_result:
+                                    res.append(w)
+                                    print("whirl res: ", w_res)
+                                #res.append(["SUCCESS from whirl!!"])
+                                print("whirl bracket?: ", self.current_tok)
+                                if self.current_tok.token != CRBRACKET:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket for whirl!"))
+                                    return [], error
+                                else:
+                                    res.append(["SUCCESS from whirl"])
+                                    self.advance()
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
+
                 
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
@@ -2500,41 +2532,37 @@ class Parser:
         return res, error
     #function of whirl:
 
-    def whirl_stmt(self):
+    def whirl(self):
         res = []
         error = []
-        self.advance()
-        if self.current_tok.token != LPAREN:
-            print("no lparen")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-        else:
+
+        if self.current_tok.token == LPAREN:
             self.advance()
-            if self.current_tok.token != IDENTIFIER:
-                print("no ident")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-            else: 
+            if self.current_tok.token == IDENTIFIER:
                 self.advance()
-                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
-                    print("no condition")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
-                else:
+                if self.current_tok.token == E_EQUAL or self.current_tok.token == LESS_THAN or self.current_tok.token == GREATER_THAN or self.current_tok.token == GREATER_THAN_EQUAL or self.current_tok.token == LESS_THAN_EQUAL or self.current_tok.token == NOT_EQUAL:
                     self.advance()
-                    if self.current_tok.token != INTEL:
-                        print("not an intel")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                    else: 
+                    if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
                         self.advance()
-                        if self.current_tok.token != RPAREN:
-                            print("no rparen")
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                        if self.current_tok.token == RPAREN:
+                            res.append('SUCCESS from whirl!')
                         else:
-                            self.advance()
-                            if self.current_tok.token != SEMICOLON:
-                                print("no semicolon")
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                            else:
-                                res.append("SUCCESS")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
+                        
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected relational operator!"))
+
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier for whirl!"))
+
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected condition for whirl!"))
+
         return res, error
+
 
     #CONDITIONAL
     #FUNC FOR IF, ELSE, ELSEIF
