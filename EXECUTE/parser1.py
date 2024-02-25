@@ -1554,7 +1554,7 @@ class Parser:
             while self.current_tok.token != NEWLINE:
                 self.advance()
             self.advance()
-        print("after comment:", self.current_tok)
+            print("after comment:", self.current_tok)
                 
         
         #TODO: CHECK IF MAY TAKEOFF SA START
@@ -1597,7 +1597,7 @@ class Parser:
                 while self.current_tok.token != NEWLINE:
                     self.advance()
                 self.advance()
-            print("after comment:", self.current_tok)
+                print("after comment:", self.current_tok)
         
             
                      
