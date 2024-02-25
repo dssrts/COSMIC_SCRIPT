@@ -1990,7 +1990,7 @@ class Parser:
         
         res = []
         error = []
-        self.advance()
+        
         if self.current_tok.token == EQUAL:
             assign = self.assign_val()
             if assign == True:
