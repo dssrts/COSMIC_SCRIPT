@@ -1611,7 +1611,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec parse!"))
                     else:
                         self.advance()
-                        res.append(["SUCCESS from global dec!"])
+                        res.append(["SUCCESS from global declaration!"])
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
                     break
