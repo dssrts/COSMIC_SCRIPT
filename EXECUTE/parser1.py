@@ -443,7 +443,7 @@ class Lexer:
                         tokens.append(Token(M_OPEN_COMET, "//*"))
                         self.advance()# for multi comment
                 elif self.current_char == "*":
-                    tokens.append(Token(S_COMET, "/*"))# for single comet
+                    tokens.append(Token(S_COMET, "/*", pos_start = self.pos))# for single comet
                     self.advance()
                 
                 else:
@@ -1655,6 +1655,8 @@ class Parser:
             if self.current_tok.token == EOF:
                 # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
                 break
+
+            
 
             
             
