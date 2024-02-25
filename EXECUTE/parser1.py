@@ -829,7 +829,7 @@ class Lexer:
                     if self.current_char not in block_delim:
                         errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
                         return [], errors
-                    return Token(DO, "do"), errors
+                    return Token(DO, "do", pos_start = self.pos), errors
                 
                 
             if self.current_char == "e": #else, else if, entity
@@ -1392,7 +1392,7 @@ class Lexer:
                                 if self.current_char not in loop_delim:
                                     errors.extend([f'Invalid delimiter for whirl! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(WHIRL, "whirl"), errors
+                                return Token(WHIRL, "whirl", pos_start = self.pos), errors
                 else:
                     ident_count += 1
                     if ident_count > 10:
@@ -1470,10 +1470,7 @@ class Lexer:
             errors.append("Expected closing quotation mark!")
             return [], errors
        
-             
-   
-        
-        
+                  
 #NODES
 class NumberNode:
     def __init__(self, tok):
@@ -1533,13 +1530,13 @@ class Parser:
         self.if_stmt_encountered = False
         self.landing = False
 
-
     def advance(self):
         self.tok_idx += 1
         if self.tok_idx < len(self.tokens):
             self.current_tok = self.tokens[self.tok_idx]
         return self.current_tok
     
+    #* parse takes the list of tokens then  deciedes which functions to execute based on the token
     def parse(self):
         res =  []
         error = []
@@ -1557,7 +1554,7 @@ class Parser:
             print("after comment:", self.current_tok)
                 
         
-        #TODO: CHECK IF MAY TAKEOFF SA START
+        
         if self.current_tok.token != TAKEOFF:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Type 'takeoff' start the program!"))
             return [], error
@@ -1672,6 +1669,8 @@ class Parser:
 
 
         return res, error
+    
+    #* controls what happens when the compiler encounters the galaxy token
     def galaxy(self):
         res = []
         error = []
@@ -1778,7 +1777,7 @@ class Parser:
     
         return res, error
 
-
+    #* body controls the user defined functions as well as the main gaalxy function
     def body(self):
         res =  []
         error = []
@@ -1884,7 +1883,19 @@ class Parser:
                                     self.advance()
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
-
+                
+                #TODO: do whirl
+                if self.current_tok.token == DO:
+                    print("there's a do token!")
+                    self.advance()
+                    do_res, do_err = self.do_whirl()
+                    if do_err:
+                        for err in do_err:
+                            error.append(err)
+                        return [], error
+                    else:
+                        self.advance()
+                        res.append(do_res)
                 
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
@@ -2002,13 +2013,14 @@ class Parser:
 
         return res, error
     
+    # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL:
             return True
         else:
             return False
 
-
+    #* initialize a variable
     def init_var(self):
         
         res = []
@@ -2031,6 +2043,7 @@ class Parser:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from initialize variable"))
         return res, error
     
+    #*declare a variable
     def var_dec(self):
         res = []
         error = []
@@ -2077,6 +2090,7 @@ class Parser:
 
         return res, error
     
+    #* assign a value of a variable
     def assign_val(self):
         is_function = False
         print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
@@ -2138,6 +2152,7 @@ class Parser:
         else:
             return False
         
+    #* DECLARING A FORM
     def init_form(self):
         res = []
         error = []
@@ -2248,7 +2263,6 @@ class Parser:
         
         return res, error
     
-
     #* CALLING A FORM
     def call_form(self):
         res = []
@@ -2319,17 +2333,6 @@ class Parser:
         print("RES FROM CALL FROM FUNCTION: ", res)
         return res, error
     
-    def comma(self):
-        error = False
-        while self.current_tok.token  == COMMA:
-            self.advance()
-            if self.current_tok.token == IDENTIFIER:
-                self.advance()
-            else:
-                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                error = True
-        return error
-    
     def arguments (self):
         error = False
         while self.current_tok.token  == COMMA:
@@ -2341,6 +2344,18 @@ class Parser:
                 error = True
         return error
 
+    def comma(self):
+        error = False
+        while self.current_tok.token  == COMMA:
+            self.advance()
+            if self.current_tok.token == IDENTIFIER:
+                self.advance()
+            else:
+                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                error = True
+        return error
+    
+    #*LOOPING STATEMENTS
     def force_stmt(self):
         res = []
         error = []
@@ -2478,64 +2493,60 @@ class Parser:
                                                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Syntax Error!"))
                                                     #next is yung new line, curly brackerts and stamements
         return res, error
-
-    #function ng inner
-    def inner_stmt(self):
+    
+    def do_whirl(self):
         res = []
         error = []
-        self.advance()
 
-        # Check if the next token is the inner delimiter ">>"
-        if self.current_tok.token != ">>":
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax, expected '>>'"))
-        else:
+        if self.current_tok.token == CLBRACKET:
             self.advance()
-            # Check if the next token is an identifier
-            if self.current_tok.token != IDENTIFIER:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier"))
-                self.advance()
+            do_res, do_error = self.body()
+            print("do res: ", res)
+            if do_error:
+                print("THERES  AN ERROR INSIDE THE DO SCOPE")
+                for err in do_error:
+                    error.append(err)
                 return [], error
             else:
-                self.advance()
-        # Check if the next token is a semicolon
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon"))
+                print("successful do!")
+                for d_res in do_res:
+                    res.extend([d_res])
+                print("do res: ", do_res)
+                
+                print("token  after  success do: ", self.current_tok)
+
+                if self.current_tok.token == CRBRACKET:
+                    #return [], error
+                    self.advance()
+                    if self.current_tok.token == WHIRL:
+                        self.advance()
+                        #TODO connect whirl here
+                        w_res, w_error = self.whirl()
+                        print("token after whirl:", self.current_tok)
+                        if w_error:
+                            for err in w_error:
+                                error.append(err)
+                            return [], error
+                        else:
+                            self.advance()
+                            print("token after whirl in do whirl: ", self.current_tok)
+                            if self.current_tok.token == SEMICOLON:
+                                res.append(["SUCCESS from do whirl"])
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in do whirl!"))
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected whirl condition!"))
 
                 else:
-                    res.append(["SUCCESS from inner!"])
-
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
+                
         return res, error
-
-    #FUNC NG OUTER
-    def outer_stmt(self):
-        res = []
-        error = []
-        self.advance()
-        if self.current_tok.token != OUT:
-            print("no <<")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected '<<' symbol!"))
-        else: 
-            self.advance()
-            if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
-                print("no string")
-                print("current tok from outer: ", self.current_tok.token)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal or identifier!"))
-                self.advance()
-            else: 
-                self.advance()
-                if self.current_tok.token != SEMICOLON:
-                    print("no semicolon")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
-                else:
-                    res.append(["SUCCESS from outer"])
-        
-        return res, error
-    #function of whirl:
 
     def whirl(self):
         res = []
         error = []
-
+        print("first token in whirl: ", self.current_tok)
+        
         if self.current_tok.token == LPAREN:
             self.advance()
             if self.current_tok.token == IDENTIFIER:
@@ -2562,9 +2573,59 @@ class Parser:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected condition for whirl!"))
 
         return res, error
+    
+    #* INPUT OUTPUT STATEMENTS
+    def inner_stmt(self):
+        res = []
+        error = []
+        self.advance()
 
+        # Check if the next token is the inner delimiter ">>"
+        if self.current_tok.token != ">>":
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax, expected '>>'"))
+        else:
+            self.advance()
+            # Check if the next token is an identifier
+            if self.current_tok.token != IDENTIFIER:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier"))
+                self.advance()
+                return [], error
+            else:
+                self.advance()
+        # Check if the next token is a semicolon
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon"))
 
-    #CONDITIONAL
+                else:
+                    res.append(["SUCCESS from inner!"])
+
+        return res, error
+    
+    def outer_stmt(self):
+        res = []
+        error = []
+        self.advance()
+        if self.current_tok.token != OUT:
+            print("no <<")
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected '<<' symbol!"))
+        else: 
+            self.advance()
+            if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
+                print("no string")
+                print("current tok from outer: ", self.current_tok.token)
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal or identifier!"))
+                self.advance()
+            else: 
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    print("no semicolon")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
+                else:
+                    res.append(["SUCCESS from outer"])
+        
+        return res, error
+    
+    #*CONDITIONAL
     #FUNC FOR IF, ELSE, ELSEIF
     def if_stmt(self):
         res = []
@@ -2711,14 +2772,9 @@ class Parser:
                                 
                     #next is yung new line, curly brackerts and stamements
         return res, error
-    
-    def assign_val_whirl(self):
-        self.advance()
-        if self.current_tok.token == INTEL:
-            print("theres  a number here")
-            return True
-        return False
-    
+
+
+#?PARSE RESULT ARE HERE
     def factor(self):
         res = ParseResult()
         tok = self.current_tok
@@ -2786,8 +2842,7 @@ class Parser:
             return left
             
         '''
-        
-    #TODO add parenthesis for term/factor
+   
     #func is rule (expr or term)
     def bin_op(self, func, ops):
         res = ParseResult()
