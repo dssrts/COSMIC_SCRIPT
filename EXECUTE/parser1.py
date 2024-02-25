@@ -1856,7 +1856,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
                     
                     
-                else:
+                elif self.current_tok.token == EQUAL:
                     print("initialize the variable")
                     assign, a_error = self.init_var()
 
@@ -1864,6 +1864,12 @@ class Parser:
                         error.extend(a_error)
                         break
                     res.append(assign)
+
+                else:
+                    print('INVALID IDENT OPERATION')
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
+                    return [], error
+
 
             #LOOPS
             if self.current_tok.token in FORCE:
