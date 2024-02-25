@@ -403,7 +403,7 @@ class Lexer:
                     if self.current_char not in delim2:
                         errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(MINUS, "-")) 
+                    tokens.append(Token(MINUS, "-", pos_start = self.pos)) 
                 
             elif self.current_char == '*': 
                 self.advance()
@@ -942,7 +942,7 @@ class Lexer:
                                 if self.current_char not in inner_delim:
                                     errors.extend([f'Invalid delimiter for inner! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(INNER, "inner"), errors
+                                return Token(INNER, "inner", pos_start = self.pos), errors
                         
             if self.current_char == "f": #false, force, form
                 ident += self.current_char
@@ -1790,173 +1790,189 @@ class Parser:
         # * basically yung parse lang pero walang form
 
         while True:
-            if self.current_tok.token == S_COMET:
-                self.advance()
-                while self.current_tok.token != NEWLINE:
+            if self.is_statement():
+                if self.current_tok.token == S_COMET:
                     self.advance()
-            # if self.current_tok.token == SEMICOLON:
-            #     print("semicolon")
-            #     self.advance()
-            if self.current_tok.token == NEWLINE:
-                self.advance()
-
-            #not working yung intel
-            if self.current_tok.token in INTEL:
-                res = self.expr()
-                print("this is a binary operation")
-
-            #INITIALIZATION
-            if self.current_tok.token == IDENTIFIER:
-                self.advance()
-                if self.current_tok.token == LPAREN:
-                    c_form, call_form_error = self.call_form()
-                    print("token after call form: ", self.current_tok.token)
-                    self.advance()
-                    print('call form result:', c_form)
-                    if call_form_error:
-                        error.extend(call_form_error)
-                        break
-                    res.append(c_form)
-                    
-                    
-                    
-                    
-                elif self.current_tok.token == EQUAL:
-                    print("initialize the variable")
-                    assign, a_error = self.init_var()
-
-                    if a_error:
-                        error.extend(a_error)
-                        break
-                    res.append(assign)
-
-                else:
-                    print('INVALID IDENT OPERATION')
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
-                    return [], error
-
-
-            #LOOPS
-            if self.current_tok.token in FORCE:
-                print("this is a force statement")
-                force_res, force_error = self.force_stmt()
-                self.advance()
-
-                if force_error:
-                    error.extend(force_error)
-                    break
-                else:
-                    for fres in force_res:
-                        res.append(fres)
-                        #self.advance()
-                        print("current token from force dec parse: ", self.current_tok)
-                
-                
-
-            if self.current_tok.token in WHIRL:
-                print("this is a do statement")
-                res, error = self.whirl_stmt()
-                self.advance()
-            
-            if self.current_tok.token in OUTER:
-                print("this is an outer statement")
-                res, error = self.outer_stmt()
-                self.advance()
-
-            #CONDITIONAL
-            if self.current_tok.token in IF:
-                print("this is an if statement")
-                if_res, if_error = self.if_stmt()
-                self.advance() 
-
-                if if_error:
-                    error.extend(if_error)
-                    break
-                else:
-                    for fres in if_res:
-                        res.append(fres)
-                        #self.advance()
-                        print("current token from if parse: ", self.current_tok)
-
-            if self.current_tok.token in ELSE:
-                print("this is an else statement")
-                else_res, else_error = self.else_stmt()
-                self.advance()
-
-                if else_error:
-                    error.extend(else_error)
-                    break
-                else:
-                    for fres in else_res:
-                        res.append(fres)
-                        print("current token from if parse: ", self.current_tok)
-                    self.advance()
-
-            if self.current_tok.token in ELSEIF:
-                print("this is an elif statement")
-                elif_res, elif_error = self.elif_stmt()
-                self.advance()
-
-                if elif_error:
-                    error.extend(elif_error)
-                    break
-                else:
-                    for fres in elif_res:
-                        res.append(fres)
-                        print("current token from elseif parse: ", self.current_tok)
-                    self.advance()
-
-
-            #INPUT OUTPUT
-            if self.current_tok.token in INNER:
-                print("this is an inner statement")
-                res, error = self.inner_stmt()
-                self.advance()
-                     
-            #VAR DECLARATION            
-            if self.current_tok.token in VAR: 
-                print("this is a var token")
-                var, var_error = self.var_dec()
-                if var_error:
-                    error.extend(var_error)
-                    break
-                res.append(var)
-                #self.advance()
-                print("current token from var dec parse: ", self.current_tok)
-                
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
-                else:
-                    self.advance()
-            
-            
-            if self.current_tok.token in FORM:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
-                break
-            
-            if self.current_tok.token == SATURN:
-                self.advance()
-                if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
-                    break
-                else:
-                    self.advance()
-                    if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                    else:
-                        res.append(["SUCCESS! from saturn"])
+                    while self.current_tok.token != NEWLINE:
                         self.advance()
+                # if self.current_tok.token == SEMICOLON:
+                #     print("semicolon")
+                #     self.advance()
+                if self.current_tok.token == NEWLINE:
+                    self.advance()
+
+                #not working yung intel
+                if self.current_tok.token in INTEL:
+                    res = self.expr()
+                    print("this is a binary operation")
+
+                #INITIALIZATION
+                if self.current_tok.token == IDENTIFIER:
+                    self.advance()
+                    if self.current_tok.token == LPAREN:
+                        c_form, call_form_error = self.call_form()
+                        print("token after call form: ", self.current_tok.token)
+                        self.advance()
+                        print('call form result:', c_form)
+                        if call_form_error:
+                            error.extend(call_form_error)
+                            break
+                        res.append(c_form)
+                        
+                        
+                        
+                        
+                    elif self.current_tok.token == EQUAL:
+                        print("initialize the variable")
+                        assign, a_error = self.init_var()
+
+                        if a_error:
+                            error.extend(a_error)
+                            break
+                        res.append(assign)
+
+                    else:
+                        print('INVALID IDENT OPERATION')
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
+                        return [], error
+
+                #LOOPS
+                if self.current_tok.token in FORCE:
+                    print("this is a force statement")
+                    force_res, force_error = self.force_stmt()
+                    self.advance()
+
+                    if force_error:
+                        error.extend(force_error)
+                        break
+                    else:
+                        for fres in force_res:
+                            res.append(fres)
+                            #self.advance()
+                            print("current token from force dec parse: ", self.current_tok)
                     
+                    
+                if self.current_tok.token in WHIRL:
+                    print("this is a do statement")
+                    res, error = self.whirl_stmt()
+                    self.advance()
+                
+                if self.current_tok.token in OUTER:
+                    print("this is an outer statement")
+                    outer_res, outer_error = self.outer_stmt()
+                    self.advance()
+                    if outer_error:
+                        error.extend(outer_error)
+                        break
+                    res.append(outer_res)
+
+                #CONDITIONAL
+                if self.current_tok.token in IF:
+                    print("this is an if statement")
+                    if_res, if_error = self.if_stmt()
+                    self.advance() 
+
+                    if if_error:
+                        error.extend(if_error)
+                        break
+                    else:
+                        for fres in if_res:
+                            res.append(fres)
+                            #self.advance()
+                            print("current token from if parse: ", self.current_tok)
+
+                if self.current_tok.token in ELSE:
+                    print("this is an else statement")
+                    else_res, else_error = self.else_stmt()
+                    self.advance()
+
+                    if else_error:
+                        error.extend(else_error)
+                        break
+                    else:
+                        for fres in else_res:
+                            res.append(fres)
+                            print("current token from if parse: ", self.current_tok)
+                        self.advance()
+
+                if self.current_tok.token in ELSEIF:
+                    print("this is an elif statement")
+                    elif_res, elif_error = self.elif_stmt()
+                    self.advance()
+
+                    if elif_error:
+                        error.extend(elif_error)
+                        break
+                    else:
+                        for fres in elif_res:
+                            res.append(fres)
+                            print("current token from elseif parse: ", self.current_tok)
+                        self.advance()
+
+                #INPUT OUTPUT
+                if self.current_tok.token in INNER:
+                    print("this is an inner statement")
+                    res, error = self.inner_stmt()
+                    self.advance()
+
+                        
+                #VAR DECLARATION            
+                if self.current_tok.token in VAR: 
+                    print("this is a var token")
+                    var, var_error = self.var_dec()
+                    if var_error:
+                        error.extend(var_error)
+                        break
+                    res.append(var)
+                    #self.advance()
+                    print("current token from var dec parse: ", self.current_tok)
+                    
+                    if self.current_tok.token != SEMICOLON:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec!"))
+                    else:
+                        self.advance()
+                
+                
+                if self.current_tok.token in FORM:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
+                    break
+                
+                if self.current_tok.token == SATURN:
+                    self.advance()
+                    if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
+                        break
+                    else:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS! from saturn"])
+                            self.advance()
+                        
 
 
-            if self.current_tok.token == CRBRACKET:
+                if self.current_tok.token == CRBRACKET:
+                    break
+
+                if self.current_tok.token == EOF:
+                    # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
+                    break
+            
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
                 break
 
-            if self.current_tok.token == EOF:
-                # error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "INVALID MAIN SCOPE"))
-                break
 
         return res, error
+    
+    def is_statement(self):
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF:
+            return True
+        else:
+            return False
+
+
     def init_var(self):
         
         res = []
@@ -2403,6 +2419,8 @@ class Parser:
             # Check if the next token is an identifier
             if self.current_tok.token != IDENTIFIER:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier"))
+                self.advance()
+                return [], error
             else:
                 self.advance()
         # Check if the next token is a semicolon
