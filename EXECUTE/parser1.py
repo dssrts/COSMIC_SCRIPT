@@ -383,7 +383,7 @@ class Lexer:
                     if self.current_char not in delim2:
                         errors.extend([f"Invalid delimiter for ' -= '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(MINUS_EQUAL, "-=")) 
+                    tokens.append(Token(MINUS_EQUAL, "-=", pos_start = self.pos)) 
                 elif self.current_char == '-': #for -- decre
                     self.advance()
                     if self.current_char == None:
@@ -423,7 +423,7 @@ class Lexer:
                     if self.current_char not in delim2:
                         errors.extend([f"Invalid delimiter for ' *= '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(MUL_EQUAL, "*=")) 
+                    tokens.append(Token(MUL_EQUAL, "*=", pos_start = self.pos)) 
                 else:
                     
                     if self.current_char == None:
@@ -447,7 +447,7 @@ class Lexer:
                     if self.current_char not in delim2:
                         errors.extend([f"Invalid delimiter for ' /= '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(DIV_EQUAL, "/="))
+                    tokens.append(Token(DIV_EQUAL, "/=", pos_start, self.pos))
                 elif self.current_char == '/': #for 
                     self.advance()
                     if self.current_char == "*":
