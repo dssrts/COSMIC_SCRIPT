@@ -509,7 +509,7 @@ class Lexer:
                     errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '%')])
                     
                     continue
-                tokens.append(Token(MODULUS, "%"))
+                tokens.append(Token(MODULUS, "%", pos_start=self.pos))
                 
             elif self.current_char == '!': #logical operators (!, &&, ||)
                 self.advance()
@@ -2248,7 +2248,7 @@ class Parser:
         else:
             return False
         
-        while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
+        while self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
             print("IN THE OPERATORS NUM LOOP")
             self.advance()
             if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
