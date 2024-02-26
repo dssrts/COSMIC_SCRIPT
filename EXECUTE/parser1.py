@@ -326,7 +326,7 @@ class Lexer:
                     if self.current_char not in all_letters+space_delim:
                         errors.extend([f"Invalid delimiter for ' >> '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(IN, ">>"))
+                    tokens.append(Token(IN, ">>", pos_start = self.pos))
                     
                 else:
                     if self.current_char == None:
