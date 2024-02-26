@@ -2047,6 +2047,7 @@ class Parser:
             
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
+                print("FOUND AN INVALID CHARACTER")
                 break
 
 
