@@ -2228,12 +2228,7 @@ class Parser:
                     else:
                         return True
                 else:
-                    print("theres  an identifier here here")
-                    print("current tok here: ", self.current_tok.token)
-                    if self.current_tok.token == SEMICOLON:
-                        return True
-                    else:
-                        return False
+                    return True;
                         
                     
 
