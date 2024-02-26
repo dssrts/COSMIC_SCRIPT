@@ -413,6 +413,16 @@ class Lexer:
                         self.advance()
                         if self.current_char == None:
                             tokens.append(Token(M_END_COMET, "*//"))
+
+                elif self.current_char == "=":
+                    self.advance()
+                    if self.current_char == None:
+                        errors.extend([f"Invalid delimiter for ' *= '. Cause: ' {self.current_char} '"])
+                        continue
+                    if self.current_char not in delim2:
+                        errors.extend([f"Invalid delimiter for ' *= '. Cause: ' {self.current_char} '"])
+                        continue
+                    tokens.append(Token(MUL_EQUAL, "*=")) 
                 else:
                     
                     if self.current_char == None:
