@@ -1786,6 +1786,7 @@ class Parser:
         # * basically yung parse lang pero walang form
 
         while True:
+            #* check if token has a valid operation
             if self.is_statement():
                 if self.current_tok.token == S_COMET:
                     self.advance()
@@ -1797,10 +1798,10 @@ class Parser:
                 if self.current_tok.token == NEWLINE:
                     self.advance()
 
-                #not working yung intel
-                if self.current_tok.token in INTEL:
-                    res = self.expr()
-                    print("this is a binary operation")
+                # not working yung intel
+                # if self.current_tok.token in INTEL:
+                #     res = self.expr()
+                #     print("this is a binary operation")
 
                 #INITIALIZATION
                 #* IDENTIFIER OPERATIONS
@@ -1845,7 +1846,32 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
                         return [], error
 
-                #LOOPS
+                # * UNARY STATEMENTS
+                if self.current_tok.token == INCRE:
+                    self.advance()
+                    if self.current_tok.token == IDENTIFIER:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS from unary pre increment"])
+                            self.advance()
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
+
+                if self.current_tok.token == DECRE:
+                    self.advance()
+                    if self.current_tok.token == IDENTIFIER:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS from unary pre decrement"])
+                            self.advance()
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
+
+                #* LOOPS
                 if self.current_tok.token in FORCE:
                     print("this is a force statement")
                     force_res, force_error = self.force_stmt()
@@ -1898,18 +1924,6 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
                 
                 
-                if self.current_tok.token == DO:
-                    print("there's a do token!")
-                    self.advance()
-                    do_res, do_err = self.do_whirl()
-                    if do_err:
-                        for err in do_err:
-                            error.append(err)
-                        return [], error
-                    else:
-                        self.advance()
-                        res.append(do_res)
-                
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
@@ -1919,7 +1933,7 @@ class Parser:
                         break
                     res.append(outer_res)
 
-                #CONDITIONAL
+                #* CONDITIONAL
                 if self.current_tok.token in IF:
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
@@ -1962,14 +1976,25 @@ class Parser:
                             print("current token from elseif parse: ", self.current_tok)
                         self.advance()
 
-                #INPUT OUTPUT
+                #* INPUT OUTPUT
                 if self.current_tok.token in INNER:
                     print("this is an inner statement")
                     res, error = self.inner_stmt()
                     self.advance()
-
+                
+                if self.current_tok.token == DO:
+                    print("there's a do token!")
+                    self.advance()
+                    do_res, do_err = self.do_whirl()
+                    if do_err:
+                        for err in do_err:
+                            error.append(err)
+                        return [], error
+                    else:
+                        self.advance()
+                        res.append(do_res)
                         
-                #VAR DECLARATION            
+                #* VAR DECLARATION            
                 if self.current_tok.token in VAR: 
                     print("this is a var token")
                     var, var_error = self.var_dec()
@@ -1986,11 +2011,12 @@ class Parser:
                         self.advance()
                         res.append(["SUCCESS from variable declaration!"])
                 
-                
+                # * YOU CANT DECLARE A FUNCTION WITHIN A FUNCTION
                 if self.current_tok.token in FORM:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
                     break
                 
+                #* RETURN STATEMENTS
                 if self.current_tok.token == SATURN:
                     self.advance()
                     if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
