@@ -2249,20 +2249,50 @@ class Parser:
                     print("NO CLOSING PAREN FOUND")
                     return False
                 else:
+                    print("after initial  paren: ", self.current_tok)
                     print("CLOSING PAREN")
                     self.advance()
-                    print("token after closing paren: ", self.current_tok)
-                    return True
+                    print("token after closing paren in assign val: ", self.current_tok)
+                    if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                        self.advance()
+                    else:
+                        return True
+                    check = self.num_loop()
+                    if check:
+                        if self.current_tok.token == SEMICOLON:
+                            return True
+                        else:
+                            return False
+                    else:
+                        return False
             else:
                 return False
         else:
             return False
         
     def num_loop(self):
-        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+        print("FIRST TOKEN IN NUM LOOP: ", self.current_tok)
+        if self.current_tok.token == LPAREN:
             self.advance()
-        else:
+            check = self.num_loop()
+            if check:
+                print("NUM LOOP SEEMS GOOD")
+                if self.current_tok.token != RPAREN:
+                    print("NO CLOSING PAREN FOUND")
+                    return False
+                else:
+                    print("CLOSING PAREN in num loop")
+                    self.advance()
+                    print("after first parenthesis in num loop: ", self.current_tok)
+                    self.advance()
+            else:
+                return False 
+        if self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token and GRAVITY:
             return False
+        else:
+            self.advance()
+        
+        
         
         while self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
             print("IN THE OPERATORS NUM LOOP")
@@ -2279,13 +2309,14 @@ class Parser:
                         print("NO CLOSING PAREN FOUND")
                         return False
                     else:
-                        print("CLOSING PAREN")
+                        print("CLOSING PAREN in num loop")
                         self.advance()
                         #return True
                 else:
                     return False 
             else:
                 return False
+                
         print("after num loop loop token: ", self.current_tok)
         
         # TODO 
