@@ -435,7 +435,11 @@ class Lexer:
                         self.advance()# for multi comment
                 elif self.current_char == "*":
                     tokens.append(Token(S_COMET, "/*"))# for single comet
-                    self.advance()
+                    #self.advance()
+                    while self.current_char != "\n":
+                        self.advance()
+                        print("CURRENT CHAR IN TOKEN: ", self.current_char)
+                    
                 
                 else:
                     
