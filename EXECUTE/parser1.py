@@ -1803,6 +1803,7 @@ class Parser:
                     print("this is a binary operation")
 
                 #INITIALIZATION
+                #* IDENTIFIER OPERATIONS
                 if self.current_tok.token == IDENTIFIER:
                     self.advance()
                     if self.current_tok.token == LPAREN:
@@ -1830,6 +1831,13 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
                         else:
                             res.append(["SUCCESS from unary post increment"])
+                            self.advance()
+                    elif self.current_tok.token == DECRE:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS from unary post decrement"])
                             self.advance()
 
                     else:
