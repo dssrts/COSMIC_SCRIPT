@@ -1624,7 +1624,7 @@ class Parser:
                         break
                 self.advance()
 
-            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING :
+            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING :
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
                 break
             else:
