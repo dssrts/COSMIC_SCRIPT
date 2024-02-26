@@ -1786,7 +1786,6 @@ class Parser:
         # * basically yung parse lang pero walang form
 
         while True:
-            #* check if token has a valid operation
             if self.is_statement():
                 if self.current_tok.token == S_COMET:
                     self.advance()
@@ -1798,13 +1797,12 @@ class Parser:
                 if self.current_tok.token == NEWLINE:
                     self.advance()
 
-                # not working yung intel
-                # if self.current_tok.token in INTEL:
-                #     res = self.expr()
-                #     print("this is a binary operation")
+                #not working yung intel
+                if self.current_tok.token in INTEL:
+                    res = self.expr()
+                    print("this is a binary operation")
 
                 #INITIALIZATION
-                #* IDENTIFIER OPERATIONS
                 if self.current_tok.token == IDENTIFIER:
                     self.advance()
                     if self.current_tok.token == LPAREN:
@@ -1846,7 +1844,6 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
                         return [], error
 
-                # * UNARY STATEMENTS
                 if self.current_tok.token == INCRE:
                     self.advance()
                     if self.current_tok.token == IDENTIFIER:
@@ -1870,8 +1867,7 @@ class Parser:
                             self.advance()
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
-
-                #* LOOPS
+                #LOOPS
                 if self.current_tok.token in FORCE:
                     print("this is a force statement")
                     force_res, force_error = self.force_stmt()
@@ -1924,6 +1920,18 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
                 
                 
+                if self.current_tok.token == DO:
+                    print("there's a do token!")
+                    self.advance()
+                    do_res, do_err = self.do_whirl()
+                    if do_err:
+                        for err in do_err:
+                            error.append(err)
+                        return [], error
+                    else:
+                        self.advance()
+                        res.append(do_res)
+                
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
@@ -1933,7 +1941,7 @@ class Parser:
                         break
                     res.append(outer_res)
 
-                #* CONDITIONAL
+                #CONDITIONAL
                 if self.current_tok.token in IF:
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
@@ -1976,25 +1984,14 @@ class Parser:
                             print("current token from elseif parse: ", self.current_tok)
                         self.advance()
 
-                #* INPUT OUTPUT
+                #INPUT OUTPUT
                 if self.current_tok.token in INNER:
                     print("this is an inner statement")
                     res, error = self.inner_stmt()
                     self.advance()
-                
-                if self.current_tok.token == DO:
-                    print("there's a do token!")
-                    self.advance()
-                    do_res, do_err = self.do_whirl()
-                    if do_err:
-                        for err in do_err:
-                            error.append(err)
-                        return [], error
-                    else:
-                        self.advance()
-                        res.append(do_res)
+
                         
-                #* VAR DECLARATION            
+                #VAR DECLARATION            
                 if self.current_tok.token in VAR: 
                     print("this is a var token")
                     var, var_error = self.var_dec()
@@ -2011,12 +2008,11 @@ class Parser:
                         self.advance()
                         res.append(["SUCCESS from variable declaration!"])
                 
-                # * YOU CANT DECLARE A FUNCTION WITHIN A FUNCTION
+                
                 if self.current_tok.token in FORM:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "You can't declare a function within a function!"))
                     break
                 
-                #* RETURN STATEMENTS
                 if self.current_tok.token == SATURN:
                     self.advance()
                     if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
@@ -2047,7 +2043,6 @@ class Parser:
             
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
-                print("FOUND AN INVALID CHARACTER")
                 break
 
 
@@ -2055,7 +2050,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token in INCRE or self.current_tok.token in DECRE:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE:
             return True
         else:
             return False
