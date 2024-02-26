@@ -1815,9 +1815,7 @@ class Parser:
                             break
                         res.append(c_form)
                         
-                        
-                        
-                        
+                               
                     elif self.current_tok.token == EQUAL:
                         print("initialize the variable")
                         assign, a_error = self.init_var()
@@ -1826,6 +1824,13 @@ class Parser:
                             error.extend(a_error)
                             break
                         res.append(assign)
+                    elif self.current_tok.token == INCRE:
+                        self.advance()
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS from unary post increment"])
+                            self.advance()
 
                     else:
                         print('INVALID IDENT OPERATION')
@@ -1884,7 +1889,7 @@ class Parser:
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
                 
-                #TODO: do whirl
+                
                 if self.current_tok.token == DO:
                     print("there's a do token!")
                     self.advance()
@@ -2015,7 +2020,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token in INCRE or self.current_tok.token in DECRE:
             return True
         else:
             return False
