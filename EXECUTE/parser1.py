@@ -459,6 +459,8 @@ class Lexer:
                             self.advance()
                             if self.current_char == "*":
                                 break
+                            if self.current_char == None:
+                                break
                             comment += self.current_char
                             print("CURRENT CHAR IN TOKEN: ", self.current_char)
                         print("CURRENT CHAR AFTER LOOP: ", self.current_char)
@@ -1590,6 +1592,9 @@ class Parser:
                 self.advance()
             self.advance()
             print("after comment:", self.current_tok)
+        if self.current_tok.token == M_OPEN_COMET:
+            while self.current_tok.token != M_END_COMET:
+                self.advance()
                 
         
         
@@ -1612,7 +1617,10 @@ class Parser:
             # if self.current_tok.token == SEMICOLON:
             #     print("semicolon")
             #     self.advance()
-            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY:
+            if self.current_tok.token == M_OPEN_COMET:
+                while self.current_tok.token != M_END_COMET:
+                    self.advance()
+            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
                 break
             else:
@@ -1825,6 +1833,11 @@ class Parser:
 
         while True:
             if self.is_statement():
+                if self.current_tok.token == M_OPEN_COMET:
+                    print("found multi line comment")
+                    while self.current_tok.token != M_END_COMET:
+                        self.advance()
+                    self.advance()
                 if self.current_tok.token == S_COMET:
                     self.advance()
                     while self.current_tok.token != NEWLINE:
@@ -2088,7 +2101,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET:
             return True
         else:
             return False

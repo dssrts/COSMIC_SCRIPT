@@ -440,6 +440,8 @@ class Lexer:
                             self.advance()
                             if self.current_char == "*":
                                 break
+                            if self.current_char == None:
+                                break
                             comment += self.current_char
                             print("CURRENT CHAR IN TOKEN: ", self.current_char)
                         print("CURRENT CHAR AFTER LOOP: ", self.current_char)
