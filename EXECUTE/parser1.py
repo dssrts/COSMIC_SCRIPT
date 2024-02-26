@@ -2229,17 +2229,13 @@ class Parser:
                         return True
                 else:
                     print("theres  an identifier here here")
-                    self.advance()
-                    print("operator", self.current_tok)
-                    while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
-                        print("IN THE OPERATORS LOOP")
-                        self.advance()
-                        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL:
-                            self.advance()
-                        else:
-                            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                            return False
-                    return True
+                    print("current tok here: ", self.current_tok.token)
+                    if self.current_tok.token == SEMICOLON:
+                        return True
+                    else:
+                        return False
+                        
+                    
 
         else:
             return False
