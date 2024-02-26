@@ -294,7 +294,7 @@ class Lexer:
                     if self.current_char not in delim1:
                         errors.extend([f"Invalid delimiter for ' << '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(OUT, "<<"))
+                    tokens.append(Token(OUT, "<<", pos_start = self.pos))
                 else:
                     
                     if self.current_char == None:
