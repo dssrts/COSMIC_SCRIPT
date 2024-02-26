@@ -347,7 +347,7 @@ class Lexer:
                     if self.current_char not in (delim1 + '['):
                         errors.extend([f"Invalid delimiter for ' += '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(PLUS_EQUAL, "+=")) #for == symbol
+                    tokens.append(Token(PLUS_EQUAL, "+=", pos_start = self.pos)) #for == symbol
                     
                 elif self.current_char == '+': #for ++ incre
                     self.advance()
@@ -1816,7 +1816,7 @@ class Parser:
                         res.append(c_form)
                         
                                
-                    elif self.current_tok.token == EQUAL:
+                    elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
                         print("initialize the variable")
                         assign, a_error = self.init_var()
 
@@ -2061,7 +2061,7 @@ class Parser:
         res = []
         error = []
         
-        if self.current_tok.token == EQUAL:
+        if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
             assign = self.assign_val()
             if assign == True:
                 
