@@ -2239,6 +2239,22 @@ class Parser:
                         return True
                     else:
                         return False
+        elif self.current_tok.token == LPAREN:
+            print("PARENTHESIS IN ASSIGN")
+            self.advance()
+            check = self.num_loop()
+            if check:
+                print("NUM LOOP SEEMS GOOD")
+                if self.current_tok.token != RPAREN:
+                    print("NO CLOSING PAREN FOUND")
+                    return False
+                else:
+                    print("CLOSING PAREN")
+                    self.advance()
+                    print("token after closing paren: ", self.current_tok)
+                    return True
+            else:
+                return False
         else:
             return False
         
@@ -2260,8 +2276,10 @@ class Parser:
                 if check:
                     print("NUM LOOP SEEMS GOOD")
                     if self.current_tok.token != RPAREN:
+                        print("NO CLOSING PAREN FOUND")
                         return False
                     else:
+                        print("CLOSING PAREN")
                         self.advance()
                         #return True
                 else:
