@@ -432,7 +432,7 @@ class Lexer:
                     if self.current_char not in delim2:
                         errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(MUL, "*"))    
+                    tokens.append(Token(MUL, "*", pos_start = self.pos))    
                         
                 
                 
@@ -1859,9 +1859,10 @@ class Parser:
                     res = self.expr()
                     print("this is a binary operation")
 
-                #INITIALIZATION
+                #--INITIALIZATION OF IDENTIFIERS
                 if self.current_tok.token == IDENTIFIER:
                     self.advance()
+                    #-- if it's a function call
                     if self.current_tok.token == LPAREN:
                         c_form, call_form_error = self.call_form()
                         print("token after call form: ", self.current_tok.token)
@@ -1872,7 +1873,7 @@ class Parser:
                             break
                         res.append(c_form)
                         
-                               
+                    #-- if we assign a value to it but not declaring it           
                     elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
                         print("initialize the variable")
                         assign, a_error = self.init_var()
@@ -1881,6 +1882,7 @@ class Parser:
                             error.extend(a_error)
                             break
                         res.append(assign)
+                    #-- if we increment it
                     elif self.current_tok.token == INCRE:
                         self.advance()
                         if self.current_tok.token != SEMICOLON:
@@ -1888,6 +1890,7 @@ class Parser:
                         else:
                             res.append(["SUCCESS from unary post increment"])
                             self.advance()
+                    #-- if we decrement it
                     elif self.current_tok.token == DECRE:
                         self.advance()
                         if self.current_tok.token != SEMICOLON:
@@ -1895,7 +1898,7 @@ class Parser:
                         else:
                             res.append(["SUCCESS from unary post decrement"])
                             self.advance()
-
+                    # -- else no other operation for it
                     else:
                         print('INVALID IDENT OPERATION')
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
@@ -2048,7 +2051,7 @@ class Parser:
                     self.advance()
 
                         
-                #VAR DECLARATION            
+                # VAR DECLARATION            
                 if self.current_tok.token in VAR: 
                     print("this is a var token")
                     var, var_error = self.var_dec()
@@ -2139,8 +2142,10 @@ class Parser:
     def var_dec(self):
         res = []
         error = []
+        # -- token when entering this function is 'var'
         self.advance()
-        
+
+        # -- if the user doesnt type an identiifier after 'var'
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
             print("current tok: ", self.current_tok.token)
@@ -2180,21 +2185,17 @@ class Parser:
                     else:
                         for c in comma:
                             res.append(c)
-                res.append("SUCCESS! from variable declaration")
-            
-            #var a, b
+            else:
+                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
 
-            # else:
-            #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization, no equal sign after identifier!"))
-                
-               
-                #self.advance()
+                res.append("SUCCESS! from variable declaration")
+    
 
         return res, error
     
     #* assign a value of a variable
     def assign_val(self):
-        is_function = False
+        
         print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
         self.advance()
         if self.current_tok.token == STRING:
@@ -2211,24 +2212,19 @@ class Parser:
                     return False
             return True
         elif self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
+            
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
-                print("theres  a number here here")
-                self.advance()
-                print("operator", self.current_tok)
-                while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
-                    print("IN THE OPERATORS LOOP")
-                    self.advance()
-                    if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
-                        self.advance()
-                    else:
-                        #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                        return False
-                return True
+                number = self.num_loop()
+                if number:
+                    return True
+                else:
+                    return False
             
             elif self.current_tok.token == IDENTIFIER:
-                print("we assigned a function call to a variable")
+                print("first value in assign val is an identifier")
                 self.advance()
                 if self.current_tok.token == LPAREN:
+                    print("we assigned a function call to a variable")
                     c_form, call_form_error = self.call_form()
                     print("token after call form in assign val: ", self.current_tok.token)
                     #self.advance()
@@ -2238,13 +2234,52 @@ class Parser:
                     else:
                         return True
                 else:
-                    return True;
-                        
-                    
-
+                    num = self.num_loop()
+                    if num:
+                        return True
+                    else:
+                        return False
         else:
             return False
         
+    def num_loop(self):
+        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+            self.advance()
+        else:
+            return False
+        
+        while self.current_tok.token in (MUL, DIV, PLUS, MINUS):
+            print("IN THE OPERATORS NUM LOOP")
+            self.advance()
+            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+                self.advance()
+            elif self.current_tok.token == LPAREN:
+                print("PARENTHESIS IN ASSIGN")
+                self.advance()
+                check = self.num_loop()
+                if check:
+                    print("NUM LOOP SEEMS GOOD")
+                    if self.current_tok.token != RPAREN:
+                        return False
+                    else:
+                        self.advance()
+                        #return True
+                else:
+                    return False 
+            else:
+                return False
+        print("after num loop loop token: ", self.current_tok)
+        
+        # TODO 
+        # 1 check if next char is a number or an identifier
+        # 2 if yes, advance 
+        # 3 check for operation if valid operation advance
+        # 4 if left paren, repeat 1
+        # 5 check if there's a right paren
+        
+        
+        return True
+
     #* DECLARING A FORM
     def init_form(self):
         res = []
