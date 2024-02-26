@@ -1078,7 +1078,7 @@ class Lexer:
                                         if self.current_char not in lineEnd_delim:
                                             errors.extend([f'Invalid delimiter for landing! Cause: {self.current_char}'])
                                             return [], errors
-                                        return Token(LANDING, "landing"), errors
+                                        return Token(LANDING, "landing", pos_start = self.pos), errors
                                     
                     elif self.current_char == "u": #launch
                         ident += self.current_char
