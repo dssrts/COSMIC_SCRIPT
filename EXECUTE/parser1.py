@@ -133,6 +133,7 @@ SPACE = "space"
 
 EOF = 'EOF'
 
+COMMENT = 'COMMENT'
 
 
 class Error:
@@ -452,13 +453,37 @@ class Lexer:
                     if self.current_char == "*":
                         tokens.append(Token(M_OPEN_COMET, "//*"))
                         self.advance()# for multi comment
+                        comment = ""
+                        while self.current_char != "*":
+                            
+                            self.advance()
+                            if self.current_char == "*":
+                                break
+                            comment += self.current_char
+                            print("CURRENT CHAR IN TOKEN: ", self.current_char)
+                        print("CURRENT CHAR AFTER LOOP: ", self.current_char)
+                        
+                        if self.current_char == "*":
+                            self.advance()
+                            if self.current_char == "/":
+                                self.advance()
+                                if self.current_char == "/":
+                                    tokens.append(Token(COMMENT, f"{comment}"))# for single comet
+                                    tokens.append(Token(M_END_COMET, "*//"))# for single comet
+                                    self.advance()
+                                else:
+                                    continue
+                            else:
+                                continue
                 elif self.current_char == "*":
                     tokens.append(Token(S_COMET, "/*", pos_start = self.pos))# for single comet
                     #self.advance()
+                    comment = ""
                     while self.current_char != "\n":
                         self.advance()
+                        comment += self.current_char
                         print("CURRENT CHAR IN TOKEN: ", self.current_char)
-                
+                    tokens.append(Token(COMMENT, f"{comment}"))# for single comet
                 else:
                     
                     if self.current_char == None:
