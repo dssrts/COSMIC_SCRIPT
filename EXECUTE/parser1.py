@@ -1007,10 +1007,10 @@ class Lexer:
                                 if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
                                     return [], errors
-                                if self.current_char not in bool_delim:
+                                if self.current_char not in bool_delim + ',':
                                     errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(FALSE, "false"), errors
+                                return Token(FALSE, "false", pos_start = self.pos), errors
                             
                             
                     
@@ -1320,10 +1320,10 @@ class Lexer:
                                 if self.current_char == None:
                                         errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                         return [], errors
-                                if self.current_char not in bool_delim:
+                                if self.current_char not in bool_delim + ',':
                                     errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(TRUE, "true"), errors
+                                return Token(TRUE, "true", pos_start = self.pos), errors
                 
             if self.current_char == "u": #universe
                 ident += self.current_char
@@ -2129,6 +2129,7 @@ class Parser:
         error = []
         
         if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
+            #-- used assign val pero bawal dapat sa string
             assign = self.assign_val()
             if assign == True:
                 
@@ -2163,6 +2164,8 @@ class Parser:
             if self.current_tok.token == EQUAL or self.current_tok.token == COMMA:
                 if self.current_tok.token == EQUAL:
                     print("value after equal: ", self.current_tok)
+                    # -- USED SELF ASSIGN VAL 1
+
                     assign = self.assign_val()
                     if assign == True:
                         print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
@@ -2242,6 +2245,102 @@ class Parser:
                     else:
                         self.advance()
                         if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                            # -- USED SELF.ASSIGN_VAL()
+
+                            check = self.assign_val()
+                            if  check:
+                                return True
+                            else:
+                                return False
+                        return True
+                else:
+                    print('FIRST OPERAND IS AN IDENTIFIER')
+                    num = self.num_loop()
+                    if num:
+                        return True
+                    
+                    else:
+                        return False
+        elif self.current_tok.token == LPAREN:
+            print("PARENTHESIS IN ASSIGN")
+            self.advance()
+            check = self.num_loop()
+            if check:
+                print("NUM LOOP SEEMS GOOD")
+                if self.current_tok.token != RPAREN:
+                    print("NO CLOSING PAREN FOUND")
+                    return False
+                else:
+                    print("after initial  paren: ", self.current_tok)
+                    print("CLOSING PAREN")
+                    self.advance()
+                    print("token after closing paren in assign val: ", self.current_tok)
+                    if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                        self.advance()
+                    else:
+                        return True
+                    check = self.num_loop()
+                    if check:
+                        if self.current_tok.token == SEMICOLON:
+                            return True
+                        
+                        else:
+                            return False
+                    else:
+                        return False
+            else:
+                return False
+        elif self.current_tok.token == TRUE:
+            self.advance()
+            return True
+        elif self.current_tok.token == FALSE:
+            self.advance()
+            return True
+        else:
+            return False
+    
+    def assign_val2(self):
+        print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
+        self.advance()
+        if self.current_tok.token == STRING:
+            print("string here")
+            self.advance()
+            print("operator", self.current_tok)
+            while self.current_tok.token in PLUS:
+                print("IN THE STRING LOOP for concatenation")
+                self.advance()
+                if self.current_tok.token == STRING:
+                    self.advance()
+                else:
+                    #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                    return False
+            return True
+        elif self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
+            
+            if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+                number = self.num_loop()
+                if number:
+                    return True
+                else:
+                    return False
+            
+            elif self.current_tok.token == IDENTIFIER:
+                print("first value in assign val is an identifier")
+                self.advance()
+                if self.current_tok.token == LPAREN:
+                    print("we assigned a function call to a variable")
+                    c_form, call_form_error = self.call_form()
+                    print("token after call form in assign val: ", self.current_tok.token)
+                    #self.advance()
+                    print('call form result in assign val:', c_form)
+                    if call_form_error:
+                        print("ERROR IN VALL FORM")
+                        return False
+                    else:
+                        self.advance()
+                        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                            # -- USED SELF.ASSIGN_VAL()
+
                             check = self.assign_val()
                             if  check:
                                 return True
@@ -2843,6 +2942,7 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                 else:
                     self.advance()
+                    #-- USED ASSIGN VAL PERO DAPAT BAWAL STRING
                     assign = self.assign_val()
                     assign == True   
                     if self.current_tok.token != RPAREN:
@@ -2898,6 +2998,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                     else:
                         self.advance()
+                        #-- used assign val pero bawal dapat string
                         assign = self.assign_val()
                         assign == True   
                         if self.current_tok.token != RPAREN:
