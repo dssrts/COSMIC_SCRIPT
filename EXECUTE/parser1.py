@@ -2292,8 +2292,14 @@ class Parser:
         
         if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
             pass
+        elif self.current_tok.token == COMMA:
+            self.advance()
+        elif self.current_tok.token == SEMICOLON:
+            return True
+            
         elif self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token and GRAVITY:
             return False
+        
         else:
             self.advance()
         
