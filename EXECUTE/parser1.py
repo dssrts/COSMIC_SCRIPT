@@ -2233,13 +2233,13 @@ class Parser:
                         print("ERROR IN VALL FORM")
                         return False
                     else:
-                        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
-                            check = self.assign_val()
-                            if check:
-                                return True
-                            else:
+                        # if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                        #     check = self.assign_val()
+                        #     if check:
+                        #         return True
+                        #     else:
 
-                                return False
+                        #         return False
                         return True
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
