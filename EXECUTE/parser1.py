@@ -2128,9 +2128,23 @@ class Parser:
         res = []
         error = []
         
-        if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
-            #-- used assign val pero bawal dapat sa string
+        if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL:
+            # -- pag equal lang pwede string
             assign = self.assign_val()
+            if assign == True:
+                
+                print("init var: ",self.current_tok )
+                
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
+                else:
+                    res.append("SUCCESS! from assign")
+                    self.advance()
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
+        elif self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
+            #-- use assign val pero bawal dapat sa string
+            assign = self.assign_val2()
             if assign == True:
                 
                 print("init var: ",self.current_tok )
@@ -2300,22 +2314,8 @@ class Parser:
             return False
     
     def assign_val2(self):
-        print ("VALUE ASSIGNED FROM  ASSIGN_VAL")
-        self.advance()
-        if self.current_tok.token == STRING:
-            print("string here")
-            self.advance()
-            print("operator", self.current_tok)
-            while self.current_tok.token in PLUS:
-                print("IN THE STRING LOOP for concatenation")
-                self.advance()
-                if self.current_tok.token == STRING:
-                    self.advance()
-                else:
-                    #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                    return False
-            return True
-        elif self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
+        
+        if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
             
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 number = self.num_loop()
@@ -2341,7 +2341,7 @@ class Parser:
                         if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
                             # -- USED SELF.ASSIGN_VAL()
 
-                            check = self.assign_val()
+                            check = self.assign_val2()
                             if  check:
                                 return True
                             else:
