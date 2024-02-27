@@ -1866,12 +1866,19 @@ class Parser:
                     if self.current_tok.token == LPAREN:
                         c_form, call_form_error = self.call_form()
                         print("token after call form: ", self.current_tok.token)
-                        self.advance()
+                        #self.advance()
                         print('call form result:', c_form)
                         if call_form_error:
                             error.extend(call_form_error)
                             break
-                        res.append(c_form)
+                        else:
+                            self.advance()
+                            if self.current_tok.token in SEMICOLON:
+                                res.append(c_form)
+                                self.advance()
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in call form!"))
+
                         
                     #-- if we assign a value to it but not declaring it           
                     elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
@@ -2233,13 +2240,13 @@ class Parser:
                         print("ERROR IN VALL FORM")
                         return False
                     else:
-                        # if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
-                        #     check = self.assign_val()
-                        #     if check:
-                        #         return True
-                        #     else:
-
-                        #         return False
+                        self.advance()
+                        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                            check = self.assign_val()
+                            if  check:
+                                return True
+                            else:
+                                return False
                         return True
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
@@ -2481,24 +2488,24 @@ class Parser:
                     else: 
                         #res.append("SUCCESS from form!")
 
-                        self.advance()
+                        # self.advance()
 
-                        print("current token from no error function call: ", self.current_tok.token)
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from call form!"))
+                        # print("current token from no error function call: ", self.current_tok.token)
+                        # if self.current_tok.token != SEMICOLON:
+                        #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from call form!"))
                         
-                        else:
+                        # else:
                             
-                            res.append(["SUCCESS from function call!"])
+                        res.append(["SUCCESS from function call!"])
                             
             elif self.current_tok.token == RPAREN:
                 print("found no arguments in function call")
-                self.advance()
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
+                # self.advance()
+                # if self.current_tok.token != SEMICOLON:
+                #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
             
-                else: 
-                    res.append(["SUCCESS from function call!"])
+                # else: 
+                res.append(["SUCCESS from function call!"])
                     
 
             else:
@@ -2510,11 +2517,11 @@ class Parser:
         elif self.current_tok.token == RPAREN:
             print("found no arguments in function call")
             self.advance()
-            if self.current_tok.token != SEMICOLON:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
+            # if self.current_tok.token != SEMICOLON:
+            #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
         
-            else: 
-                res.append(["SUCCESS from function call!"])
+            # else: 
+            res.append(["SUCCESS from function call!"])
                 
 
         else:
