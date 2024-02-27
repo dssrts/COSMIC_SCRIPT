@@ -2234,6 +2234,7 @@ class Parser:
                     else:
                         return True
                 else:
+                    print('FIRST OPERAND IS AN IDENTIFIER')
                     num = self.num_loop()
                     if num:
                         return True
@@ -2271,6 +2272,7 @@ class Parser:
             return False
         
     def num_loop(self):
+        
         print("FIRST TOKEN IN NUM LOOP: ", self.current_tok)
         if self.current_tok.token == LPAREN:
             self.advance()
@@ -2287,7 +2289,10 @@ class Parser:
                     self.advance()
             else:
                 return False 
-        if self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token and GRAVITY:
+        
+        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+            pass
+        elif self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token and GRAVITY:
             return False
         else:
             self.advance()
@@ -2318,14 +2323,6 @@ class Parser:
                 return False
                 
         print("after num loop loop token: ", self.current_tok)
-        
-        # TODO 
-        # 1 check if next char is a number or an identifier
-        # 2 if yes, advance 
-        # 3 check for operation if valid operation advance
-        # 4 if left paren, repeat 1
-        # 5 check if there's a right paren
-        
         
         return True
 
