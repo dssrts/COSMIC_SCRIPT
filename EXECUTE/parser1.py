@@ -2230,14 +2230,23 @@ class Parser:
                     #self.advance()
                     print('call form result in assign val:', c_form)
                     if call_form_error:
+                        print("ERROR IN VALL FORM")
                         return False
                     else:
+                        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                            check = self.assign_val()
+                            if check:
+                                return True
+                            else:
+
+                                return False
                         return True
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
                     num = self.num_loop()
                     if num:
                         return True
+                    
                     else:
                         return False
         elif self.current_tok.token == LPAREN:
@@ -2262,6 +2271,7 @@ class Parser:
                     if check:
                         if self.current_tok.token == SEMICOLON:
                             return True
+                        
                         else:
                             return False
                     else:
