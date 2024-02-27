@@ -2130,6 +2130,7 @@ class Parser:
         
         if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL:
             # -- pag equal lang pwede string
+            # * DONE
             assign = self.assign_val()
             if assign == True:
                 
@@ -2144,6 +2145,7 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
         elif self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
             #-- use assign val pero bawal dapat sa string
+            #* DONE
             assign = self.assign_val2()
             if assign == True:
                 
@@ -2179,7 +2181,7 @@ class Parser:
                 if self.current_tok.token == EQUAL:
                     print("value after equal: ", self.current_tok)
                     # -- USED SELF ASSIGN VAL 1
-
+                    
                     assign = self.assign_val()
                     if assign == True:
                         print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
@@ -2419,13 +2421,20 @@ class Parser:
         else:
             self.advance()
         
-        
+        ops = ""
         
         while self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+            ops += self.current_tok.value
             print("IN THE OPERATORS NUM LOOP")
             self.advance()
+            #-- dito ibahin if iinclude yung string
             if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 self.advance()
+            elif self.current_tok.token == STRING:
+                if "-" in ops or "/" in ops or "%" in ops or "*" in ops:
+                    return False
+                else:
+                    self.advance()
             elif self.current_tok.token == LPAREN:
                 print("PARENTHESIS IN ASSIGN")
                 self.advance()
