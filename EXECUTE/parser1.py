@@ -2088,7 +2088,7 @@ class Parser:
                 
                 if self.current_tok.token == SATURN:
                     self.advance()
-                    if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING:
+                    if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
                         break
                     else:
@@ -2285,7 +2285,9 @@ class Parser:
                 print("list init is successful!")
                 res.append("Success form list init!")
                 self.advance()
-        
+        elif self.current_tok.token == VOID:
+            self.advance()
+            return res, error
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
     
