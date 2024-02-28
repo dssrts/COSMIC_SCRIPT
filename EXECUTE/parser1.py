@@ -2129,9 +2129,12 @@ class Parser:
         error = []
         
         if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL:
+            print("in init var")
             # -- pag equal lang pwede string
             # * DONE
-            assign = self.assign_val()
+            self.advance()
+            assign = self.assign_val2()
+            print("assign: ", assign)
             if assign == True:
                 
                 print("init var: ",self.current_tok )
@@ -2142,7 +2145,7 @@ class Parser:
                     res.append("SUCCESS! from assign")
                     self.advance()
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign equal" ))
         elif self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
             #-- use assign val pero bawal dapat sa string
             #* DONE
@@ -2157,7 +2160,7 @@ class Parser:
                     res.append("SUCCESS! from assign")
                     self.advance()
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign" ))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from assign not equal" ))
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from initialize variable"))
         return res, error
@@ -2316,15 +2319,22 @@ class Parser:
             return False
     
     def assign_val2(self):
+        print("im in assign val 2")
         
         if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
             
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
-                number = self.num_loop()
-                if number:
+                print("found a number in assign val 2")
+                self.advance()
+                check = self.num_loop()
+                if check:
+                    print("checked")
+                    #self.advance()
+                    print("after checked: ", self.current_tok)
                     return True
-                else:
-                    return False
+                
+                
+                
             
             elif self.current_tok.token == IDENTIFIER:
                 print("first value in assign val is an identifier")
@@ -2360,102 +2370,72 @@ class Parser:
         elif self.current_tok.token == LPAREN:
             print("PARENTHESIS IN ASSIGN")
             self.advance()
-            check = self.num_loop()
+            check = self.assign_val2()
+            #self.advance()
+                
             if check:
-                print("NUM LOOP SEEMS GOOD")
-                if self.current_tok.token != RPAREN:
-                    print("NO CLOSING PAREN FOUND")
-                    return False
-                else:
-                    print("after initial  paren: ", self.current_tok)
-                    print("CLOSING PAREN")
+                if self.current_tok.token == RPAREN:
+                    print("found closing")
                     self.advance()
-                    print("token after closing paren in assign val: ", self.current_tok)
-                    if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
+                    
+                    if self.current_tok.token in (PLUS, MINUS, DIV, MUL):
+                        print("found operator  after paren")
                         self.advance()
-                    else:
-                        return True
-                    check = self.num_loop()
-                    if check:
-                        if self.current_tok.token == SEMICOLON:
+                        num = self.assign_val2()
+                        if  num:
                             return True
-                        
                         else:
                             return False
-                    else:
-                        return False
+                    return True
+                    
+                        
+                    #return True
+                else:
+                    return False
             else:
                 return False
-        else:
-            return False
+        
         
     def num_loop(self):
-        
-        print("FIRST TOKEN IN NUM LOOP: ", self.current_tok)
-        if self.current_tok.token == LPAREN:
+        res = []
+        error = []
+        print("current tok in num loop: ", self.current_tok)
+        while self.current_tok.token in (PLUS, MINUS, DIV, MUL):
             self.advance()
-            check = self.num_loop()
-            if check:
-                print("NUM LOOP SEEMS GOOD")
-                if self.current_tok.token != RPAREN:
-                    print("NO CLOSING PAREN FOUND")
-                    return False
-                else:
-                    print("CLOSING PAREN in num loop")
-                    self.advance()
-                    print("after first parenthesis in num loop: ", self.current_tok)
-                    self.advance()
-            else:
-                return False 
-        
-        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
-            pass
-        elif self.current_tok.token == COMMA:
-            self.advance()
-        elif self.current_tok.token == SEMICOLON:
-            return True
-            
-        elif self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token and GRAVITY:
-            return False
-        
-        else:
-            self.advance()
-        
-        ops = ""
-        
-        while self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
-            ops += self.current_tok.value
-            print("IN THE OPERATORS NUM LOOP")
-            self.advance()
-            #-- dito ibahin if iinclude yung string
-            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
+            if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
                 self.advance()
-            elif self.current_tok.token == STRING:
-                if "-" in ops or "/" in ops or "%" in ops or "*" in ops:
-                    return False
-                else:
-                    self.advance()
+                res.append("sucess in num loop")
             elif self.current_tok.token == LPAREN:
-                print("PARENTHESIS IN ASSIGN")
                 self.advance()
-                check = self.num_loop()
-                if check:
-                    print("NUM LOOP SEEMS GOOD")
-                    if self.current_tok.token != RPAREN:
-                        print("NO CLOSING PAREN FOUND")
-                        return False
-                    else:
-                        print("CLOSING PAREN in num loop")
+                num = self.assign_val2()
+                if num:
+                    if self.current_tok.token == RPAREN:
+                        print("found closing")
                         self.advance()
+                        
+                        if self.current_tok.token in (PLUS, MINUS, DIV, MUL):
+                            print("found operator  after paren")
+                            self.advance()
+                            num = self.assign_val2()
+                            if  num:
+                                return True
+                            else:
+                                return False
+                        return True
+                        
+                            
                         #return True
-                else:
-                    return False 
-            else:
-                return False
-                
-        print("after num loop loop token: ", self.current_tok)
+                    else:
+                        return False
+            elif self.current_tok.token == RPAREN:
+                print("found rparen")
+                break
+    
+            # else:
+            #     return False
         
-        return True
+        return res, error
+          
 
     #* DECLARING A FORM
     def init_form(self):
