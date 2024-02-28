@@ -2252,90 +2252,24 @@ class Parser:
             return res, error
         if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
             
-            if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
-                print("found a number in assign val 2")
-                self.advance()
-                check, err = self.num_loop()
-                if err:
-                    print("FOUND AN ERROR IN NUM LOOP")
-                    #return False
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
-                    return res, error
+            n_res, n_error = self.assign_val2()
 
-                else:
-                    print("checked")
-                    #self.advance()
-                    print("after checked: ", self.current_tok)
-                    res.append(["okay yung num loop!"])
-                
-                
-                
-            elif self.current_tok.token == IDENTIFIER:
-                print("first value in assign val is an identifier")
-                self.advance()
-                if self.current_tok.token == LPAREN:
-                    print("we assigned a function call to a variable")
-                    c_form, call_form_error = self.call_form()
-                    print("token after call form in assign val: ", self.current_tok.token)
-                    #self.advance()
-                    print('call form result in assign val:', c_form)
-                    if call_form_error:
-                        print("ERROR IN VALL FORM")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM call form!"))
-                        
-                    else:
-                        print("no error after function call: ", self.current_tok)
-                        self.advance()
-                        #print("found operator after function call")
-                        if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
-                            # -- USED SELF.ASSIGN_VAL()
-                            self.advance()
-                            check, err = self.assign_val2()
-                            if  err:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
+            if n_error:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
+            else:
+                res.append("Success form ident assign!")
 
-                            else:
-                                res.append("Success form ident assign!")
-                        return res, error
-                else:
-                    print('FIRST OPERAND IS AN IDENTIFIER')
-                    num, err = self.num_loop()
-                    if err:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
-                    else:
-                        res.append("Success form ident assign!")
+
 
         elif self.current_tok.token == LPAREN:
-            print("PARENTHESIS IN ASSIGN")
-            self.advance()
-            check, err = self.assign_val2()
-            #self.advance()
-                
-            if err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
-                
+            
+            n_res, n_error = self.assign_val2()
 
+            if n_error:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
             else:
-                if self.current_tok.token == RPAREN:
-                    print("found closing")
-                    self.advance()
-                    
-                    if self.current_tok.token in (PLUS, MINUS, DIV, MUL):
-                        print("found operator  after paren")
-                        self.advance()
-                        num, err = self.assign_val2()
-                        if  err:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
-
-                        else:
-                            res.append("Success form ident assign!")
-
-                    return res, error
-                    
-                        
-                    #return True
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
+                res.append("Success form ident assign!")
+                
         elif self.current_tok.token == TRUE:
             self.advance()
             return res, error
