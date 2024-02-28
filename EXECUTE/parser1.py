@@ -2662,7 +2662,7 @@ class Parser:
 
         elif self.current_tok.token == RPAREN:
             print("found no arguments in function call")
-            self.advance()
+            #self.advance()
             # if self.current_tok.token != SEMICOLON:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
         
