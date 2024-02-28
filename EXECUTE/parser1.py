@@ -2277,10 +2277,12 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM call form!"))
                         
                     else:
+                        print("no error after function call: ", self.current_tok)
                         self.advance()
+                        #print("found operator after function call")
                         if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
                             # -- USED SELF.ASSIGN_VAL()
-
+                            self.advance()
                             check, err = self.assign_val2()
                             if  err:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
@@ -2381,6 +2383,7 @@ class Parser:
                         
                     else:
                         self.advance()
+                        print("FOUND FORM CALL OPERAND HERE")
                         if self.current_tok.token in (MUL, DIV, PLUS, MINUS, MODULUS):
                             # -- USED SELF.ASSIGN_VAL()
 
