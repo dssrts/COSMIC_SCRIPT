@@ -2184,9 +2184,13 @@ class Parser:
                 if self.current_tok.token == EQUAL:
                     print("value after equal: ", self.current_tok)
                     # -- USED SELF ASSIGN VAL 1
-                    
-                    assign = self.assign_val()
-                    if assign == True:
+                    self.advance()
+                    assign,err = self.assign_val2()
+                    if err:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                        
+                    else:
+                        #self.advance()
                         print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
                         if self.current_tok.token == COMMA:
                             print("comma after init!")
@@ -2199,9 +2203,6 @@ class Parser:
                             else:
                                 for c in comma:
                                     res.append(c)
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                        #self.advance()
                     
                 elif self.current_tok.token == COMMA:
                     print("there's a comma here")
