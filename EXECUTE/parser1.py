@@ -2327,6 +2327,13 @@ class Parser:
                     #return True
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
+        elif self.current_tok.token == TRUE:
+            self.advance()
+            return res, error
+        elif self.current_tok.token == FALSE:
+            self.advance()
+            return res, error
+        
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
     
