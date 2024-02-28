@@ -2156,9 +2156,10 @@ class Parser:
         elif self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
             #-- use assign val pero bawal dapat sa string
             #* DONE
+            self.advance()
             assign, err = self.assign_val2()
             if err:
-                error.append(err)
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
                 
             else:
                 print("init var: ",self.current_tok )
