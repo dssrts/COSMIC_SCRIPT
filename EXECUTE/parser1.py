@@ -585,10 +585,10 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' [ '. Cause: ' {self.current_char} '"])
                     continue
-                if self.current_char not in delim0 + space_delim:
+                if self.current_char not in delim0 + space_delim + ']':
                     errors.extend([f"Invalid delimiter for ' [ '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(SLBRACKET, "["))
+                tokens.append(Token(SLBRACKET, "[", pos_start = self.pos))
             elif self.current_char == ']':
                 self.advance()
                 if self.current_char == None:
@@ -597,7 +597,7 @@ class Lexer:
                 if self.current_char not in lineEnd_delim:
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '"])
                     continue
-                tokens.append(Token(SRBRACKET, "]"))
+                tokens.append(Token(SRBRACKET, "]", pos_start = self.pos))
             elif self.current_char == '{':
                 self.advance()
                 if self.current_char == None:
@@ -2277,6 +2277,15 @@ class Parser:
             self.advance()
             return res, error
         
+        elif self.current_tok.token == SLBRACKET:
+            l_res, l_err = self.init_list()
+            if l_err:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+            else:
+                print("list init is successful!")
+                res.append("Success form list init!")
+                self.advance()
+        
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
     
@@ -2547,6 +2556,53 @@ class Parser:
         
         return res, error
     
+    # * INITIALIZE A LIST
+    def init_list(self):
+        res = []
+        error = []
+        #-- so una muna yung SLBRACKET
+        self.advance()
+        print("CURRENT TOKEN AFTER SLBRACKET IN CALL FORM: ", self.current_tok)
+        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token == GRAVITY:
+        
+            print("current token from list init is: ", self.current_tok.token)
+            self.advance()
+            if self.current_tok.token == COMMA:
+                print("you found a comma in the list init !")
+                #if comma yung current, find identifier, next, then if comma, next, and repeat
+                a_error = self.arguments()
+                print("current token after comma: ", self.current_tok.token)
+                if a_error:
+                    print("THERES AN ERROR IN THE LIST ELEMENTS")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal after comma!"))
+                
+                else:
+                    print("NO ERROR IN THE LIST ELEMENTS")
+                    if self.current_tok.token != SRBRACKET:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                        self.advance()
+                    else: 
+
+                        res.append(["SUCCESS from list init!"])
+                            
+            elif self.current_tok.token == SRBRACKET:
+                print("found no elements")
+                res.append(["SUCCESS from init list!"])
+                    
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid list init!"))
+
+        elif self.current_tok.token == SRBRACKET:
+            print("found no arguments in list init ")
+            
+            res.append(["SUCCESS from list  init!"])         
+
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid list init!"))
+
+        print("RES FROM list init: ", res)
+        return res, error
+    
     #* CALLING A FORM
     def call_form(self):
         res = []
@@ -2573,43 +2629,20 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                         self.advance()
                     else: 
-                        #res.append("SUCCESS from form!")
 
-                        # self.advance()
-
-                        # print("current token from no error function call: ", self.current_tok.token)
-                        # if self.current_tok.token != SEMICOLON:
-                        #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from call form!"))
-                        
-                        # else:
-                            
                         res.append(["SUCCESS from function call!"])
                             
             elif self.current_tok.token == RPAREN:
                 print("found no arguments in function call")
-                # self.advance()
-                # if self.current_tok.token != SEMICOLON:
-                #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
-            
-                # else: 
                 res.append(["SUCCESS from function call!"])
                     
-
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
 
-
-
-
         elif self.current_tok.token == RPAREN:
             print("found no arguments in function call")
-            #self.advance()
-            # if self.current_tok.token != SEMICOLON:
-            #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon! from call form"))
-        
-            # else: 
-            res.append(["SUCCESS from function call!"])
-                
+            
+            res.append(["SUCCESS from function call!"])         
 
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
@@ -2621,7 +2654,7 @@ class Parser:
         error = False
         while self.current_tok.token  == COMMA:
             self.advance()
-            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or GRAVITY:
+            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token==GRAVITY:
                 self.advance()
             else:
                 #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
