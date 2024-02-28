@@ -531,7 +531,7 @@ class Lexer:
                     if self.current_char not in delim1:
                         errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!')])
                         continue
-                    tokens.append(Token(NOT_OP, "!"))
+                    tokens.append(Token(NOT_OP, "!", pos_start = self.pos))
                     
             elif self.current_char == '&': #return error
                 self.advance()
