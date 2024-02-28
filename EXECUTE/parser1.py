@@ -2427,9 +2427,11 @@ class Parser:
                         #return True
                     else:
                         return False
-            elif self.current_tok.token == RPAREN:
-                print("found rparen")
-                break
+            # elif self.current_tok.token == RPAREN:
+            #     print("found rparen")
+            #     break
+            else:
+                return False
     
             # else:
             #     return False
