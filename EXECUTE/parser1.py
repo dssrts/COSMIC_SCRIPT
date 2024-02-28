@@ -1569,6 +1569,7 @@ class Parser:
         self.advance()
         self.if_stmt_encountered = False
         self.landing = False
+        self.is_galaxy = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1624,7 +1625,7 @@ class Parser:
                         break
                 self.advance()
 
-            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING :
+            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
                 break
             else:
@@ -1643,25 +1644,30 @@ class Parser:
                      
             #VAR DECLARATION  DAT MAY GLOBAL
             if self.current_tok.token in UNIVERSE:
-                self.advance()          
-                if self.current_tok.token in VAR: 
-                    print("this is a var token")
-                    var, var_error = self.var_dec()
-                    if var_error:
-                        error.extend(var_error)
-                        break
-                    #res.append(var)
-                    #self.advance()
-                    print("current token from global var dec parse: ", self.current_tok)
-                    
-                    if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec parse!"))
-                    else:
-                        self.advance()
-                        res.append(["SUCCESS from global declaration!"])
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
+                if self.is_galaxy == True:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please declarare global variables before galaxy!"))
                     break
+                else:
+
+                    self.advance()          
+                    if self.current_tok.token in VAR: 
+                        print("this is a var token")
+                        var, var_error = self.var_dec()
+                        if var_error:
+                            error.extend(var_error)
+                            break
+                        #res.append(var)
+                        #self.advance()
+                        print("current token from global var dec parse: ", self.current_tok)
+                        
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec parse!"))
+                        else:
+                            self.advance()
+                            res.append(["SUCCESS from global declaration!"])
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
+                        break
 
             # ? pwede i-bring back pag need specific
             # if self.current_tok.token in VAR:
@@ -1683,7 +1689,7 @@ class Parser:
                     res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
-                
+                self.is_galaxy = True
                 print("youve got a galaxy token")
                 g_res, g_error = self.galaxy()
 
