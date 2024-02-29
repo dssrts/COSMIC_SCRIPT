@@ -1978,7 +1978,7 @@ class Parser:
                     
                 if self.current_tok.token in WHIRL:
                     self.advance()
-                    w_res, w_error = self.whirl()
+                    w_res, w_error = self.if_whirl_condition()
                     print("token after whirl:", self.current_tok)
                     if w_error:
                         for err in w_error:
@@ -1986,7 +1986,7 @@ class Parser:
                         return [], error
                     else:
                         #res.append(w_res)
-                        self.advance()
+                        #self.advance()
                         if self.current_tok.token == CLBRACKET:
                             self.advance()
                             w_result, w_err = self.body()
@@ -3140,11 +3140,11 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
                         else:
                             if self.current_tok.token == RPAREN:
-                                res.append("SUCCESS FROM IF") 
+                                res.append("SUCCESS FROM CONDITION") 
                             else:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
                     else:
-                        res.append("SUCCESS FROM IF")       
+                        res.append("SUCCESS FROM CONDITION")       
                         return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
