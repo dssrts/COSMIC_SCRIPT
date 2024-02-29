@@ -2854,14 +2854,14 @@ class Parser:
                     if self.current_tok.token == WHIRL:
                         self.advance()
                         #TODO connect whirl here
-                        w_res, w_error = self.whirl()
+                        w_res, w_error = self.if_whirl_condition()
                         print("token after whirl:", self.current_tok)
                         if w_error:
                             for err in w_error:
                                 error.append(err)
                             return [], error
                         else:
-                            self.advance()
+                            #self.advance()
                             print("token after whirl in do whirl: ", self.current_tok)
                             if self.current_tok.token == SEMICOLON:
                                 res.append(["SUCCESS from do whirl"])
@@ -3128,7 +3128,7 @@ class Parser:
             self.advance()
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
             else:
                 if self.current_tok.token == RPAREN:
                     
