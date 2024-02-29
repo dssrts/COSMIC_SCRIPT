@@ -348,7 +348,7 @@ class Lexer:
                     if self.current_char not in alphanum + '(' + space_delim:
                         errors.extend([f"Invalid delimiter for ' > '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(GREATER_THAN, ">"))
+                    tokens.append(Token(GREATER_THAN, ">", pos_start = self.pos))
                     
                 
             elif self.current_char == '+': #mathematical operator (+, -, *, /, %)
@@ -439,7 +439,7 @@ class Lexer:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in delim2 = '~':
+                    if self.current_char not in delim2 + '~':
                         errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(MUL, "*", pos_start = self.pos))    
@@ -1609,6 +1609,9 @@ class Parser:
                 
         while self.current_tok.token != TAKEOFF:
             self.advance()
+            if self.current_tok.token == EOF:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Type 'takeoff' start the program!"))
+                return res, error
         
         if self.current_tok.token != TAKEOFF:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Type 'takeoff' start the program!"))
@@ -2311,7 +2314,7 @@ class Parser:
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 print("found a number in assign val 2")
                 self.advance()
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error

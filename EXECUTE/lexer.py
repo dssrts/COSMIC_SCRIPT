@@ -223,7 +223,7 @@ class Lexer:
                 
                 errors.extend(error)
                 tokens.append(result)
-                    
+                
             elif self.current_char in all_num:
                 result, error = self.make_number()
                 
