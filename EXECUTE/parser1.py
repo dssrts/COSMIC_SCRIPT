@@ -2314,6 +2314,7 @@ class Parser:
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 print("found a number in assign val 2")
                 self.advance()
+                
                 if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
