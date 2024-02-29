@@ -2949,8 +2949,28 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
             else:
                 if self.current_tok.token == RPAREN:
-                    res.append(["SUCCESS FROM IF"]) 
-                    return res, error
+                    self.advance()
+                    if self.current_tok.token == CLBRACKET:
+                        self.advance()
+                        if_res, if_error = self.body()
+                        print("if res: ", res)
+                        if if_error:
+                            print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                            for err in if_error:
+                                error.append(err)
+                            return [], error
+                        else:
+                            print("successful elif!")
+                            for f_res in if_res:
+                                res.append(f_res)
+                                print("f res: ", f_res)
+                            res.append(["SUCCESS from if"])
+                            return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
+                        
+                    #res.append(["SUCCESS FROM IF"]) 
+                    
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
         else:
