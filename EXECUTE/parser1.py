@@ -1603,7 +1603,8 @@ class Parser:
             while self.current_tok.token != M_END_COMET:
                 self.advance()
                 
-        
+        while self.current_tok.token != TAKEOFF:
+            self.advance()
         
         if self.current_tok.token != TAKEOFF:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Type 'takeoff' start the program!"))
@@ -1633,7 +1634,7 @@ class Parser:
 
             if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING:
                 print("token causing error: ", self.current_tok)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax structure!"))
                 break
             else:
                 self.advance()
