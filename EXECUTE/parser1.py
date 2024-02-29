@@ -909,7 +909,7 @@ class Lexer:
                                     if self.current_char not in block_delim + "(":
                                         errors.extend([f'Invalid delimiter for elseif! Cause: {self.current_char}'])
                                         return [], errors
-                                    return Token(ELSEIF, "elseif"), errors
+                                    return Token(ELSEIF, "elseif", pos_start = self.pos), errors
                             else:
                                 if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
@@ -2043,19 +2043,7 @@ class Parser:
                             print("current token from if parse: ", self.current_tok)
                         self.advance()
 
-                if self.current_tok.token in ELSEIF:
-                    print("this is an elif statement")
-                    elif_res, elif_error = self.elif_stmt()
-                    self.advance()
-
-                    if elif_error:
-                        error.extend(elif_error)
-                        break
-                    else:
-                        for fres in elif_res:
-                            res.append(fres)
-                            print("current token from elseif parse: ", self.current_tok)
-                        self.advance()
+                
 
                 #INPUT OUTPUT
                 if self.current_tok.token in INNER:
@@ -2123,7 +2111,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
             return True
         else:
             return False
@@ -2965,6 +2953,22 @@ class Parser:
                                 res.append(f_res)
                                 print("f res: ", f_res)
                             res.append(["SUCCESS from if"])
+                            self.advance()
+                            if self.current_tok.token in ELSEIF:
+                                print("this is an elif statement")
+                                elif_res, elif_error = self.if_stmt()
+                                #self.advance()
+
+                                if elif_error:
+                                    # for err in elif_error:
+                                    #     error.append(err)
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
+                                else:
+                                    for fres in elif_res:
+                                        res.append(fres)
+                                        print("current token from elseif parse: ", self.current_tok)
+                                    self.advance()
                             return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
