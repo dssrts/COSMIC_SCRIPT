@@ -2954,37 +2954,25 @@ class Parser:
                                 print("f res: ", f_res)
                             res.append([f"SUCCESS from if"])
                             self.advance()
-                            if self.current_tok.token in ELSEIF:
-                                print("this is an elif statement")
-                                elif_res, elif_error = self.elif_stmt()
-                                #self.advance()
 
-                                if elif_error:
-                                    # for err in elif_error:
-                                    #     error.append(err)
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                            while self.current_tok.token == ELSEIF:
+                                if self.current_tok.token in ELSEIF:
+                                    print("this is an elif statement")
+                                    elif_res, elif_error = self.elif_stmt()
+                                    #self.advance()
 
-                                else:
-                                    for fres in elif_res:
-                                        res.append(fres)
-                                        print("current token from elseif parse: ", self.current_tok)
-                                    self.advance()
-                            if self.current_tok.token == ELSEIF:
-                                print("this is a nested elif statement")
-                                elif_res, elif_error = self.elif_stmt()
-                                #self.advance()
+                                    if elif_error:
+                                        # for err in elif_error:
+                                        #     error.append(err)
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
 
-                                if elif_error:
-                                    # for err in elif_error:
-                                    #     error.append(err)
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
-
-                                else:
-                                    for fres in elif_res:
-                                        res.append(fres)
-                                        print("current token from elseif parse: ", self.current_tok)
-                                    self.advance()
-                                
+                                    else:
+                                        for fres in elif_res:
+                                            res.append(fres)
+                                            print("current token from elseif parse: ", self.current_tok)
+                                        #self.advance()
+                           
+                            
                             return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
