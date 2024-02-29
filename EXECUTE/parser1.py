@@ -2231,6 +2231,7 @@ class Parser:
         return res, error
     
     #* assign a value of a variable
+    # -- may string, and boolean here, also paren support, used in =
     def assign_val(self):
         res=[]
         error =[]
