@@ -917,7 +917,7 @@ class Lexer:
                                 if self.current_char not in block_delim:
                                     errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(ELSE, "else"),errors
+                                return Token(ELSE, "else", pos_start = self.pos),errors
                             
                 elif self.current_char == "n":
                     if ident_count == 10:
@@ -2018,8 +2018,8 @@ class Parser:
                 if self.current_tok.token in IF:
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
-                    self.advance() 
-
+                    #self.advance() 
+                    print("after calling if in body: ", self.current_tok)
                     if if_error:
                         error.extend(if_error)
                         break
@@ -2972,7 +2972,22 @@ class Parser:
                                             print("current token from elseif parse: ", self.current_tok)
                                         #self.advance()
                             print("token after last elseif: ", self.current_tok)
-                            
+                            if self.current_tok.token == ELSE:
+                                print('ELSE FOUND')
+                                else_res, else_error = self.else_stmt()
+                                    #self.advance()
+
+                                if else_error:
+                                    # for err in elif_error:
+                                    #     error.append(err)
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
+                                else:
+                                    for fres in else_res:
+                                        res.append(fres)
+                                        print("current token from else parse: ", self.current_tok)
+                            #self.advance()
+                        
                             return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
@@ -3014,22 +3029,22 @@ class Parser:
                                 print("f res: ", f_res)
                             res.append(["SUCCESS from elif"])
                             self.advance()
-                            if self.current_tok.token in ELSEIF:
-                                print("this is an elif statement")
-                                elif_res, elif_error = self.elif_stmt()
-                                #self.advance()
+                            # if self.current_tok.token in ELSEIF:
+                            #     print("this is an elif statement")
+                            #     elif_res, elif_error = self.elif_stmt()
+                            #     #self.advance()
 
-                                if elif_error:
-                                    # for err in elif_error:
-                                    #     error.append(err)
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                            #     if elif_error:
+                            #         # for err in elif_error:
+                            #         #     error.append(err)
+                            #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
 
-                                else:
-                                    for fres in elif_res:
-                                        res.append(fres)
-                                        print("current token from elseif parse: ", self.current_tok)
-                                    self.advance()
-                            return res, error
+                            #     else:
+                            #         for fres in elif_res:
+                            #             res.append(fres)
+                            #             print("current token from elseif parse: ", self.current_tok)
+                            #         self.advance()
+                            # return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif scope!"))
                         
@@ -3045,36 +3060,29 @@ class Parser:
     def else_stmt(self):
         res = []
         error = []
-        if self.if_stmt_encountered is not True:
-            print("this is the error")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "else without preceding if or elseif statement!"))
-            return res, error
-        else: 
+        self.advance()
+        print("IN ELSE STMT: ", self.current_tok)
+        if self.current_tok.token != CLBRACKET:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+        else:
             self.advance()
-            if self.current_tok.token != CLBRACKET:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+            else_res, else_error = self.body()
+            print("if res: ", res)
+            if else_error:
+                print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                for err in else_error:
+                    error.append(err)
+                return [], error
             else:
+                print("successful else!")
+                for f_res in else_res:
+                    res.append(f_res)
+                    print("f res: ", f_res)
+                res.append(["SUCCESS from else"])
                 self.advance()
-                else_res, else_error = self.body()
-                print("if res: ", res)
-                if else_error:
-                    print("THERES  AN ERROR INSIDE THE IF SCOPE")
-                    for err in else_error:
-                        error.append(err)
-                    return [], error
-                else:
-                    print("successful else!")
-                    for f_res in else_res:
-                        res.append(f_res)
-                        print("f res: ", f_res)
-                    res.append(["SUCCESS from else"])
-                    
-
-                    if self.current_tok.token != CRBRACKET:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                        return [], error
-                                
-                    #next is yung new line, curly brackerts and stamements
+                
+                            
+                #next is yung new line, curly brackerts and stamements
         return res, error
 
     def if_whirl_condition(self):
