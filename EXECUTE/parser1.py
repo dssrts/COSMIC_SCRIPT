@@ -1631,7 +1631,8 @@ class Parser:
                         break
                 self.advance()
 
-            if self.current_tok.token != S_COMET and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING:
+            if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING:
+                print("token causing error: ", self.current_tok)
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax outside galaxy!"))
                 break
             else:
@@ -1695,7 +1696,7 @@ class Parser:
                     res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
-                self.is_galaxy = True
+                
                 print("youve got a galaxy token")
                 g_res, g_error = self.galaxy()
 
@@ -1704,13 +1705,18 @@ class Parser:
                         error.append(err)
                     break
                 else:
+                    self.is_galaxy = True
                     res.extend(g_res)
 
             if self.current_tok.token == LANDING:
                 self.advance()
                 if self.current_tok.token == SEMICOLON:
                     self.landing = True
-                    return res, error
+                    if self.is_galaxy == False:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No galaxy function found!"))
+                        self.advance()
+                    else:
+                        return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Semicolon expected for 'landing'!"))
             
