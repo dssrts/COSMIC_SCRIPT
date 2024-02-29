@@ -2971,7 +2971,7 @@ class Parser:
                                             res.append(fres)
                                             print("current token from elseif parse: ", self.current_tok)
                                         #self.advance()
-                           
+                            print("token after last elseif: ", self.current_tok)
                             
                             return res, error
                     else:
