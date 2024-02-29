@@ -2017,7 +2017,7 @@ class Parser:
                 #CONDITIONAL
                 if self.current_tok.token in IF:
                     print("this is an if statement")
-                    if_res, if_error = self.if_stmt()
+                    if_res, if_error = self.if_stmt("if")
                     self.advance() 
 
                     if if_error:
@@ -2926,7 +2926,7 @@ class Parser:
     
     #*CONDITIONAL
     #FUNC FOR IF, ELSE, ELSEIF
-    def if_stmt(self):
+    def if_stmt(self, msg):
         res = []
         error = []
         self.advance()
@@ -2952,11 +2952,11 @@ class Parser:
                             for f_res in if_res:
                                 res.append(f_res)
                                 print("f res: ", f_res)
-                            res.append(["SUCCESS from if"])
+                            res.append([f"SUCCESS from {msg}"])
                             self.advance()
                             if self.current_tok.token in ELSEIF:
                                 print("this is an elif statement")
-                                elif_res, elif_error = self.if_stmt()
+                                elif_res, elif_error = self.if_stmt("elif")
                                 #self.advance()
 
                                 if elif_error:
