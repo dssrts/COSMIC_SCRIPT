@@ -92,6 +92,9 @@ LESS_THAN = '<'
 GREATER_THAN = '>'
 LESS_THAN_EQUAL = '<='
 GREATER_THAN_EQUAL = '>='
+
+REL_OP = E_EQUAL + NOT_EQUAL + LESS_THAN + GREATER_THAN + LESS_THAN_EQUAL + GREATER_THAN_EQUAL
+
 #mathematical operators | done
 PLUS = '+' #it can also use in string operator
 MINUS = '-'
@@ -102,6 +105,9 @@ MODULUS = '%'
 NOT_OP = '!'
 AND_OP = '&&'
 OR_OP = '||'
+
+LOG_OP = NOT_OP + AND_OP + OR_OP
+
 #other symbols
 LPAREN = '('
 RPAREN = ')'
@@ -543,7 +549,7 @@ class Lexer:
                     if self.current_char not in delim1:
                         errors.extend([f"Invalid delimiter for ' & '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(AND_OP, "&&"))
+                    tokens.append(Token(AND_OP, "&&", pos_start = self.pos))
                     
                 else:
                     errors.extend([f"Please enter a valid symbol! User typed: & .Did you mean && ?"])
@@ -903,7 +909,7 @@ class Lexer:
                                     if self.current_char not in block_delim + "(":
                                         errors.extend([f'Invalid delimiter for elseif! Cause: {self.current_char}'])
                                         return [], errors
-                                    return Token(ELSEIF, "elseif"), errors
+                                    return Token(ELSEIF, "elseif", pos_start = self.pos), errors
                             else:
                                 if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
@@ -911,7 +917,7 @@ class Lexer:
                                 if self.current_char not in block_delim:
                                     errors.extend([f'Invalid delimiter for else! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(ELSE, "else"),errors
+                                return Token(ELSE, "else", pos_start = self.pos),errors
                             
                 elif self.current_char == "n":
                     if ident_count == 10:
@@ -2018,8 +2024,8 @@ class Parser:
                 if self.current_tok.token in IF:
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
-                    self.advance() 
-
+                    #self.advance() 
+                    print("after calling if in body: ", self.current_tok)
                     if if_error:
                         error.extend(if_error)
                         break
@@ -2043,19 +2049,7 @@ class Parser:
                             print("current token from if parse: ", self.current_tok)
                         self.advance()
 
-                if self.current_tok.token in ELSEIF:
-                    print("this is an elif statement")
-                    elif_res, elif_error = self.elif_stmt()
-                    self.advance()
-
-                    if elif_error:
-                        error.extend(elif_error)
-                        break
-                    else:
-                        for fres in elif_res:
-                            res.append(fres)
-                            print("current token from elseif parse: ", self.current_tok)
-                        self.advance()
+                
 
                 #INPUT OUTPUT
                 if self.current_tok.token in INNER:
@@ -2123,7 +2117,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in ELSEIF or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
+        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
             return True
         else:
             return False
@@ -2951,148 +2945,233 @@ class Parser:
         res = []
         error = []
         self.advance()
-        if self.current_tok.token != LPAREN:
-            print("no lparen")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-        else: 
+        if self.current_tok.token == LPAREN:
             self.advance()
-            if self.current_tok.token != IDENTIFIER:
-                print("no ident after left paren")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-            else: 
-                self.advance()
-                if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
-                    print("no condition")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
-                else:
+            c_ces, c_error = self.if_whirl_condition()
+            if c_error:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+            else:
+                if self.current_tok.token == RPAREN:
                     self.advance()
-                    #-- USED ASSIGN VAL PERO DAPAT BAWAL STRING
-                    assign = self.assign_val()
-                    assign == True   
-                    if self.current_tok.token != RPAREN:
-                        print("no rparen")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-                    else:
+                    if self.current_tok.token == CLBRACKET:
                         self.advance()
-                        if self.current_tok.token != CLBRACKET:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected If Scope!"))
+                        if_res, if_error = self.body()
+                        print("if res: ", res)
+                        if if_error:
+                            print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                            for err in if_error:
+                                error.append(err)
+                            return [], error
                         else:
+                            print("successful if!")
+                            for f_res in if_res:
+                                res.append(f_res)
+                                print("f res: ", f_res)
+                            res.append([f"SUCCESS from if"])
                             self.advance()
-                            if_res, if_error = self.body()
-                            print("if res: ", res)
-                            if if_error:
-                                print("THERES  AN ERROR INSIDE THE IF SCOPE")
-                                for err in if_error:
-                                    error.append(err)
-                                return [], error
-                            else:
-                                print("successful form!")
-                                for f_res in if_res:
-                                    res.append(f_res)
-                                    print("f res: ", f_res)
-                                res.append(["SUCCESS from if"])
-                                self.if_stmt_encountered = True
 
-                                if self.current_tok.token != CRBRACKET:
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                                    return [], error
+                            while self.current_tok.token == ELSEIF:
+                                if self.current_tok.token in ELSEIF:
+                                    print("this is an elif statement")
+                                    elif_res, elif_error = self.elif_stmt()
+                                    #self.advance()
+
+                                    if elif_error:
+                                        # for err in elif_error:
+                                        #     error.append(err)
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
+                                    else:
+                                        for fres in elif_res:
+                                            res.append(fres)
+                                            print("current token from elseif parse: ", self.current_tok)
+                                        #self.advance()
+                            print("token after last elseif: ", self.current_tok)
+                            if self.current_tok.token == ELSE:
+                                print('ELSE FOUND')
+                                else_res, else_error = self.else_stmt()
+                                    #self.advance()
+
+                                if else_error:
+                                    # for err in elif_error:
+                                    #     error.append(err)
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
+                                else:
+                                    for fres in else_res:
+                                        res.append(fres)
+                                        print("current token from else parse: ", self.current_tok)
+                            #self.advance()
+                        
+                            return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
+                        
+                    #res.append(["SUCCESS FROM IF"]) 
+                    
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+
         return res, error
     
     def elif_stmt(self):
         res = []
         error = []
-        if self.if_stmt_encountered is not True:
-            print("this is the error")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "elif without preceding if statement!"))
-            return res, error
-        else: 
+        self.advance()
+        if self.current_tok.token == LPAREN:
             self.advance()
-            if self.current_tok.token != LPAREN:
-                print("no lparen")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-            else: 
-                self.advance()
-                if self.current_tok.token != IDENTIFIER:
-                    print("no ident after left paren")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                else: 
+            c_ces, c_error = self.if_whirl_condition()
+            if c_error:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+            else:
+                if self.current_tok.token == RPAREN:
                     self.advance()
-                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
-                        print("no condition")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
-                    else:
+                    if self.current_tok.token == CLBRACKET:
                         self.advance()
-                        #-- used assign val pero bawal dapat string
-                        assign = self.assign_val()
-                        assign == True   
-                        if self.current_tok.token != RPAREN:
-                            print("no rparen")
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
+                        if_res, if_error = self.body()
+                        print("elif res: ", res)
+                        if if_error:
+                            print("THERES  AN ERROR INSIDE THE ELIF SCOPE")
+                            for err in if_error:
+                                error.append(err)
+                            return [], error
                         else:
+                            print("successful elif!")
+                            for f_res in if_res:
+                                res.append(f_res)
+                                print("f res: ", f_res)
+                            res.append(["SUCCESS from elif"])
                             self.advance()
-                            if self.current_tok.token != CLBRACKET:
-                                
-                                # print("no semicolon")
-                                # print("current tok in if: ", self.current_tok.token)
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected elif Scope!"))
-                            else:
-                                self.advance()
-                                elif_res, elif_error = self.body()
-                                print("if res: ", res)
-                                if elif_error:
-                                    print("THERES  AN ERROR INSIDE THE IF SCOPE")
-                                    for err in elif_error:
-                                        error.append(err)
-                                    return [], error
-                                else:
-                                    print("successful elif!")
-                                    for f_res in elif_res:
-                                        res.append(f_res)
-                                        print("f res: ", f_res)
-                                    res.append(["SUCCESS from elif"])
-                                    self.if_stmt_encountered = True
-                                    
+                            # if self.current_tok.token in ELSEIF:
+                            #     print("this is an elif statement")
+                            #     elif_res, elif_error = self.elif_stmt()
+                            #     #self.advance()
 
-                                    if self.current_tok.token != CRBRACKET:
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                                        return [], error
-                                
-                    #next is yung new line, curly brackerts and stamements
+                            #     if elif_error:
+                            #         # for err in elif_error:
+                            #         #     error.append(err)
+                            #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
+                            #     else:
+                            #         for fres in elif_res:
+                            #             res.append(fres)
+                            #             print("current token from elseif parse: ", self.current_tok)
+                            #         self.advance()
+                            # return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif scope!"))
+                        
+                    #res.append(["SUCCESS FROM IF"]) 
+                    
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+
         return res, error
     
     def else_stmt(self):
         res = []
         error = []
-        if self.if_stmt_encountered is not True:
-            print("this is the error")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "else without preceding if or elseif statement!"))
-            return res, error
-        else: 
+        self.advance()
+        print("IN ELSE STMT: ", self.current_tok)
+        if self.current_tok.token != CLBRACKET:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+        else:
             self.advance()
-            if self.current_tok.token != CLBRACKET:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+            else_res, else_error = self.body()
+            print("if res: ", res)
+            if else_error:
+                print("THERES  AN ERROR INSIDE THE IF SCOPE")
+                for err in else_error:
+                    error.append(err)
+                return [], error
             else:
+                print("successful else!")
+                for f_res in else_res:
+                    res.append(f_res)
+                    print("f res: ", f_res)
+                res.append(["SUCCESS from else"])
                 self.advance()
-                else_res, else_error = self.body()
-                print("if res: ", res)
-                if else_error:
-                    print("THERES  AN ERROR INSIDE THE IF SCOPE")
-                    for err in else_error:
-                        error.append(err)
-                    return [], error
-                else:
-                    print("successful else!")
-                    for f_res in else_res:
-                        res.append(f_res)
-                        print("f res: ", f_res)
-                    res.append(["SUCCESS from else"])
-                    
+                
+                            
+                #next is yung new line, curly brackerts and stamements
+        return res, error
 
-                    if self.current_tok.token != CRBRACKET:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                        return [], error
-                                
-                    #next is yung new line, curly brackerts and stamements
+    def if_whirl_condition(self):
+        res = []
+        error = []
+        if self.current_tok.token == LPAREN:
+            self.advance()
+            c_ces, c_error = self.if_whirl_condition()
+            if c_error:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+            else:
+                if self.current_tok.token == RPAREN:
+                    
+                    self.advance()
+                    if self.current_tok.token in LOG_OP:
+                        self.advance()
+                        c_ces, c_error = self.if_whirl_condition()
+                        if c_error:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                        else:
+                            if self.current_tok.token == RPAREN:
+                                res.append("SUCCESS FROM IF") 
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
+                    else:
+                        res.append("SUCCESS FROM IF")       
+                        return res, error
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+        elif self.current_tok.token == IDENTIFIER:
+            self.advance()
+            if self.current_tok.token in REL_OP:
+                self.advance()
+                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+                    self.advance()
+                    if self.current_tok.token in LOG_OP:
+                        self.advance()
+                        if self.current_tok.token == IDENTIFIER:
+                            self.advance()
+                            if self.current_tok.token in REL_OP:
+                                self.advance()
+                                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+                                    self.advance()
+                                    res.append("SUCCESS from if condition")
+                                else:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier or number as relation operand!"))
+                            elif self.current_tok.token == RPAREN:
+                                res.append("SUCCESS from if condition")
+                                return res, error
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operator!"))
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
+                    elif self.current_tok.token == RPAREN:
+                        res.append("SUCCESS from if condition")
+                        return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
+            elif self.current_tok.token in LOG_OP:
+                self.advance()
+                if self.current_tok.token == IDENTIFIER:
+                    self.advance()
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid logical operand!"))
+            elif self.current_tok.token == RPAREN:
+                res.append("SUCCESS from if condition")
+                return res, error 
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+        
         return res, error
 
 
