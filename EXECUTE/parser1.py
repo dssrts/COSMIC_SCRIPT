@@ -549,7 +549,7 @@ class Lexer:
                     if self.current_char not in delim1:
                         errors.extend([f"Invalid delimiter for ' & '. Cause: ' {self.current_char} '"])
                         continue
-                    tokens.append(Token(AND_OP, "&&"))
+                    tokens.append(Token(AND_OP, "&&", pos_start = self.pos))
                     
                 else:
                     errors.extend([f"Please enter a valid symbol! User typed: & .Did you mean && ?"])
@@ -2956,8 +2956,6 @@ class Parser:
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
 
-
-        
         return res, error
     
     def elif_stmt(self):
@@ -3066,12 +3064,25 @@ class Parser:
             if c_error:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
             else:
-                if self.current_char.token == RPAREN:
-                    res.append("SUCCESS FROM IF") 
-                    return res, error
+                if self.current_tok.token == RPAREN:
+                    
+                    self.advance()
+                    if self.current_tok.token in LOG_OP:
+                        self.advance()
+                        c_ces, c_error = self.if_whirl_condition()
+                        if c_error:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                        else:
+                            if self.current_tok.token == RPAREN:
+                                res.append("SUCCESS FROM IF") 
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
+                    else:
+                        res.append("SUCCESS FROM IF")       
+                        return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
-        if self.current_tok.token == IDENTIFIER:
+        elif self.current_tok.token == IDENTIFIER:
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
