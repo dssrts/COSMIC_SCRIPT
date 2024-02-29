@@ -2979,7 +2979,8 @@ class Parser:
                                     if elif_error:
                                         # for err in elif_error:
                                         #     error.append(err)
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                                        for err in elif_error:
+                                            error.append(err)
 
                                     else:
                                         for fres in elif_res:
@@ -2995,7 +2996,8 @@ class Parser:
                                 if else_error:
                                     # for err in elif_error:
                                     #     error.append(err)
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                                    for err in else_error:
+                                        error.append(err)
 
                                 else:
                                     for fres in else_res:
