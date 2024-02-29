@@ -96,6 +96,7 @@ MINUS = '-'
 MUL = '*'
 DIV = '/'
 MODULUS = '%'
+NEG_OP = '~'
 #logical operators
 NOT_OP = '!'
 AND_OP = '&&'
@@ -256,7 +257,12 @@ class Lexer:
                         continue
                     tokens.append(Token(EQUAL, "=")) #for == symbol
                         
-                    
+            elif self.current_char == '~':
+                self.advance()
+                if self.current_char in all_num:
+                    result, error = self.make_number()
+                    result = Token(result.token, result.value * -1)
+                    tokens.append(result)          
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
@@ -375,10 +381,7 @@ class Lexer:
                         errors.extend([f"Invalid delimiter for ' -- '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(DECRE, "--")) 
-                elif self.current_char in all_num:
-                    result, error = self.make_number()
-                    result = Token(result.token, result.value * -1)
-                    tokens.append(result)
+                
                 else:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])

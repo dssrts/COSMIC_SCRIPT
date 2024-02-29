@@ -101,6 +101,8 @@ MINUS = '-'
 MUL = '*'
 DIV = '/'
 MODULUS = '%'
+NEG_OP = '~'
+
 #logical operators
 NOT_OP = '!'
 AND_OP = '&&'
@@ -280,7 +282,12 @@ class Lexer:
                         continue
                     tokens.append(Token(EQUAL, "=", pos_start = self.pos)) #for == symbol
                         
-                    
+            elif self.current_char == '~':
+                self.advance()
+                if self.current_char in all_num:
+                    result, error = self.make_number()
+                    result = Token(result.token, result.value * -1, pos_start, self.pos)
+                    tokens.append(result)       
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
@@ -371,7 +378,7 @@ class Lexer:
                         errors.extend([f"Invalid delimiter for ' + '! Cause: {self.current_char}"])
                         continue
                         
-                    if self.current_char not in delim1:
+                    if self.current_char not in delim1 + '~':
                         errors.extend([f"Invalid delimiter for ' + ' ! Cause: {self.current_char}"])
                         continue
                         
@@ -399,15 +406,12 @@ class Lexer:
                         errors.extend([f"Invalid delimiter for ' -- '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(DECRE, "--")) 
-                elif self.current_char in all_num:
-                    result, error = self.make_number()
-                    result = Token(result.token, result.value * -1)
-                    tokens.append(result)
+                
                 else:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in delim2:
+                    if self.current_char not in delim2 + '~':
                         errors.extend([f"Invalid delimiter for ' - '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(MINUS, "-", pos_start = self.pos)) 
@@ -435,7 +439,7 @@ class Lexer:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in delim2:
+                    if self.current_char not in delim2 = '~':
                         errors.extend([f"Invalid delimiter for ' * '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(MUL, "*", pos_start = self.pos))    
@@ -450,7 +454,7 @@ class Lexer:
                     if self.current_char == None:
                         errors.extend([f"Invalid delimiter for ' /= '. Cause: ' {self.current_char} '"])
                         continue
-                    if self.current_char not in delim2:
+                    if self.current_char not in delim2 + '~':
                         errors.extend([f"Invalid delimiter for ' /= '. Cause: ' {self.current_char} '"])
                         continue
                     tokens.append(Token(DIV_EQUAL, "/=", pos_start, self.pos))
@@ -2307,6 +2311,10 @@ class Parser:
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 print("found a number in assign val 2")
                 self.advance()
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON):
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                    print("current error tok: ",  self.current_tok)
+                    return res, error
                 check, err = self.num_loop()
                 if err:
                     print("FOUND AN ERROR IN NUM LOOP")
