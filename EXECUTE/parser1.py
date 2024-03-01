@@ -2720,9 +2720,25 @@ class Parser:
                         else:
                             self.advance()
                             print("success condition")
-
-                    
-
+                            #TODO FORCE SCOPE
+                            if self.current_tok.token == CLBRACKET:
+                                self.advance()
+                                force_res, force_error = self.body()
+                                print("force res: ", res)
+                                if force_error:
+                                    print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
+                                    for err in force_error:
+                                        error.append(err)
+                                    return [], error
+                                else:
+                                    print("successful FORCE!")
+                                    for f_res in force_res:
+                                        res.append(f_res)
+                                        print("f res: ", f_res)
+                                    res.append([f"SUCCESS from FORCE"])
+                                    self.advance()
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid force scope!"))
         return res, error
 
     # -- need a function for the var dec of force
