@@ -1527,11 +1527,11 @@ class Parser:
         self.tokens = tokens
         self.tok_idx = -1
         self.advance()
-        self.if_stmt_encountered = False
         self.landing = False
         self.is_galaxy = False
         self.in_loop = False
         self.in_condition = False
+        self.in_force = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1916,8 +1916,9 @@ class Parser:
                 #LOOPS
                 if self.current_tok.token in FORCE:
                     print("this is a force statement")
-                    force_res, force_error = self.force_stmt()
+                    
                     self.advance()
+                    force_res, force_error = self.force_stmt()
 
                     if force_error:
                         error.extend(force_error)
@@ -2209,16 +2210,20 @@ class Parser:
                                     res.append(c)
                     
                 elif self.current_tok.token == COMMA:
-                    print("there's a comma here")
-                    comma, c_error = self.var_dec()
-                    print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
-                    
-                    if c_error:
-                        for err in c_error:
-                            error.append(err)
+                    if self.in_force == False:
+                        print("there's a comma here")
+                        comma, c_error = self.var_dec()
+                        print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
+                        
+                        if c_error:
+                            for err in c_error:
+                                error.append(err)
+                        else:
+                            for c in comma:
+                                res.append(c)
                     else:
-                        for c in comma:
-                            res.append(c)
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid force condition!"))
+
             # else:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
 
@@ -2683,7 +2688,123 @@ class Parser:
         error = []
         #TODO create force
         if self.current_tok.token == LPAREN:
-            pass
+            self.advance()
+            var, var_error = self.force_first_condition()
+            if var_error:
+                error.extend(var_error)
+                return res, error
+            else:
+                self.advance()
+                print("success first condition")
+            
+
+        return res, error
+
+    # -- need a function for the var dec of force
+    def force_var_dec(self):
+        res = []
+        error = []
+        # -- token when entering this function is 'var'
+        self.advance()
+
+        # -- if the user doesnt type an identiifier after 'var'
+        if self.current_tok.token != IDENTIFIER:
+            print("bro put an identifier!")
+            print("current tok: ", self.current_tok.token)
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER "))
+        else:
+            print("u good")
+            self.advance()
+            
+            if self.current_tok.token == EQUAL:
+                print("value after equal: ", self.current_tok)
+                # -- USED SELF ASSIGN VAL 2 kasi number lang
+                self.advance()
+                assign,err = self.assign_val2()
+                if err:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                    
+                else:
+                    #self.advance()
+                    print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
+                    if self.current_tok.token == COMMA:
+                        print("comma after init!")
+                        comma, c_error = self.var_dec()
+                        print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
+                        
+                        if c_error:
+                            for err in c_error:
+                                error.append(err)
+                        else:
+                            for c in comma:
+                                res.append(c)
+                
+            
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+
+            #res.append("SUCCESS! from variable declaration")
+
+
+        return res, error
+    
+    #-- need ng init function for force lang
+    def force_init_var(self):
+        res = []
+        error = []
+        if self.current_tok.token == EQUAL:
+            print("in init var")
+            self.advance()
+            assign, err = self.assign_val2()
+            print("assign: ", err)
+            if err:
+                #error.append(err)
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+
+
+            else:
+                # semicolon current char
+                res.append("force first condition")
+                self.advance()
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+
+        return res, error
+    
+    def force_first_condition(self):
+        res = []
+        error = []
+        if self.current_tok.token == VAR:
+            print("this is a var token")
+            var, var_error = self.force_var_dec()
+            if var_error:
+                error.extend(var_error)
+                return res, error
+            #res.append(var)
+            #self.advance()
+            print("current token from var dec parse: ", self.current_tok)
+            
+            if self.current_tok.token != SEMICOLON:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec body!"))
+            else:
+                self.advance()
+                res.append(["force first condition"])
+        elif self.current_tok.token == IDENTIFIER:
+            self.advance()
+            init_res, init_err = self.force_init_var()
+            if init_err:
+                error.extend(init_err)
+            else:
+                res.append(["force first condition init"])
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid force condition!"))
+
+        return res, error   
+         
+    # -- need relational for force
+    def force_rel(self):
+        pass
+    # -- need unary statement for force
     def do_whirl(self):
         res = []
         error = []

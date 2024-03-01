@@ -1024,7 +1024,7 @@ class Lexer:
                                         errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}. Expected: \' \' '])
                                         return [], errors
                                     if self.current_char not in "( " + space_delim:
-                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}. Expected: \' \' '])
+                                        errors.extend([f'Invalid delimiter for galaxy! Cause: {self.current_char}. Expected: \' (\' '])
                                         return [], errors
                                     return Token(GALAXY, "galaxy"), errors                     
                 
