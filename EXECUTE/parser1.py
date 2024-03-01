@@ -1668,6 +1668,7 @@ class Parser:
                     if self.is_galaxy == False:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No galaxy function found!"))
                         self.advance()
+                        return res, error
                     else:
                         return res, error
                 else:
@@ -2056,6 +2057,7 @@ class Parser:
                     self.advance()
                     if self.current_tok.token == SEMICOLON:
                         self.landing = True
+                        #self.advance()
                         return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Semicolon expected for 'landing'!"))
