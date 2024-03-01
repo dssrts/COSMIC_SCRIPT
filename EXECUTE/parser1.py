@@ -3228,6 +3228,8 @@ class Parser:
         error = []
         if self.current_tok.token == LPAREN:
             self.advance()
+            if self.current_tok.token == NOT_OP:
+                self.advance()
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
