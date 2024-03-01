@@ -3250,11 +3250,11 @@ class Parser:
                         return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
-        elif self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY) :
+        elif self.current_tok.token in (IDENTIFIER) :
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
-                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY, TRUE):
                     self.advance()
                     if self.current_tok.token in LOG_OP:
                         self.advance()
@@ -3262,7 +3262,7 @@ class Parser:
                             self.advance()
                             if self.current_tok.token in REL_OP:
                                 self.advance()
-                                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+                                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY, TRUE):
                                     self.advance()
                                     res.append("SUCCESS from if condition")
                                 else:
