@@ -3270,7 +3270,15 @@ class Parser:
             if self.current_tok.token in REL_OP:
                 self.advance()
                 if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY, TRUE):
-                    self.advance()
+                    if self.current_tok.token == TRUE:
+                        self.advance()
+                    elif self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
+                        n_res, n_error = self.assign_val2()
+                        print("assign val in arith rel op: ", self.current_tok.token)
+                        if n_error:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
+                        else:
+                            self.advance
                     if self.current_tok.token in LOG_OP:
                         self.advance()
                         if self.current_tok.token == IDENTIFIER:
