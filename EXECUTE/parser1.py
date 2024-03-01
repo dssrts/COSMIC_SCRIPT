@@ -2694,9 +2694,18 @@ class Parser:
                 error.extend(var_error)
                 return res, error
             else:
-                self.advance()
+                #self.advance()
                 print("success first condition")
-            
+                #TODO relational operator
+                rel, rel_error = self.force_rel()
+                if rel_error:
+                    error.extend(rel_error)
+                    return res, error
+                else:
+                    self.advance()
+                    print("success 2nd condition")
+                    #TODO unary and assignment
+                    
 
         return res, error
 
@@ -2803,7 +2812,30 @@ class Parser:
          
     # -- need relational for force
     def force_rel(self):
-        pass
+        res = []
+        error = []
+        if self.current_tok.token == IDENTIFIER:
+            self.advance()
+            if self.current_tok.token in REL_OP:
+                self.advance()
+                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+                    self.advance()
+                    if self.current_tok.token == SEMICOLON:
+                        res.append(["success in 2nd condtion"])
+                        return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force!"))
+
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operator in force!"))
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force!"))
+
+        return res, error
+
     # -- need unary statement for force
     def do_whirl(self):
         res = []
@@ -3126,7 +3158,7 @@ class Parser:
                         return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
-        elif self.current_tok.token == IDENTIFIER:
+        elif self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY) :
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
