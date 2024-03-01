@@ -2722,6 +2722,7 @@ class Parser:
                             print("success condition")
                             #TODO FORCE SCOPE
                             if self.current_tok.token == CLBRACKET:
+                                self.in_loop = True
                                 self.advance()
                                 force_res, force_error = self.body()
                                 print("force res: ", res)
