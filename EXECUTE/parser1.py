@@ -286,6 +286,7 @@ class Lexer:
                 self.advance()
                 if self.current_char in all_num:
                     result, error = self.make_number()
+                    #result = Token(result.token, result.value * -1, pos_start, self.pos)
                     result = Token(result.token, result.value * -1, pos_start, self.pos)
                     tokens.append(result)       
                     

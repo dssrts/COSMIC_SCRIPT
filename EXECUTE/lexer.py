@@ -262,7 +262,7 @@ class Lexer:
                 self.advance()
                 if self.current_char in all_num:
                     result, error = self.make_number()
-                    result = Token(result.token, result.value * -1)
+                    result = Token(result.token, "~" + str(result.value))
                     tokens.append(result)          
                     
             elif self.current_char == '<': #relational operator
