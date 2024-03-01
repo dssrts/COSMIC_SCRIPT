@@ -2401,9 +2401,10 @@ class Parser:
     def num_loop(self):
         res = []
         error = []
-        ops = "-/*%"
+        ops = ""
         print("current tok in num loop: ", self.current_tok)
         while self.current_tok.token in (PLUS, MINUS, DIV, MUL, MODULUS):
+            ops += self.current_tok.token
             self.advance()
             if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
                 self.advance()
@@ -2439,10 +2440,12 @@ class Parser:
             #     print("found rparen")
             #     break
             elif self.current_tok.token == STRING:
+                print("there's a string here")
                 if "-" in ops or "/" in ops or "%" in ops or "*" in ops:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid string operation!"))
-
+                    print("ERROR IN STRING OPS")
                 else:
+                    print("advanced after string found")
                     self.advance()
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
@@ -2703,6 +2706,8 @@ class Parser:
                     return res, error
                 else:
                     self.advance()
+                    # * nasa identifier tayo rn
+
                     print("success 2nd condition")
                     #TODO unary and assignment
                     
@@ -2779,7 +2784,7 @@ class Parser:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
 
         return res, error
-    
+    # combine lang  init and var
     def force_first_condition(self):
         res = []
         error = []
@@ -2822,6 +2827,7 @@ class Parser:
                     self.advance()
                     if self.current_tok.token == SEMICOLON:
                         res.append(["success in 2nd condtion"])
+                        
                         return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
@@ -2837,6 +2843,59 @@ class Parser:
         return res, error
 
     # -- need unary statement for force
+    def force_iteration(self):
+        #--INITIALIZATION OF IDENTIFIERS
+        if self.current_tok.token == IDENTIFIER:
+            self.advance()
+            #-- if it's a function call
+            if self.current_tok.token == LPAREN:
+                c_form, call_form_error = self.call_form()
+                print("token after call form: ", self.current_tok.token)
+                #self.advance()
+                print('call form result:', c_form)
+                if call_form_error:
+                    error.extend(call_form_error)
+                    #break
+                else:
+                    self.advance()
+                    if self.current_tok.token in SEMICOLON:
+                        res.append(c_form)
+                        self.advance()
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in call form!"))
+
+                
+            #-- if we assign a value to it but not declaring it           
+            elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
+                print("initialize the variable")
+                assign, a_error = self.init_var()
+
+                if a_error:
+                    error.extend(a_error)
+                    #break
+                res.append(assign)
+            #-- if we increment it
+            elif self.current_tok.token == INCRE:
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                else:
+                    res.append(["SUCCESS from unary post increment"])
+                    self.advance()
+            #-- if we decrement it
+            elif self.current_tok.token == DECRE:
+                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                else:
+                    res.append(["SUCCESS from unary post decrement"])
+                    self.advance()
+            # -- else no other operation for it
+            else:
+                print('INVALID IDENT OPERATION')
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
+                return [], error
+
     def do_whirl(self):
         res = []
         error = []
