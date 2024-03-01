@@ -1656,7 +1656,10 @@ class Parser:
                     res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
-                
+                if self.is_galaxy == True:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Only one galaxy function allowed!"))
+                    return res, error
+
                 print("youve got a galaxy token")
                 g_res, g_error = self.galaxy()
 
