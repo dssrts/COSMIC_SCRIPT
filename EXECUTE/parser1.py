@@ -577,7 +577,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '"])
                     continue
-                if self.current_char not in delim1 + ')' + alphanum + '':
+                if self.current_char not in delim1 + ')' + alphanum + '!':
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(LPAREN, "(",  pos_start = self.pos ))
@@ -2680,141 +2680,7 @@ class Parser:
     def force_stmt(self):
         res = []
         error = []
-        self.advance()
-        if self.current_tok.token != LPAREN:
-            print("no lparen")
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Syntax!"))
-        else: 
-            self.advance()
-            if self.current_tok.token != VAR:
-                print("no var")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing var!"))
-            else:
-                self.advance()
-                if self.current_tok.token != IDENTIFIER:
-                    print("no ident")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                    
-                else: 
-                    self.advance()
-                    if self.current_tok.token != EQUAL:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
-                    else:
-                        self.advance()    
-                        if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER:
-                            print("not an intel")
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                        else: 
-                            self.advance()
-                            if self.current_tok.token != SEMICOLON:
-                                print("no semicolon")
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                            else:
-                                self.advance()
-                                if self.current_tok.token != IDENTIFIER:
-                                    print("no ident")
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                                else: 
-                                        #self.advance()
-                                    
-                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
-                                        print("no condition")
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
-                                    else:
-                                        self.advance()
-                                        if self.current_tok.token != INTEL and self.current_tok.token == IDENTIFIER:
-                                            print("not an intel")
-                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
-                                        else: 
-                                            self.advance()
-                                            if self.current_tok.token != SEMICOLON:
-                                                print("no semicolon")
-                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
-                                            else:
-                                                self.advance()
-                                                if self.current_tok.token not in (INCRE, DECRE) and self.current_tok.token == IDENTIFIER:
-                                                    self.advance()
-                                                    if self.current_tok.token not in (INCRE, DECRE):
-                                                        print("no unary op")
-                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid operation!"))
-                                                    else:
-                                                        self.advance()
-                                                        if self.current_tok.token != RPAREN:
-                                                            print("no rparen")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
-                                                        else:
-                                                            #res.append("SUCCESS!")
-
-                                                            self.advance()
-
-                                                            if self.current_tok.token != CLBRACKET:
-                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Force scope!"))
-                                                                return [], error
-                                                            else:
-                                                                self.advance()
-                                                                force_res, force_error = self.body()
-                                                                print("force res: ", res)
-                                                                if force_error:
-                                                                    print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
-                                                                    for err in force_error:
-                                                                        error.append(err)
-                                                                    return [], error
-                                                                else:
-                                                                    print("successful form!")
-                                                                    for f_res in force_res:
-                                                                        res.append(f_res)
-                                                                        print("f res: ", f_res)
-                                                                    res.append(["SUCCESS from force"])
-                                                                    
-
-                                                                    if self.current_tok.token != CRBRACKET:
-                                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                                                                        return [], error
-                                                                    
-                                                                    
-                                                    
-                                                elif self.current_tok.token in (INCRE, DECRE) and self.current_tok.token != IDENTIFIER:
-                                                    self.advance()
-                                                    if self.current_tok.token != IDENTIFIER:
-                                                        print("no ident")
-                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
-                                                    else:
-                                                        self.advance()
-                                                        if self.current_tok.token != RPAREN:
-                                                            print("no rparen")
-                                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
-                                                        else:
-                                                            #res.append("SUCCESS!")
-
-                                                            self.advance()
-
-                                                            if self.current_tok.token != CLBRACKET:
-                                                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Force scope!"))
-                                                                return [], error
-                                                            else:
-                                                                self.advance()
-                                                                force_res, force_error = self.body()
-                                                                print("force res: ", res)
-                                                                if force_error:
-                                                                    print("THERES  AN ERROR INSIDE THE FORCE SCOPE")
-                                                                    for err in force_error:
-                                                                        error.append(err)
-                                                                    return [], error
-                                                                else:
-                                                                    print("successful form!")
-                                                                    for f_res in force_res:
-                                                                        res.append(f_res)
-                                                                        print("f res: ", f_res)
-                                                                    res.append(["SUCCESS from force"])
-                                                                    
-
-                                                                    if self.current_tok.token != CRBRACKET:
-                                                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly bracket!"))
-                                                                        return [], error
-                                                else:
-                                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Syntax Error!"))
-                                                    #next is yung new line, curly brackerts and stamements
-        return res, error
+        #TODO create force
     
     def do_whirl(self):
         res = []
