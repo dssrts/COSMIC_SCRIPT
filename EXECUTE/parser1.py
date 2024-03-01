@@ -1995,6 +1995,21 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Blast not in valid scope!"))
                         self.advance()
 
+                if self.current_tok.token == SKIP:
+                    print("found blast")
+                    self.advance()
+                    print("in loop: ", self.in_loop)
+                    if self.in_loop == True and self.in_condition == True:
+                        if self.current_tok.token == SEMICOLON:
+                            res.append(["SUCCESS from skip"])
+                            self.advance()
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from skip!"))
+
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "skip not in valid scope!"))
+                        self.advance()
+
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
