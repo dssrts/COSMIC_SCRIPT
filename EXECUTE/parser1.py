@@ -2686,7 +2686,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                     else:
                         self.advance()    
-                        if self.current_tok.token != INTEL:
+                        if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER:
                             print("not an intel")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
                         else: 
@@ -2700,13 +2700,14 @@ class Parser:
                                     print("no ident")
                                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
                                 else: 
-                                    self.advance()
-                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
+                                        #self.advance()
+                                    
+                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
                                         print("no condition")
                                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                                     else:
                                         self.advance()
-                                        if self.current_tok.token != INTEL:
+                                        if self.current_tok.token != INTEL and self.current_tok.token == IDENTIFIER:
                                             print("not an intel")
                                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
                                         else: 
