@@ -1264,21 +1264,25 @@ class Lexer:
                                             return [], errors
                                         return Token(TAKEOFF, "takeoff", pos_start=self.pos), errors
                                 
-                        elif self.current_char == "u":
+                elif self.current_char == "r":
+                    ident += self.current_char
+                    self.advance()
+                    ident_count += 1
+                    if self.current_char == "u":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "e":
                             ident += self.current_char
-                            self.advance()
-                            ident_count += 1
-                            if self.current_char == "e":
-                                ident += self.current_char
-                                self.advance()     
-                                ident_count += 1    
-                                if self.current_char == None:
-                                        errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
-                                        return [], errors
-                                if self.current_char not in bool_delim + ',':
+                            self.advance()     
+                            ident_count += 1    
+                            if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(TRUE, "true", pos_start = self.pos), errors
+                            if self.current_char not in bool_delim + ',':
+                                errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
+                                return [], errors
+                            return Token(TRUE, "true", pos_start = self.pos), errors
                 
             if self.current_char == "u": #universe
                 ident += self.current_char
