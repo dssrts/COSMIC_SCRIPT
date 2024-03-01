@@ -1863,11 +1863,19 @@ class Parser:
                     elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
                         print("initialize the variable")
                         assign, a_error = self.init_var()
-
+                        
                         if a_error:
                             error.extend(a_error)
                             break
-                        res.append(assign)
+                        else:
+                            print("init var: ",self.current_tok )
+                            #self.advance()
+                            if self.current_tok.token != SEMICOLON:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
+                            else:
+                                res.append(assign)
+                                self.advance()
+                        
                     #-- if we increment it
                     elif self.current_tok.token == INCRE:
                         self.advance()
@@ -2142,15 +2150,10 @@ class Parser:
             if err:
                 #error.append(err)
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
-
                 
             else:
-                print("init var: ",self.current_tok )
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
-                else:
-                    res.append("SUCCESS! from assign")
-                    self.advance()
+                res.append("SUCCESS from assign")
+                return res, error
         elif self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
             #-- use assign val pero bawal dapat sa string
             #* DONE
@@ -2160,12 +2163,8 @@ class Parser:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
                 
             else:
-                print("init var: ",self.current_tok )
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
-                else:
-                    res.append("SUCCESS! from assign")
-                    self.advance()
+                res.append("SUCCESS! from assign")
+                    
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from initialize variable"))
         return res, error
@@ -2309,7 +2308,7 @@ class Parser:
                 print("found a number in assign val 2")
                 self.advance()
                 
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
@@ -2709,12 +2708,15 @@ class Parser:
                     self.advance()
                     # * nasa identifier tayo rn
                     rel2, rel2_error = self.force_iteration()
+                    #nasa r paren tayo if ever nag assign value tayo sa iteration
+                    #self.advance()
                     if rel2_error:
                         error.extend(rel2_error)
                         return res, error
                     else:
-                        self.advance()
+                        #self.advance()
                         print("success 3rd condition")
+                        print("after success 3rd condition:" , self.current_tok)
                         if self.current_tok.token != RPAREN:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis for force!"))
                         else:
@@ -2884,8 +2886,9 @@ class Parser:
 
                 if a_error:
                     error.extend(a_error)
-                    #break
+                    
                 else:
+                    #self.advance()
                     return res, error
             #-- if we increment it
             elif self.current_tok.token == INCRE:
