@@ -791,49 +791,32 @@ class Lexer:
         errors = []
         
         while self.current_char != None:
-            #FIXME here cinocontrol number ng identifiers
-            if ident_count == 10:
-                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
-                ident += self.current_char
-                self.advance()
-                if self.current_char in space_delim + ident_delim + ';' +'(,' + newline_delim:  
-                       
-                    return Token(IDENTIFIER, ident), errors
-                else:
-                    
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}. Expected: \' \', ,+-*/%><!=&|)/closing & open bracket \']\"/~, ;, ( or newline "])
-                    
-                    break
+            
                 
            
             
             if self.current_char == "b":
-                if ident_count == 10:
-                        break
+                
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
                 if self.current_char == "l":
-                    if ident_count == 10:
-                        break
+                    
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
                     if self.current_char == "a":
-                        if ident_count == 10:
-                            break
+                       
                         ident += self.current_char
                         self.advance()
                         ident_count += 1
                         if self.current_char == "s":
-                            if ident_count == 10:
-                                break
+                            
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
                             if self.current_char == "t":
-                                if ident_count == 10:
-                                    break
+                                
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
@@ -1348,17 +1331,11 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for whirl! Cause: {self.current_char}. Expected: ('])
                                     return [], errors
                                 return Token(WHIRL, "whirl"), errors
-                else:
-                    ident_count += 1
-                    if ident_count > 10:
-                        errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
                         
                        
             
             else:
-                if ident_count == 10:
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}. Expected: ;, ,+-*/%><!=&|)/opening bracket and closing bracket, \']\"/~, \'\', ( or :"])           
-                    return [], errors
+                
                 
                 if self.current_char == None:
                     break
