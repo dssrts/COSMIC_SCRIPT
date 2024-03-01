@@ -2682,7 +2682,8 @@ class Parser:
         res = []
         error = []
         #TODO create force
-    
+        if self.current_tok.token == LPAREN:
+            pass
     def do_whirl(self):
         res = []
         error = []

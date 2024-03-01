@@ -263,7 +263,10 @@ class Lexer:
                 if self.current_char in all_num:
                     result, error = self.make_number()
                     result = Token(result.token, "~" + str(result.value))
-                    tokens.append(result)          
+                    tokens.append(result)  
+                else:
+                    errors.extend([f"Invalid delimiter for ' ~ '. Cause: ' {self.current_char} '. Expected:  123456789"])
+                    
                     
             elif self.current_char == '<': #relational operator
                 self.advance()        
