@@ -95,7 +95,8 @@ PLUS = '+' #it can also use in string operator
 MINUS = '-'
 MUL = '*'
 DIV = '/'
-MODULUS = '%'
+MODULUS = '%'  
+#negative operator
 NEG_OP = '~'
 #logical operators
 NOT_OP = '!'
