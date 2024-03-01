@@ -123,7 +123,7 @@ UNDERSCORE = "_"
 NEWLINE= "\\n"
 IN = ">>"
 OUT = "<<"
-TILDE = "~"
+#TILDE = "~"
 
 #literals
 
@@ -717,27 +717,27 @@ class Lexer:
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            if dec_count == 4:
-                if dot_count == 0:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            # if dec_count == 4:
+            #     if dot_count == 0:
+            #         if self.current_char in all_num:
+            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                         
-                        return [], errors
-                    else:
-                        Token(INTEL, int(num_str)), errors
-                else:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            #             return [], errors
+            #         else:
+            #             Token(INTEL, int(num_str)), errors
+            #     else:
+            #         if self.current_char in all_num:
+            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                         
-                        return [], errors
-                    else:
-                        return Token(GRAVITY, float(num_str)), errors
-            if num_count == 9:
+            #             return [], errors
+            #         else:
+            #             return Token(GRAVITY, float(num_str)), errors
+            # if num_count == 9:
                 
-                if self.current_char in all_num:
-                    errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            #     if self.current_char in all_num:
+            #         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                     
-                    return [], errors
+            #         return [], errors
                     
             if self.current_char == '.':
                 if dot_count == 1: 
@@ -747,9 +747,7 @@ class Lexer:
                 num_str += '.'
                 
             else:
-                if '.' in num_str:
-                    if num_count > 9:
-                        break   
+                if '.' in num_str: 
                     dec_count += 1
                     num_count -= 1
                 
@@ -770,11 +768,11 @@ class Lexer:
             
 
        #TODO need maread kapag may 0
-            if dot_count == 0:
-                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
-            else:
-                return Token(GRAVITY, float(num_str)), errors
+            # if dot_count == 0:
+            #     #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
+            #     return Token(INTEL, int(num_str)), errors
+            # else:
+            #     return Token(GRAVITY, float(num_str)), errors
         
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
@@ -791,9 +789,6 @@ class Lexer:
         errors = []
         
         while self.current_char != None:
-            
-                
-           
             
             if self.current_char == "b":
                 
@@ -1207,21 +1202,25 @@ class Lexer:
                                             return [], errors
                                         return Token(TAKEOFF, "takeoff"), errors
                                 
-                elif self.current_char == "u":
+                elif self.current_char == "r":
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
-                    if self.current_char == "e":
+                    if self.current_char == "u":
                         ident += self.current_char
-                        self.advance()     
-                        ident_count += 1    
-                        if self.current_char == None:
-                            errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
-                            return [], errors
-                        if self.current_char not in bool_delim + ',':
-                            errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
-                            return [], errors
-                        return Token(TRUE, "true"), errors
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "e":
+                            ident += self.current_char
+                            self.advance()     
+                            ident_count += 1    
+                            if self.current_char == None:
+                                errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
+                                return [], errors
+                            if self.current_char not in bool_delim + ',':
+                                errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
+                                return [], errors
+                            return Token(TRUE, "true"), errors
                 
             if self.current_char == "u": #universe
                 ident += self.current_char
