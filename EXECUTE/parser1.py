@@ -1530,6 +1530,7 @@ class Parser:
         self.landing = False
         self.is_galaxy = False
         self.in_loop = False
+        self.in_condition = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1982,7 +1983,7 @@ class Parser:
                     print("found blast")
                     self.advance()
                     print("in loop: ", self.in_loop)
-                    if self.in_loop == True:
+                    if self.in_loop == True and self.in_condition == True:
                         
                         if self.current_tok.token == SEMICOLON:
                             res.append(["SUCCESS from blast"])
@@ -1991,7 +1992,7 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from blast!"))
 
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Blast not in valid loop!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Blast not in valid scope!"))
                         self.advance()
 
                 if self.current_tok.token in OUTER:
@@ -2005,6 +2006,7 @@ class Parser:
 
                 #CONDITIONAL
                 if self.current_tok.token in IF:
+                    self.in_condition = True
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
                     #self.advance() 
