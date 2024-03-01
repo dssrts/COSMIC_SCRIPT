@@ -2705,11 +2705,22 @@ class Parser:
                     error.extend(rel_error)
                     return res, error
                 else:
+                    #TODO unary and assignment
                     self.advance()
                     # * nasa identifier tayo rn
+                    rel2, rel2_error = self.force_iteration()
+                    if rel2_error:
+                        error.extend(rel2_error)
+                        return res, error
+                    else:
+                        self.advance()
+                        print("success 3rd condition")
+                        if self.current_tok.token != RPAREN:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis for force!"))
+                        else:
+                            self.advance()
+                            print("success condition")
 
-                    print("success 2nd condition")
-                    #TODO unary and assignment
                     
 
         return res, error
@@ -2844,58 +2855,60 @@ class Parser:
 
     # -- need unary statement for force
     def force_iteration(self):
+        res = []
+        error = []
         #--INITIALIZATION OF IDENTIFIERS
         if self.current_tok.token == IDENTIFIER:
             self.advance()
-            #-- if it's a function call
-            if self.current_tok.token == LPAREN:
-                c_form, call_form_error = self.call_form()
-                print("token after call form: ", self.current_tok.token)
-                #self.advance()
-                print('call form result:', c_form)
-                if call_form_error:
-                    error.extend(call_form_error)
-                    #break
-                else:
-                    self.advance()
-                    if self.current_tok.token in SEMICOLON:
-                        res.append(c_form)
-                        self.advance()
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in call form!"))
-
-                
             #-- if we assign a value to it but not declaring it           
-            elif self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
+            if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
                 print("initialize the variable")
                 assign, a_error = self.init_var()
 
                 if a_error:
                     error.extend(a_error)
                     #break
-                res.append(assign)
+                else:
+                    return res, error
             #-- if we increment it
             elif self.current_tok.token == INCRE:
-                self.advance()
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                else:
-                    res.append(["SUCCESS from unary post increment"])
-                    self.advance()
+                
+                return res, error
             #-- if we decrement it
             elif self.current_tok.token == DECRE:
-                self.advance()
-                if self.current_tok.token != SEMICOLON:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                else:
-                    res.append(["SUCCESS from unary post decrement"])
-                    self.advance()
+                
+                return res, error
             # -- else no other operation for it
             else:
                 print('INVALID IDENT OPERATION')
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation in force third condition!"))
                 return [], error
+        elif self.current_tok.token == INCRE:
+            self.advance()
+            if self.current_tok.token == IDENTIFIER:
+                self.advance()
+                
+                return res, error
+            
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
 
+        elif self.current_tok.token == DECRE:
+            self.advance()
+            if self.current_tok.token == IDENTIFIER:
+                return res, error
+                    
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
+
+        else:
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid third condition for force!"))
+        
+
+        return res, error
+
+        
+    
     def do_whirl(self):
         res = []
         error = []
