@@ -1525,6 +1525,7 @@ class Parser:
         self.if_stmt_encountered = False
         self.landing = False
         self.is_galaxy = False
+        self.in_loop = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1935,6 +1936,8 @@ class Parser:
                         #self.advance()
                         if self.current_tok.token == CLBRACKET:
                             self.advance()
+                            print("IN LOOP NOW")
+                            self.in_loop = True
                             w_result, w_err = self.body()
                             print("w res: ", res)
                             if w_err:
@@ -1971,6 +1974,22 @@ class Parser:
                         self.advance()
                         res.append(do_res)
                 
+                if self.current_tok.token == BLAST:
+                    print("found blast")
+                    self.advance()
+                    print("in loop: ", self.in_loop)
+                    if self.in_loop == True:
+                        
+                        if self.current_tok.token == SEMICOLON:
+                            res.append(["SUCCESS from blast"])
+                            self.advance()
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from blast!"))
+
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Blast not in valid loop!"))
+                        self.advance()
+
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
@@ -2070,6 +2089,7 @@ class Parser:
                     break
             
             else:
+                print("error tok: ", self.current_tok)
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
                 break
 
@@ -2078,7 +2098,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
+        if self.current_tok.token == BLAST or self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
             return True
         else:
             return False
