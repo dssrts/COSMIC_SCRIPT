@@ -604,7 +604,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '"])
                     continue
-                if self.current_char not in lineEnd_delim:
+                if self.current_char not in lineEnd_delim + ',':
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SRBRACKET, "]", pos_start = self.pos))
