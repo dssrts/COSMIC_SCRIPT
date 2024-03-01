@@ -123,7 +123,7 @@ UNDERSCORE = "_"
 NEWLINE= "\\n"
 IN = ">>"
 OUT = "<<"
-TILDE = "~"
+#TILDE = "~"
 
 #literals
 
@@ -523,7 +523,7 @@ class Lexer:
                         # errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!')])
                         errors.extend([f"Invalid delimiter for ' ! '. Cause: ' {self.current_char} '. Expected: \' \', abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789, ' \"\' or ("])
                         continue
-                    if self.current_char not in delim1:
+                    if self.current_char not in delim1 + '(':
                         # errors.extend([DelimiterError(pos_start, self.pos, self.current_char, '!')])
                         errors.extend([f"Invalid delimiter for ' ! '. Cause: ' {self.current_char} '. Expected: \' \', abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789, ' \"\' or ("])
                         continue
@@ -563,7 +563,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '. Expected: \' \', abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789, ' \"\' or )"])
                     continue
-                if self.current_char not in delim1 + ')' + alphanum + '':
+                if self.current_char not in delim1 + ')' + alphanum + '!':
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '. Expected: \' \', abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789, ' \"\' or )"])
                     continue
                 tokens.append(Token(LPAREN, "("))
@@ -590,7 +590,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '. Expected: ; "])
                     continue
-                if self.current_char not in lineEnd_delim:
+                if self.current_char not in lineEnd_delim + ',':
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '. Expected: ; "])
                     continue
                 tokens.append(Token(SRBRACKET, "]"))
@@ -717,27 +717,27 @@ class Lexer:
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            if dec_count == 4:
-                if dot_count == 0:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            # if dec_count == 4:
+            #     if dot_count == 0:
+            #         if self.current_char in all_num:
+            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                         
-                        return [], errors
-                    else:
-                        Token(INTEL, int(num_str)), errors
-                else:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            #             return [], errors
+            #         else:
+            #             Token(INTEL, int(num_str)), errors
+            #     else:
+            #         if self.current_char in all_num:
+            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                         
-                        return [], errors
-                    else:
-                        return Token(GRAVITY, float(num_str)), errors
-            if num_count == 9:
+            #             return [], errors
+            #         else:
+            #             return Token(GRAVITY, float(num_str)), errors
+            # if num_count == 9:
                 
-                if self.current_char in all_num:
-                    errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
+            #     if self.current_char in all_num:
+            #         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
                     
-                    return [], errors
+            #         return [], errors
                     
             if self.current_char == '.':
                 if dot_count == 1: 
@@ -747,9 +747,7 @@ class Lexer:
                 num_str += '.'
                 
             else:
-                if '.' in num_str:
-                    if num_count > 9:
-                        break   
+                if '.' in num_str: 
                     dec_count += 1
                     num_count -= 1
                 
@@ -770,11 +768,11 @@ class Lexer:
             
 
        #TODO need maread kapag may 0
-            if dot_count == 0:
-                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str)), errors
-            else:
-                return Token(GRAVITY, float(num_str)), errors
+            # if dot_count == 0:
+            #     #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
+            #     return Token(INTEL, int(num_str)), errors
+            # else:
+            #     return Token(GRAVITY, float(num_str)), errors
         
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
@@ -791,49 +789,29 @@ class Lexer:
         errors = []
         
         while self.current_char != None:
-            #FIXME here cinocontrol number ng identifiers
-            if ident_count == 10:
-                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
-                ident += self.current_char
-                self.advance()
-                if self.current_char in space_delim + ident_delim + ';' +'(,' + newline_delim:  
-                       
-                    return Token(IDENTIFIER, ident), errors
-                else:
-                    
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}. Expected: \' \', ,+-*/%><!=&|)/closing & open bracket \']\"/~, ;, ( or newline "])
-                    
-                    break
-                
-           
             
             if self.current_char == "b":
-                if ident_count == 10:
-                        break
+                
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
                 if self.current_char == "l":
-                    if ident_count == 10:
-                        break
+                    
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
                     if self.current_char == "a":
-                        if ident_count == 10:
-                            break
+                       
                         ident += self.current_char
                         self.advance()
                         ident_count += 1
                         if self.current_char == "s":
-                            if ident_count == 10:
-                                break
+                            
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
                             if self.current_char == "t":
-                                if ident_count == 10:
-                                    break
+                                
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
@@ -1352,17 +1330,11 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for whirl! Cause: {self.current_char}. Expected: ('])
                                     return [], errors
                                 return Token(WHIRL, "whirl"), errors
-                else:
-                    ident_count += 1
-                    if ident_count > 10:
-                        errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
                         
                        
             
             else:
-                if ident_count == 10:
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}. Expected: ;, ,+-*/%><!=&|)/opening bracket and closing bracket, \']\"/~, \'\', ( or :"])           
-                    return [], errors
+                
                 
                 if self.current_char == None:
                     break

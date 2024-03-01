@@ -604,7 +604,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '"])
                     continue
-                if self.current_char not in lineEnd_delim:
+                if self.current_char not in lineEnd_delim + ',':
                     errors.extend([f"Invalid delimiter for ' ] '. Cause: ' {self.current_char} '"])
                     continue
                 tokens.append(Token(SRBRACKET, "]", pos_start = self.pos))
@@ -1264,21 +1264,25 @@ class Lexer:
                                             return [], errors
                                         return Token(TAKEOFF, "takeoff", pos_start=self.pos), errors
                                 
-                        elif self.current_char == "u":
+                elif self.current_char == "r":
+                    ident += self.current_char
+                    self.advance()
+                    ident_count += 1
+                    if self.current_char == "u":
+                        ident += self.current_char
+                        self.advance()
+                        ident_count += 1
+                        if self.current_char == "e":
                             ident += self.current_char
-                            self.advance()
-                            ident_count += 1
-                            if self.current_char == "e":
-                                ident += self.current_char
-                                self.advance()     
-                                ident_count += 1    
-                                if self.current_char == None:
-                                        errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
-                                        return [], errors
-                                if self.current_char not in bool_delim + ',':
+                            self.advance()     
+                            ident_count += 1    
+                            if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                     return [], errors
-                                return Token(TRUE, "true", pos_start = self.pos), errors
+                            if self.current_char not in bool_delim + ',':
+                                errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
+                                return [], errors
+                            return Token(TRUE, "true", pos_start = self.pos), errors
                 
             if self.current_char == "u": #universe
                 ident += self.current_char
@@ -1525,6 +1529,8 @@ class Parser:
         self.if_stmt_encountered = False
         self.landing = False
         self.is_galaxy = False
+        self.in_loop = False
+        self.in_condition = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1668,6 +1674,7 @@ class Parser:
                     if self.is_galaxy == False:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No galaxy function found!"))
                         self.advance()
+                        return res, error
                     else:
                         return res, error
                 else:
@@ -1934,6 +1941,8 @@ class Parser:
                         #self.advance()
                         if self.current_tok.token == CLBRACKET:
                             self.advance()
+                            print("IN LOOP NOW")
+                            self.in_loop = True
                             w_result, w_err = self.body()
                             print("w res: ", res)
                             if w_err:
@@ -1970,6 +1979,22 @@ class Parser:
                         self.advance()
                         res.append(do_res)
                 
+                if self.current_tok.token == BLAST:
+                    print("found blast")
+                    self.advance()
+                    print("in loop: ", self.in_loop)
+                    if self.in_loop == True and self.in_condition == True:
+                        
+                        if self.current_tok.token == SEMICOLON:
+                            res.append(["SUCCESS from blast"])
+                            self.advance()
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from blast!"))
+
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Blast not in valid scope!"))
+                        self.advance()
+
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
@@ -1981,6 +2006,7 @@ class Parser:
 
                 #CONDITIONAL
                 if self.current_tok.token in IF:
+                    self.in_condition = True
                     print("this is an if statement")
                     if_res, if_error = self.if_stmt()
                     #self.advance() 
@@ -2056,6 +2082,7 @@ class Parser:
                     self.advance()
                     if self.current_tok.token == SEMICOLON:
                         self.landing = True
+                        #self.advance()
                         return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Semicolon expected for 'landing'!"))
@@ -2068,6 +2095,7 @@ class Parser:
                     break
             
             else:
+                print("error tok: ", self.current_tok)
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
                 break
 
@@ -2076,7 +2104,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
+        if self.current_tok.token == BLAST or self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
             return True
         else:
             return False
@@ -2658,7 +2686,7 @@ class Parser:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
                     else:
                         self.advance()    
-                        if self.current_tok.token != INTEL:
+                        if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER:
                             print("not an intel")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
                         else: 
@@ -2672,13 +2700,14 @@ class Parser:
                                     print("no ident")
                                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Identifier!"))
                                 else: 
-                                    self.advance()
-                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL):
+                                        #self.advance()
+                                    
+                                    if self.current_tok.token not in (E_EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, GREATER_THAN):
                                         print("no condition")
                                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
                                     else:
                                         self.advance()
-                                        if self.current_tok.token != INTEL:
+                                        if self.current_tok.token != INTEL and self.current_tok.token == IDENTIFIER:
                                             print("not an intel")
                                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Value of Identifier is not valid"))
                                         else: 
