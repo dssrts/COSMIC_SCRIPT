@@ -2298,15 +2298,16 @@ class Parser:
     
         return res, error
         
-    
     def assign_val2(self):
         res = []
         error = []
+        num =  []
 
         print("im in assign val 2: ", self.current_tok)
         
         if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY or self.current_tok.token == IDENTIFIER:
-            
+            if self.current_tok.token in (INTEL, GRAVITY):
+                num.append(self.current_tok.token)
             if self.current_tok.token == INTEL or self.current_tok.token == GRAVITY:
                 print("found a number in assign val 2")
                 self.advance()
@@ -2315,7 +2316,7 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
-                check, err = self.num_loop()
+                check, err = self.num_loop(num)
                 if err:
                     print("FOUND AN ERROR IN NUM LOOP")
                     #return False
@@ -2400,16 +2401,20 @@ class Parser:
     
         return res, error
         
-    def num_loop(self):
+    def num_loop(self, check = []):
         res = []
         error = []
         ops = ""
+        #num = []
         print("current tok in num loop: ", self.current_tok)
         while self.current_tok.token in (PLUS, MINUS, DIV, MUL, MODULUS):
             ops += self.current_tok.token
             self.advance()
             if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
                 self.advance()
+                if self.current_tok.token in (INTEL, GRAVITY):
+                    print("found NUMBER")
+                    check.append(self.current_tok.token)
             elif self.current_tok.token == LPAREN:
                 self.advance()
                 num = self.assign_val2()
@@ -2442,9 +2447,13 @@ class Parser:
             #     print("found rparen")
             #     break
             elif self.current_tok.token == STRING:
+                print("check:", check)
                 print("there's a string here")
                 if "-" in ops or "/" in ops or "%" in ops or "*" in ops:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid string operation!"))
+                    print("ERROR IN STRING OPS")
+                elif INTEL in check or GRAVITY in check:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot concat string with number!"))
                     print("ERROR IN STRING OPS")
                 else:
                     print("advanced after string found")
