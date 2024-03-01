@@ -2895,11 +2895,11 @@ class Parser:
                     return res, error
             #-- if we increment it
             elif self.current_tok.token == INCRE:
-                
+                self.advance()
                 return res, error
             #-- if we decrement it
             elif self.current_tok.token == DECRE:
-                
+                self.advance()
                 return res, error
             # -- else no other operation for it
             else:
@@ -2919,6 +2919,7 @@ class Parser:
         elif self.current_tok.token == DECRE:
             self.advance()
             if self.current_tok.token == IDENTIFIER:
+                self.advance()
                 return res, error
                     
             else:
