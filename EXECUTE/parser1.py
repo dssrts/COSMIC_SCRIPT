@@ -3311,6 +3311,9 @@ class Parser:
                         else:
                             print("R PAREN NOT FOUND")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                else:
+                    print("error 2nd part")
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
             elif self.current_tok.token == RPAREN:
                 res.append("SUCCESS from if condition")
                 return res, error 
