@@ -2312,7 +2312,7 @@ class Parser:
                 print("found a number in assign val 2")
                 self.advance()
                 
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
@@ -3239,6 +3239,8 @@ class Parser:
     def if_whirl_condition(self):
         res = []
         error = []
+        if self.current_tok.token == NOT_OP:
+            self.advance()
         if self.current_tok.token == LPAREN:
             self.advance()
             if self.current_tok.token == NOT_OP:
