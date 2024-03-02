@@ -3279,41 +3279,38 @@ class Parser:
                     if self.current_tok.token == TRUE:
                         self.advance()
                     elif self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
-                        n_res, n_error = self.assign_val2()
-                        print("assign val in arith rel op: ", self.current_tok.token)
-                       
-                    if self.current_tok.token in LOG_OP:
-                        self.advance()
-                        if self.current_tok.token == IDENTIFIER:
-                            self.advance()
-                            if self.current_tok.token in REL_OP:
-                                self.advance()
-                                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY, TRUE):
-                                    self.advance()
-                                    res.append("SUCCESS from if condition")
-                                else:
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier or number as relation operand!"))
-                            elif self.current_tok.token == RPAREN:
-                                res.append("SUCCESS from if condition")
-                                return res, error
-                            else:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operator!"))
+                        #TODO RECURSIVE CALL SA IF WHIRL CONDITION
+                        c_ces, c_error = self.if_whirl_condition()
+                        if c_error:
+                            print("ERROR IN LEFT SIDE")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
                         else:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
-                    elif self.current_tok.token == RPAREN:
-                        res.append("SUCCESS from if condition")
-                        return res, error
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                            print("REL OP TOKEN: ", self.current_tok)
+                            if self.current_tok.token == RPAREN:
+                                return res, error
+                       
                 else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
             elif self.current_tok.token in LOG_OP:
                 print("LOG OP FOUND")
                 self.advance()
-                if self.current_tok.token == IDENTIFIER:
-                    self.advance()
-                else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid logical operand!"))
+                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
+
+                    c_ces, c_error = self.if_whirl_condition()
+                    if c_error:
+                        print('error after log op')
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                    else:
+                        print("SUCCESS NAMAN YUNG RIGHT SIDE: ", self.current_tok)
+                        if self.current_tok.token == RPAREN:
+                            
+                            #self.advance()
+                            
+                            res.append("SUCCESS FROM CONDITION")       
+                            return res, error
+                        else:
+                            print("R PAREN NOT FOUND")
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
             elif self.current_tok.token == RPAREN:
                 res.append("SUCCESS from if condition")
                 return res, error 
