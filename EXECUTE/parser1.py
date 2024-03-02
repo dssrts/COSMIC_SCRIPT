@@ -3272,10 +3272,7 @@ class Parser:
                 
                 n_res, n_error = self.assign_val2()
                 print("assign val in arith rel op left: ", self.current_tok.token)
-                if n_error:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
-                else:
-                    self.advance
+                #self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
                 if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY, TRUE):
@@ -3284,10 +3281,7 @@ class Parser:
                     elif self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
                         n_res, n_error = self.assign_val2()
                         print("assign val in arith rel op: ", self.current_tok.token)
-                        if n_error:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
-                        else:
-                            self.advance
+                       
                     if self.current_tok.token in LOG_OP:
                         self.advance()
                         if self.current_tok.token == IDENTIFIER:
@@ -3314,6 +3308,7 @@ class Parser:
                 else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand!"))
             elif self.current_tok.token in LOG_OP:
+                print("LOG OP FOUND")
                 self.advance()
                 if self.current_tok.token == IDENTIFIER:
                     self.advance()
@@ -3323,6 +3318,7 @@ class Parser:
                 res.append("SUCCESS from if condition")
                 return res, error 
             else:
+                print("ETO YUNG ERROR")
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
