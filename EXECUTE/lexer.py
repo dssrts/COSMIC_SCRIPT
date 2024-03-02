@@ -1341,7 +1341,7 @@ class Lexer:
                 
                 if self.current_char == None:
                     break
-                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':'):
+                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + "\n" + "[]"):
                     break
                
                 
