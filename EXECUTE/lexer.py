@@ -575,7 +575,7 @@ class Lexer:
                 if self.current_char == None:
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '. Expected: +-*/%, ><==!<=>=!=, \' \', 'closing bracket', ;, \' \', newline or ) "])
                     continue
-                if self.current_char not in closing_delim + '{' + ';' + space_delim + '\n' + ')':
+                if self.current_char not in closing_delim + '{' + ';' + space_delim + '\n' + ')' + ',':
                     errors.extend([f"Invalid delimiter for ' ( '. Cause: ' {self.current_char} '. Expected: +-*/%, ><==!<=>=!=, \' \', 'closing bracket', ;, \' \', newline or ) "])
                     continue
                 tokens.append(Token(RPAREN, ")"))
