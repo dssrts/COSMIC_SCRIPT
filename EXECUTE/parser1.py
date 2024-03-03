@@ -1896,6 +1896,42 @@ class Parser:
                             res.append(["SUCCESS from unary post decrement"])
                             self.advance()
                     # -- else no other operation for it
+                    elif self.current_tok.token == SLBRACKET:
+                        #TODO LIST
+                        print("you got a list")
+                        self.advance()
+                        list, err = self.assign_val2()
+                        print("list: ", err)
+                        if err:
+                            #error.append(err)
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your saturn value!"))
+                            #return res, error
+                        else:
+                            if self.current_tok.token != SRBRACKET:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing bracket for list!"))
+                            else:
+                                print("Sucess from init list")
+                                # ] yung current char
+                                self.advance()
+                                if self.current_tok.token == EQUAL:
+                                    print("initialize the variable")
+                                    assign, a_error = self.init_var()
+                                    
+                                    if a_error:
+                                        error.extend(a_error)
+                                        return res, error
+                                    else:
+                                        print("init var: ",self.current_tok )
+                                        #self.advance()
+                                        if self.current_tok.token != SEMICOLON:
+                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
+                                        else:
+                                            res.append(assign)
+                                            self.advance()
+                                else:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid list initialization!"))
+                                    
+                                
                     else:
                         print('INVALID IDENT OPERATION')
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
