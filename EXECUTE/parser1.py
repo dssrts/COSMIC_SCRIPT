@@ -2329,7 +2329,7 @@ class Parser:
                 print("found a number in assign val 2")
                 self.advance()
                 
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
@@ -2377,7 +2377,19 @@ class Parser:
                 elif self.current_tok.token == SLBRACKET:
                     #TODO LIST
                     print("you got a list")
-                    
+                    self.advance()
+                    list, err = self.assign_val2()
+                    print("list: ", err)
+                    if err:
+                        #error.append(err)
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your saturn value!"))
+                        #return res, error
+                    else:
+                        if self.current_tok.token != SRBRACKET:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing bracket for list!"))
+                        else:
+                            print("Sucess from assign list")
+                            self.advance()
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
                     num, err = self.num_loop()
