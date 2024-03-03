@@ -2104,7 +2104,8 @@ class Parser:
                         print("assign: ", err)
                         if err:
                             #error.append(err)
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your saturn value!"))
+                            return res, error
                             
                         else:
                             # res.append("SUCCESS from saturn")
