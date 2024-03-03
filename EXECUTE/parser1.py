@@ -3093,6 +3093,10 @@ class Parser:
                 elif self.current_tok.token in (STRING, TRUE, FALSE):
                     print("found bool in outer")
                     self.advance()
+
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot print value!"))
+
                         
                 # if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
                 #     print("no string")
