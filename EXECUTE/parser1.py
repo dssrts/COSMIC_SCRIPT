@@ -2026,11 +2026,17 @@ class Parser:
                 if self.current_tok.token in OUTER:
                     print("this is an outer statement")
                     outer_res, outer_error = self.outer_stmt()
-                    self.advance()
+                    print("token after  outer: ", self.current_tok)
+                    #self.advance()
                     if outer_error:
                         error.extend(outer_error)
                         break
-                    res.append(outer_res)
+                    else:
+                        if self.current_tok.token  != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in outer!"))
+                        else:  
+                            res.append(outer_res)
+                            self.advance()
 
                 #CONDITIONAL
                 if self.current_tok.token in IF:
@@ -3067,19 +3073,41 @@ class Parser:
             print("no <<")
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected '<<' symbol!"))
         else: 
-            self.advance()
-            if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
-                print("no string")
-                print("current tok from outer: ", self.current_tok.token)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal or identifier!"))
+
+            while self.current_tok.token == OUT:
                 self.advance()
-            else: 
-                self.advance()
-                if self.current_tok.token != SEMICOLON:
-                    print("no semicolon")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
-                else:
-                    res.append(["SUCCESS from outer"])
+                if self.current_tok.token in (INTEL, IDENTIFIER, GRAVITY):
+                    outer, err = self.assign_val()
+                    print("outer: ", err)
+                    if err:
+                        #error.append(err)
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your outer value!"))
+                        return res, error
+                        
+                    else:
+                        # res.append("SUCCESS from saturn")
+                        # return res, error
+                        if self.current_tok.token != SEMICOLON:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        else:
+                            res.append(["SUCCESS! from saturn"])
+                            self.advance()
+                elif self.current_tok.token in (STRING, TRUE, FALSE):
+                    print("found bool in outer")
+                    self.advance()
+                        
+                # if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
+                #     print("no string")
+                #     print("current tok from outer: ", self.current_tok.token)
+                #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal or identifier!"))
+                #     #self.advance()
+                # else: 
+                #     self.advance()
+                #     if self.current_tok.token != SEMICOLON:
+                #         print("no semicolon")
+                #         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing Semicolon!"))
+                #     else:
+                #         res.append(["SUCCESS from outer"])
         
         return res, error
     
