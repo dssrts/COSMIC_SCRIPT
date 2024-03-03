@@ -2374,6 +2374,10 @@ class Parser:
                             else:
                                 res.append("Success form ident assign!")
                         return res, error
+                elif self.current_tok.token == SLBRACKET:
+                    #TODO LIST
+                    print("you got a list")
+                    
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
                     num, err = self.num_loop()
@@ -3090,7 +3094,7 @@ class Parser:
                         # res.append("SUCCESS from saturn")
                         # return res, error
                         print("no error after assing val outer")
-                elif self.current_tok.token in (STRING, TRUE, FALSE):
+                elif self.current_tok.token in (STRING):
                     print("found bool in outer")
                     self.advance()
 
