@@ -1924,7 +1924,8 @@ class Parser:
                                         print("init var: ",self.current_tok )
                                         #self.advance()
                                         if self.current_tok.token != SEMICOLON:
-                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
+                                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! Invalid operation after list!"))
+                                            return res, error
                                         else:
                                             res.append(assign)
                                             self.advance()
