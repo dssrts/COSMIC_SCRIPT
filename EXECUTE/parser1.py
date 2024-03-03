@@ -1869,7 +1869,7 @@ class Parser:
                         
                         if a_error:
                             error.extend(a_error)
-                            break
+                            return res, error
                         else:
                             print("init var: ",self.current_tok )
                             #self.advance()
