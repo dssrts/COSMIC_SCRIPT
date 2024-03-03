@@ -2034,6 +2034,7 @@ class Parser:
                     else:
                         if self.current_tok.token  != SEMICOLON:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon in outer!"))
+                            return res, error
                         else:  
                             res.append(outer_res)
                             self.advance()
