@@ -630,15 +630,15 @@ class Lexer:
                 
                 errors.extend(error)
                 # ! BAWAL DAPAT YUGN SINGLE QUOTATION
-            elif self.current_char == '\'':
-                self.advance()
-                if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' \' '. Cause: ' {self.current_char} '. Expected: ; or ),"])
-                    continue
-                if self.current_char not in lineEnd_delim+'),':
-                    errors.extend([f"Invalid delimiter for ' \' '. Cause: ' {self.current_char} '. Expected: ; or ),"])
-                    continue
-                tokens.append(Token(SQ_MARK, "\'"))
+            # elif self.current_char == '\'':
+            #     self.advance()
+            #     if self.current_char == None:
+            #         errors.extend([f"Invalid delimiter for ' \' '. Cause: ' {self.current_char} '. Expected: ; or ),"])
+            #         continue
+            #     if self.current_char not in lineEnd_delim+'),':
+            #         errors.extend([f"Invalid delimiter for ' \' '. Cause: ' {self.current_char} '. Expected: ; or ),"])
+            #         continue
+            #     tokens.append(Token(SQ_MARK, "\'"))
             elif self.current_char == ',':
                 
                 self.advance()
