@@ -3078,8 +3078,9 @@ class Parser:
                 self.advance()
                 if self.current_tok.token in (INTEL, IDENTIFIER, GRAVITY):
                     outer, err = self.assign_val()
-                    print("outer: ", err)
+                    print("outer: ", self.current_tok)
                     if err:
+                        print("error in assign val outer")
                         #error.append(err)
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your outer value!"))
                         return res, error
@@ -3087,11 +3088,7 @@ class Parser:
                     else:
                         # res.append("SUCCESS from saturn")
                         # return res, error
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
-                        else:
-                            res.append(["SUCCESS! from saturn"])
-                            self.advance()
+                        print("no error after assing val outer")
                 elif self.current_tok.token in (STRING, TRUE, FALSE):
                     print("found bool in outer")
                     self.advance()
