@@ -629,6 +629,7 @@ class Lexer:
                 # tokens.append(Token(Q_MARK, "\""))
                 
                 errors.extend(error)
+                # ! BAWAL DAPAT YUGN SINGLE QUOTATION
             elif self.current_char == '\'':
                 self.advance()
                 if self.current_char == None:
