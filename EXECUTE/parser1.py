@@ -2095,16 +2095,25 @@ class Parser:
                 
                 if self.current_tok.token == SATURN:
                     self.advance()
-                    if self.current_tok.token != INTEL and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID:
+                    if self.current_tok.token != INTEL and self.current_tok.token != LPAREN and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
                         break
                     else:
-                        self.advance()
-                        if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                        # self.advance()
+                        saturn, err = self.assign_val()
+                        print("assign: ", err)
+                        if err:
+                            #error.append(err)
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+                            
                         else:
-                            res.append(["SUCCESS! from saturn"])
-                            self.advance()
+                            # res.append("SUCCESS from saturn")
+                            # return res, error
+                            if self.current_tok.token != SEMICOLON:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!"))
+                            else:
+                                res.append(["SUCCESS! from saturn"])
+                                self.advance()
                         
                 if self.current_tok.token == LANDING:
                     self.advance()
