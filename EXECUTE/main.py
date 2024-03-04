@@ -9,9 +9,9 @@ import lexer
 import sys
 
 OUTPUT_PATH = Path(__file__).parent
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
@@ -156,9 +156,9 @@ def run_syntax():
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
-#ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+#ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
 #ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
@@ -208,7 +208,7 @@ canvas.create_image(213.0, 47.0, image=image_6)
 
 #Create upper left entry/input frame
 input_frame1 = tk.Frame(root, width=1000, height=580, bg="white")
-input_frame1.place(x=45.0, y=97.9747314453125, width=553.0, height=313.1805114746094)
+input_frame1.place(x=45.0, y=97.9747314453125, width=607, height=328.1805114746094)
 input_frame1.configure(bg="white")
 input_label = tk.Label(input_frame1, text="COSMIC SCRIPT > ", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
@@ -270,7 +270,7 @@ token_text.configure(yscrollcommand=input_scrollbar_three.set)
 
 #create lower frame for error
 input_frame4 = tk.Frame(root, width=643.0, height=580.5000076293945, bg="white")  # Set width and height
-input_frame4.place(x=51.0, y=498.3636474609375, width=1184.0, height=202.27272033691406)  # Set position and dimensions
+input_frame4.place(x=45.0, y=488.3636474609375, width=607, height=210.27272033691406)  # Set position and dimensions
 errors_text = tk.Listbox(input_frame4, selectmode=tk.SINGLE, font=("Nexa Heavy", 10), fg="white",bd=8)
 errors_text.pack(fill="both", expand=True)
 errors_text.configure(bg="#817ACD", relief="flat")
@@ -285,7 +285,7 @@ errors_text.configure(yscrollcommand=input_scrollbar_four.set)
 
 # "Lexer" button on the lower left corner of the input frame
 run_button = tk.Button(root, text="Lexer", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=run_lexer)
-run_button.place(x=50.0, y=437.0, width=126.0, height=40.0)
+run_button.place(x=50.0, y=437.0, width=127.0, height=40.0)
 run_button.configure(relief="flat")
 
 # "Semantic" button to the right of the "Lexer" button
@@ -295,12 +295,12 @@ semantic_button.configure(relief="flat")
 
 # "Syntax" button to the right of the "Semantic" button
 syntax_button = tk.Button(root, text="Syntax", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=run_syntax)
-syntax_button.place(x=192.0, y=437.0, width=123.0, height=40.0)
+syntax_button.place(x=192.0, y=437.0, width=127.0, height=40.0)
 syntax_button.configure(relief="flat")
 
 # Undo button to undo changes
 clear_button = tk.Button(root, text="Clear", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=clear)
-clear_button.place(x=475.0, y=437.0, width=123.0, height=40.0)
+clear_button.place(x=475.0, y=437.0, width=127.0, height=40.0)
 clear_button.configure(relief="flat")
 
 # Redirect error output to the errors window
