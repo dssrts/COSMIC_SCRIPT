@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 #import pygame as pg
 from tkVideoPlayer import TkinterVideo
 from PIL import Image, ImageTk  # Import Pillow
@@ -9,25 +10,60 @@ import sys
 
 OUTPUT_PATH = Path(__file__).parent
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Melissa\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # List to store the history of input text changes
 input_history = []
-
+keysym_buffer = ""
+newline_count = 1
+reserve_word = ['takeoff','landing','galaxy()','var','inner','outer','if','else','elseif','do','whirl',
+                'true','false','saturn','form','force','universe','blast','skip']
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-def input_entry(widget):
-    input_text.configure(bg="#817ACD")
-    input_text.configure(bd=2)
+def get_scrollbar_one_position(event):
+    delta = int(-1*(event.delta/10))
+    input_text.yview_scroll(delta,"units")
+    input_text1_counter.yview_scroll(delta,"units")
 
-def input_out(widget):
+def input_entry(event):
     input_text.configure(bg="#817ACD")
-    input_text.configure(bd=0)
-    
+    input_text.configure(bd=8)
+    update_line_numbers(event)
+
+def input_out(event):
+    input_text.configure(bg="#817ACD")
+    input_text.configure(bd=8)
+
+def multiple_yview(*args):
+    input_text.yview(*args)
+    input_text1_counter.yview(*args)
+
+def highlight_reserve_word(keysym):
+    input_text.tag_remove('found', '1.0', tk.END)
+    for word in reserve_word:
+        idx = '1.0'
+        while idx:
+            idx = input_text.search(word, idx, nocase=1, stopindex=tk.END)
+            if idx:
+                lastidx = '%s+%dc' % (idx, len(word))
+                input_text.tag_add('found', idx, lastidx)
+                idx = lastidx
+
+    input_text.tag_config('found', foreground='yellow')
+
+def update_line_numbers(event):
+    highlight_reserve_word(event.keysym)
+    input_text1_counter.config(state="normal")
+    input_text1_counter.delete("1.0", "end")
+    lines = input_text.get("1.0", "end").count("\n")
+    input_text1_counter.insert("1.0", "\n".join(str(i) for i in range(1, lines + 1)),"right")
+    input_text1_counter.yview("end")
+    input_text1_counter.config(state="disabled")
+
 # Function to undo changes in the input_text widget
 def clear():
     global last_input_text
@@ -65,16 +101,18 @@ def run_lexer():
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
     errors_text.delete(0, tk.END)
+    count = 0
     print(result)
     print (error)
     if error:
         for err in error:
             errors_text.insert(tk.END, err)
     for item in result:
+        count += 1
         if item:
-            output_text.insert(tk.END, item.value)
-            token_text.insert(tk.END, item.token)
-    
+            output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
+            token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
+
     # if error:
     #     errors_text.insert(tk.END, error.as_string())
     # else:
@@ -83,18 +121,20 @@ def run_lexer():
 
 def run_syntax():
     input_text_str = input_text.get("1.0", "end-1c")
-    
+
     # Run lexer
     lexer_result, lexer_error = lexer.run("<stdin>", input_text_str)
-    
+
     # Display lexer output
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
+    count = 0
     for item in lexer_result:
+        count += 1
         if item:
-            output_text.insert(tk.END, item.value)
-            token_text.insert(tk.END, item.token)
-    
+            output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
+            token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
+
     # Display lexer errors
     errors_text.delete(0, tk.END)
     if lexer_error:
@@ -114,14 +154,14 @@ def run_syntax():
             for res in syntax_result:
                 errors_text.insert(tk.END, res)
             #token_text.insert(tk.END, item.token)
-        
+
 #create main canvas
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
 #ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-#ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\logo-automata.png')
-ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
+ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+#ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
 #ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
@@ -131,6 +171,11 @@ root.configure(bg="#252655")
 # pg.mixer.init()
 # loading_screen()
 
+#Create the style ttk
+style = ttk.Style()
+style.theme_use('default')
+style.configure("Vertical.TScrollbar", background="#474287",relief='flat',borderwidth=0,arrowcolor="#FFFFFF",troughcolor="#8b87c2")
+style.map("Vertical.TScrollbar",background=[('active', '#6762a6')])
 # Get screen width and height
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
@@ -163,47 +208,82 @@ image_image_6 = Image.open(relative_to_assets("image_6.png"))
 image_6 = ImageTk.PhotoImage(image_image_6)
 canvas.create_image(213.0, 47.0, image=image_6)
 
-#create upper left entry/input frame
-input_frame1 = tk.Frame(root, width=1000, height=580, bg="white")  # Set width and height
-input_frame1.place(x=45.0, y=97.9747314453125, width=553.0, height=313.1805114746094)  # Set position and dimensions
+#Create upper left entry/input frame
+input_frame1 = tk.Frame(root, width=1000, height=580, bg="white")
+input_frame1.place(x=45.0, y=97.9747314453125, width=553.0, height=313.1805114746094)
+input_frame1.configure(bg="white")
 input_label = tk.Label(input_frame1, text="COSMIC SCRIPT > ", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
-input_text = tk.Text(input_frame1, height=20, width=100, font=("Nexa Heavy", 10), fg="white")
-input_text.pack(fill="both", expand=True)
+
+#Create text widget for line number
+input_text1_counter = tk.Text(input_frame1, height=20, width=3, font=("Nexa Heavy", 10,'bold'), fg="#E2ECEE",bd=8)
+input_text1_counter.pack(fill=tk.Y)
+input_text1_counter.configure(bg="#817ACD", relief="flat",state="normal")
+input_text1_counter.tag_configure("right",justify="right")
+input_text1_counter.pack(side=tk.LEFT, padx=(10,0), pady=(0,10))
+input_text1_counter.bind("<MouseWheel>",get_scrollbar_one_position)
+
+#Create text widget for user input
+input_text = tk.Text(input_frame1, height=20, width=100, font=("Nexa Heavy", 10), fg="white",bd=8)
+input_text.pack(fill="both", expand=True,side=tk.TOP, padx=10, pady=(0,10))
 input_text.configure(bg="#817ACD", relief="flat")
+input_text.tag_config('reserve', foreground="yellow")
+input_text.tag_config('plain', foreground="white")
+#User input text widget events
 input_text.bind("<FocusIn>",input_entry)
 input_text.bind("<FocusOut>",input_out)
-input_text.pack(side=tk.TOP, padx=10, pady=(0,10))
-input_frame1.configure(bg="white")
+input_text.bind("<KeyRelease>",update_line_numbers)
+input_text.bind("<MouseWheel>",get_scrollbar_one_position)
 
-#create middle frame
+input_scrollbar_one = ttk.Scrollbar(input_text,orient='vertical')
+input_scrollbar_one.pack(side=tk.RIGHT,fill='y')
+input_scrollbar_one.config(command=multiple_yview)
+input_text.configure(yscrollcommand=input_scrollbar_one.set)
+
+#Create middle frame
 input_frame2 = tk.Frame(root, width=244.0, height=263.1805114746094, bg="white")  # Set width and height
 input_frame2.place(x=624.0, y=97.9747314453125, width=290.0, height=313.1805114746094)  # Set position and dimensions
 input_label = tk.Label(input_frame2, text="LEXEME", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
-output_text = tk.Listbox(input_frame2, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white")
+output_text = tk.Listbox(input_frame2, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white",bd=8)
 output_text.configure(bg="#817ACD", relief="flat")
 output_text.pack(fill="both", expand=True, side=tk.TOP, padx=10, pady=(0,10))
 input_frame2.configure(bg="white")
+
+input_scrollbar_two = ttk.Scrollbar(output_text,orient='vertical')
+input_scrollbar_two.pack(side=tk.RIGHT,fill='y')
+input_scrollbar_two.config(command=output_text.yview)
+output_text.configure(yscrollcommand=input_scrollbar_two.set)
 
 #create upper right frame
 input_frame3 = tk.Frame(root, width=1089.0, height=249.5649871826172, bg="white")  # Set width and height
 input_frame3.place(x=943.0, y=97.9747314453125, width=294.0, height=313.1805114746094)  # Set position and dimensions
 input_label = tk.Label(input_frame3, text="TOKEN", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
-token_text = tk.Listbox(input_frame3, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white")
+token_text = tk.Listbox(input_frame3, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white",bd=8)
 token_text.configure(bg="#817ACD", relief="flat")
 token_text.pack(fill="both", expand=True, side=tk.TOP, padx=10, pady=(0,10))
 input_frame3.configure(bg="white")
 
+input_scrollbar_three = ttk.Scrollbar(token_text,orient='vertical')
+input_scrollbar_three.pack(side=tk.RIGHT,fill='y')
+input_scrollbar_three.config(command=token_text.yview)
+token_text.configure(yscrollcommand=input_scrollbar_three.set)
+
 #create lower frame for error
 input_frame4 = tk.Frame(root, width=643.0, height=580.5000076293945, bg="white")  # Set width and height
 input_frame4.place(x=51.0, y=498.3636474609375, width=1184.0, height=202.27272033691406)  # Set position and dimensions
-errors_text = tk.Listbox(input_frame4, selectmode=tk.SINGLE, font=("Nexa Heavy", 10), fg="white")
+errors_text = tk.Listbox(input_frame4, selectmode=tk.SINGLE, font=("Nexa Heavy", 10), fg="white",bd=8)
 errors_text.pack(fill="both", expand=True)
 errors_text.configure(bg="#817ACD", relief="flat")
 errors_text.pack(side=tk.TOP, padx=10, pady=10)
 input_frame4.configure(bg="white")
+
+input_scrollbar_four = ttk.Scrollbar(errors_text,orient='vertical')
+input_scrollbar_four.pack(side=tk.RIGHT,fill='y')
+input_scrollbar_four.config(command=errors_text.yview)
+errors_text.configure(yscrollcommand=input_scrollbar_four.set)
+
 
 # "Lexer" button on the lower left corner of the input frame
 run_button = tk.Button(root, text="Lexer", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=run_lexer)

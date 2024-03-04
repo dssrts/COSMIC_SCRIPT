@@ -35,7 +35,6 @@ error = []
 #reserved words
 TAKEOFF = 'takeoff' #Start
 LANDING = 'landing' #End
-
 GALAXY = 'galaxy'
 #data types
 INTEL = 'intel'
