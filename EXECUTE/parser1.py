@@ -2693,12 +2693,21 @@ class Parser:
                 print("success first condition")
                 #TODO relational operator
                 rel, rel_error = self.force_rel()
+                print("token after 2nd condition: ", self.current_tok)
+                # ! DITO DAPAT YUNG SEMICOLON
                 if rel_error:
                     error.extend(rel_error)
                     return res, error
                 else:
                     #TODO unary and assignment
-                    self.advance()
+                        #self.advance()
+                    if self.current_tok.token == SEMICOLON:
+                        res.append(["success in 2nd condtion"])
+                        self.advance()
+                        #return res, error
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+                    
                     # * nasa identifier tayo rn
                     rel2, rel2_error = self.force_iteration()
                     #nasa r paren tayo if ever nag assign value tayo sa iteration
@@ -2842,26 +2851,40 @@ class Parser:
     def force_rel(self):
         res = []
         error = []
+        if self.current_tok.token == LPAREN:
+            print("found lparen")
+            self.advance()
+            f_rel, f_err = self.force_rel()
+            if f_err:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+            else:
+                print("sucess for 2nd rel in paren: ", self.current_tok)
+                if self.current_tok.token == RPAREN:
+                    res.append("lparen good")
+                    self.advance()
+                    return res, error
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+
+
         if self.current_tok.token == IDENTIFIER:
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
                 if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
                     self.advance()
-                    if self.current_tok.token == SEMICOLON:
-                        res.append(["success in 2nd condtion"])
-                        
-                        return res, error
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+                    #return res, error
+                   
 
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force!"))
-
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force 2!"))
+                    print("error operand: ", self.current_tok)
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operator in force!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force!1"))
+            print("error operand: ", self.current_tok)
+
 
         return res, error
 
