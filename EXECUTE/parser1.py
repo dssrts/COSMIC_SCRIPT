@@ -1713,59 +1713,7 @@ class Parser:
             print("found left paren")
             self.advance()
             
-            if self.current_tok.token == IDENTIFIER:
-                #self.advance()
-                print("current token from form is: ", self.current_tok.token)
-                self.advance()
-                if self.current_tok.token == COMMA:
-                    print("you found a comma in the params!")
-                    #if comma yung current, find identifier, next, then if comma, next, and repeat
-                    c_error = self.comma()
-                    if c_error:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                    
-                    print("current token after comma: ", self.current_tok.token)
-                if self.current_tok.token != RPAREN:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
-                    self.advance()
-                else: 
-                    #res.append("SUCCESS from form!")
-                    self.advance()
-                    if self.current_tok.token in NEWLINE:
-                        self.advance()
-                    if self.current_tok.token == CLBRACKET:
-                        print("left curly bracket")
-                        
-                        self.advance()
-
-                        while self.current_tok.token == NEWLINE:
-                            self.advance()
-                        form_res, form_error = self.body()
-                        print("form res: ", res)
-                        if form_error:
-                            print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
-                            for err in form_error:
-                                error.append(err)
-                            return [], error
-                        else:
-                            print("successful galaxy!")
-                            for f_res in form_res:
-                                res.extend(f_res)
-                                print("f res: ", f_res)
-                            
-                        
-                        print("CURRENT TOK FROM GALAXY: ", self.current_tok)
-                        if self.current_tok.token != CRBRACKET:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in galaxy!"))
-                            
-                        else:
-                            res.append("SUCCESS from GALAXY!")
-                            self.advance()
-                            
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Galaxy definition missing!"))
-                        self.advance()
-            elif self.current_tok.token == RPAREN:
+            if self.current_tok.token == RPAREN:
                 self.advance()
                 if self.current_tok.token in NEWLINE:
                     self.advance()
@@ -1800,8 +1748,8 @@ class Parser:
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Galaxy definition missing!"))
                     self.advance()
-
-            #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))   
+            else:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis for galaxy!"))   
         #form add(a, b)
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parentheses for parameters!"))
