@@ -2702,11 +2702,12 @@ class Parser:
                     #TODO unary and assignment
                         #self.advance()
                     if self.current_tok.token == SEMICOLON:
-                        res.append(["success in 2nd condtion"])
+                        #res.append(["SUCCESS from force"])
                         self.advance()
                         #return res, error
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+                        return res, error
                     
                     # * nasa identifier tayo rn
                     rel2, rel2_error = self.force_iteration()
@@ -2851,12 +2852,15 @@ class Parser:
     def force_rel(self):
         res = []
         error = []
+        if self.current_tok.token == NOT_OP:
+            self.advance()
         if self.current_tok.token == LPAREN:
             print("found lparen")
             self.advance()
             f_rel, f_err = self.force_rel()
             if f_err:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+                return res, error
             else:
                 print("sucess for 2nd rel in paren: ", self.current_tok)
                 if self.current_tok.token == RPAREN:
@@ -2865,9 +2869,10 @@ class Parser:
                     return res, error
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                    return res, error
 
 
-        if self.current_tok.token == IDENTIFIER:
+        elif self.current_tok.token == IDENTIFIER:
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
