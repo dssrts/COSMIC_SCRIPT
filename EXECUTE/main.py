@@ -67,14 +67,10 @@ def update_line_numbers(event):
 
 # Function to undo changes in the input_text widget
 def clear():
-    global last_input_text
     input_text.delete("1.0", tk.END)
-    input_text.insert(tk.END, last_input_text)
-
-# Function to save the current input text for undo functionality
-def save_changes(event):
-    global last_input_text
-    last_input_text = input_text.get("1.0", tk.END)
+    output_text.delete(0, tk.END)
+    token_text.delete(0, tk.END)
+    errors_text.delete(0, tk.END)
 
 # def remove_player(videoplayer,window):
 #     videoplayer.destroy()
@@ -244,7 +240,7 @@ input_text.configure(yscrollcommand=input_scrollbar_one.set)
 
 #Create middle frame
 input_frame2 = tk.Frame(root, width=244.0, height=263.1805114746094, bg="white")  # Set width and height
-input_frame2.place(x=624.0, y=97.9747314453125, width=290.0, height=313.1805114746094)  # Set position and dimensions
+input_frame2.place(x=664.0, y=97.9747314453125, width=290.0, height=600)  # Set position and dimensions
 input_label = tk.Label(input_frame2, text="LEXEME", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
 output_text = tk.Listbox(input_frame2, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white",bd=8)
@@ -259,7 +255,7 @@ output_text.configure(yscrollcommand=input_scrollbar_two.set)
 
 #create upper right frame
 input_frame3 = tk.Frame(root, width=1089.0, height=249.5649871826172, bg="white")  # Set width and height
-input_frame3.place(x=943.0, y=97.9747314453125, width=294.0, height=313.1805114746094)  # Set position and dimensions
+input_frame3.place(x=943.0, y=97.9747314453125, width=294.0, height=600)  # Set position and dimensions
 input_label = tk.Label(input_frame3, text="TOKEN", font=("Nexa Heavy", 15, "bold"), fg="#817ACD", bg="white")
 input_label.pack(side=tk.TOP, pady=5)
 token_text = tk.Listbox(input_frame3, selectmode=tk.SINGLE, height=34, width=40, font=("Nexa Heavy", 10), fg="white",bd=8)
@@ -294,22 +290,18 @@ run_button.configure(relief="flat")
 
 # "Semantic" button to the right of the "Lexer" button
 semantic_button = tk.Button(root, text="Semantic", font=("Nexa Heavy", 15), fg="#817ACD", bg="white")
-semantic_button.place(x=192.0, y=437.0, width=127.0, height=40.0)
+semantic_button.place(x=332.0, y=437.0, width=127.0, height=40.0)
 semantic_button.configure(relief="flat")
 
 # "Syntax" button to the right of the "Semantic" button
 syntax_button = tk.Button(root, text="Syntax", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=run_syntax)
-syntax_button.place(x=348.0, y=437.0, width=123.0, height=39.0)
+syntax_button.place(x=192.0, y=437.0, width=123.0, height=40.0)
 syntax_button.configure(relief="flat")
 
 # Undo button to undo changes
 clear_button = tk.Button(root, text="Clear", font=("Nexa Heavy", 15), fg="#817ACD", bg="white", command=clear)
-clear_button.place(x=1100.0, y=437.0, width=123.0, height=39.0)
+clear_button.place(x=475.0, y=437.0, width=123.0, height=40.0)
 clear_button.configure(relief="flat")
-
-# Save the initial input text for undo functionality
-last_input_text = ""
-input_text.bind("<FocusOut>", save_changes)
 
 # Redirect error output to the errors window
 class ErrorOutput(object):
