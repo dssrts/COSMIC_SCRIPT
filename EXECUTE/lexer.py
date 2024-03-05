@@ -833,7 +833,7 @@ class Lexer:
                             
                                 
                 
-            if self.current_char == "d": #do
+            elif self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
                 print("ident: ", ident)
@@ -856,7 +856,7 @@ class Lexer:
                     return Token(IDENTIFIER, ident), errors
                 
                 
-            if self.current_char == "e": #else, else if, entity
+            elif self.current_char == "e": #else, else if, entity
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -898,7 +898,7 @@ class Lexer:
                                 return Token(ELSE, "else"),errors
                                     
                 
-            if self.current_char == "i": #if, inner, intel
+            elif self.current_char == "i": #if, inner, intel
                 ident += self.current_char
                 self.advance()
                 ident_count += 1 
@@ -938,7 +938,7 @@ class Lexer:
                                     return [], errors
                                 return Token(INNER, "inner"), errors
                         
-            if self.current_char == "f": #false, force, form
+            elif self.current_char == "f": #false, force, form
                 ident += self.current_char
                 self.advance()
                 ident_count += 1 
@@ -1005,7 +1005,7 @@ class Lexer:
                                 return [], errors
                             return Token(FORM, "form"), errors
                         
-            if self.current_char == "g": #galaxy
+            elif self.current_char == "g": #galaxy
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1038,7 +1038,7 @@ class Lexer:
                                         return [], errors
                                     return Token(GALAXY, "galaxy"), errors                     
                 
-            if self.current_char == "l": #landing, launch
+            elif self.current_char == "l": #landing, launch
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1099,7 +1099,7 @@ class Lexer:
                                     return Token(LAUNCH, "launch"), errors
                                     
                 
-            if self.current_char == "o": #outer
+            elif self.current_char == "o": #outer
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1127,7 +1127,7 @@ class Lexer:
                                     return [], errors
                                 return Token(OUTER, "outer"), errors
                 
-            if self.current_char == "s": #saturn, shift, skip, star
+            elif self.current_char == "s": #saturn, shift, skip, star
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1179,7 +1179,7 @@ class Lexer:
                                     return [], errors
                                 return Token(SKIP, "skip"), errors
             
-            if self.current_char == "t": #takeoff, trace, true
+            elif self.current_char == "t": #takeoff, trace, true
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1235,7 +1235,7 @@ class Lexer:
                                 return [], errors
                             return Token(TRUE, "true"), errors
                 
-            if self.current_char == "u": #universe
+            elif self.current_char == "u": #universe
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1275,7 +1275,7 @@ class Lexer:
                                                 return [], errors
                                             return Token(UNIVERSE, "universe"), errors
                 
-            if self.current_char == "v": #void
+            elif self.current_char == "v": #void
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1316,7 +1316,7 @@ class Lexer:
                         return Token(VAR, "var"), errors
                   
                             
-            if self.current_char == "w": #whirl
+            elif self.current_char == "w": #whirl
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
@@ -1343,15 +1343,19 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for whirl! Cause: {self.current_char}. Expected: ('])
                                     return [], errors
                                 return Token(WHIRL, "whirl"), errors
+            
+            ident_res = self.make_ident(ident)
+            ident += ident_res
+            return Token(IDENTIFIER, ident), errors
                         
                        
             
-            else:
+            # else:
                 
-                print("non reserve word letter: ", self.current_char)
-                ident_res = self.make_ident(ident)
-                ident += ident_res
-                return Token(IDENTIFIER, ident), errors
+            #     print("non reserve word letter: ", self.current_char)
+            #     ident_res = self.make_ident(ident)
+            #     ident += ident_res
+            #     return Token(IDENTIFIER, ident), errors
         
                         
         
