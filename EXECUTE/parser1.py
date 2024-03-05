@@ -1365,35 +1365,13 @@ class Lexer:
                         
                        
             
-            else:
-                
-                
-                if self.current_char == None:
-                    break
-                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
-                    break
-               
-                
-                if self.current_char in "\n":
-                    break
-                
-                if self.current_char == UNDERSCORE:
-                    ident_count += 1
-                    ident += str(self.current_char)
-                    self.advance()
-                if self.current_char.isdigit() == True:
-                    ident_count += 1
-                    ident += str(self.current_char)
-                    self.advance()
-                else:
-                    ident_count += 1
-                    ident += self.current_char
-                    self.advance()
-
-                for item in ident:
-                    if item in ident_special_chars:
-                        errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
-                        return [], errors
+            ident_res = self.make_ident(ident)
+            ident += ident_res
+            for item in ident:
+                if item in ident_special_chars:
+                    error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+                    return [], error
+            return Token(IDENTIFIER, ident, pos_start = self.pos), errors
         
                         
         ###self.advance()
@@ -1416,7 +1394,40 @@ class Lexer:
         #print(ident_count)
         # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
         #
+    def make_ident(self, ident):
+        temp = ""
+        print("make ident char: ", self.current_char)
+        
+        while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
             
+            if self.current_char == None:
+                break
+            if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
+                break
+            
+            
+            if self.current_char in "\n":
+                break
+            
+            if self.current_char == UNDERSCORE:
+                
+                temp += str(self.current_char)
+                self.advance()
+            if self.current_char.isdigit() == True:
+                
+                temp += str(self.current_char)
+                self.advance()
+            else:
+                
+                temp += self.current_char
+                self.advance()
+
+            # for item in ident:
+            #     if item in ident_special_chars:
+            #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+            #         return [], error
+         
+        return temp       
     def make_string(self):
         
         string = ""
