@@ -2491,41 +2491,8 @@ class Parser:
                             else:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                                 self.advance()
-                    elif self.current_tok.token == RPAREN:
-                        self.advance()
-                        if self.current_tok.token == CLBRACKET:
-                            print("left curly bracket")
-                            
-                            self.advance()
-
-                            while self.current_tok.token == NEWLINE:
-                                self.advance()
-                            form_res, form_error = self.body()
-                            print("form res: ", form_res)
-                            if form_error:
-                                print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
-                                for err in form_error:
-                                    error.append(err)
-                                return [], error
-                            else:
-                                print("successful form!")
-                                for f_res in form_res:
-                                    res.extend(f_res)
-                                    print("f res: ", f_res)
-                                    
-                                
-                                print("CURRENT TOK FROM FORM: ", self.current_tok)
-                                if self.current_tok.token != CRBRACKET:
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
-                                    
-                                else:
-                                    res.append("SUCCESS from form!")
-                                    self.advance()
-                        else:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
-                            self.advance()
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after var!"))
                         self.advance()
                 elif self.current_tok.token == RPAREN:
                     self.advance()
