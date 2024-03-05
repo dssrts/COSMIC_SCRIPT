@@ -3328,6 +3328,7 @@ class Parser:
                     if c_error:
                         print('error after log op')
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                    
                     else:
                         print("SUCCESS NAMAN YUNG RIGHT SIDE: ", self.current_tok)
                         if self.current_tok.token == RPAREN:
@@ -3339,6 +3340,33 @@ class Parser:
                         else:
                             print("R PAREN NOT FOUND")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                if self.current_tok.token == LPAREN:
+                    self.advance()
+                    if self.current_tok.token == NOT_OP:
+                        self.advance()
+                    c_ces, c_error = self.if_whirl_condition()
+                    if c_error:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                    else:
+                        if self.current_tok.token == RPAREN:
+                            
+                            self.advance()
+                            if self.current_tok.token in LOG_OP:
+                                self.advance()
+                                c_ces, c_error = self.if_whirl_condition()
+                                if c_error:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                                else:
+                                    if self.current_tok.token == RPAREN:
+                                        res.append("SUCCESS FROM CONDITION") 
+                                    else:
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
+                            else:
+                                res.append("SUCCESS FROM CONDITION")       
+                                return res, error
+                        else:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                #------------------
                 else:
                     print("error 2nd part")
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
