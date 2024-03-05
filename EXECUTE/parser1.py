@@ -1506,6 +1506,7 @@ class Parser:
         self.in_loop = False
         self.in_condition = False
         self.in_force = False
+        self.in_universe = False
 
     def advance(self):
         self.tok_idx += 1
@@ -1593,6 +1594,7 @@ class Parser:
                     self.advance()          
                     if self.current_tok.token in VAR: 
                         print("this is a var token")
+                        self.in_universe = True
                         var, var_error = self.var_dec()
                         if var_error:
                             error.extend(var_error)
@@ -1605,6 +1607,7 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec parse!"))
                         else:
                             self.advance()
+                            self.in_universe = False
                             res.append(["SUCCESS from global declaration!"])
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid global variable declaration!"))
@@ -2274,6 +2277,9 @@ class Parser:
                 print("first value in assign val is an identifier")
                 self.advance()
                 if self.current_tok.token == LPAREN:
+                    if self.in_universe == True:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM call form!"))
+                        return res, error
                     print("we assigned a function call to a variable")
                     c_form, call_form_error = self.call_form()
                     print("token after call form in assign val: ", self.current_tok.token)
