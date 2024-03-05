@@ -2659,7 +2659,7 @@ class Parser:
         error = False
         while self.current_tok.token  == COMMA:
             self.advance()
-            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token==GRAVITY:
+            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token==GRAVITY or self.current_tok.token == VOID :
                 self.advance()
             else:
                 #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
