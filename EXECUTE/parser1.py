@@ -3340,7 +3340,7 @@ class Parser:
                         else:
                             print("R PAREN NOT FOUND")
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
-                if self.current_tok.token == LPAREN:
+                elif self.current_tok.token == LPAREN:
                     self.advance()
                     if self.current_tok.token == NOT_OP:
                         self.advance()
