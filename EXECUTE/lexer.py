@@ -1346,6 +1346,10 @@ class Lexer:
             
             ident_res = self.make_ident(ident)
             ident += ident_res
+            for item in ident:
+                if item in ident_special_chars:
+                    error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+                    return [], error
             return Token(IDENTIFIER, ident), errors
                         
                        
