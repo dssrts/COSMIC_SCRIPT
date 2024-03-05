@@ -1,3 +1,4 @@
-markcy = [True, 2, 1.3]
+a = 2
 
-print(markcy[0:2])
+if a < 1 or a == 4:
+    print("TWO")
