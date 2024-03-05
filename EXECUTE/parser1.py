@@ -1915,6 +1915,7 @@ class Parser:
                             error.append(err)
                         return [], error
                     else:
+                        self.in_loop = False
                         self.advance()
                         res.append(do_res)
                 
@@ -2950,7 +2951,7 @@ class Parser:
     def do_whirl(self):
         res = []
         error = []
-
+        self.in_loop = True
         if self.current_tok.token == CLBRACKET:
             self.advance()
             do_res, do_error = self.body()
@@ -2961,6 +2962,7 @@ class Parser:
                     error.append(err)
                 return [], error
             else:
+                
                 print("successful do!")
                 for d_res in do_res:
                     res.extend([d_res])
