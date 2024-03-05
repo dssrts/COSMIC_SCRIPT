@@ -1900,6 +1900,7 @@ class Parser:
                                     return [], error
                                 else:
                                     res.append(["SUCCESS from whirl"])
+                                    self.in_loop = False
                                     self.advance()
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected scope for whirl!"))
@@ -1978,6 +1979,7 @@ class Parser:
                         for fres in if_res:
                             res.append(fres)
                             #self.advance()
+                            self.in_condition = False
                             print("current token from if parse: ", self.current_tok)
 
                 if self.current_tok.token in ELSE:
@@ -2027,7 +2029,7 @@ class Parser:
                 
                 if self.current_tok.token == SATURN:
                     self.advance()
-                    if self.current_tok.token != INTEL and self.current_tok.token != LPAREN and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID:
+                    if self.current_tok.token != INTEL and self.current_tok.token != LPAREN and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID and self.current_tok.token != GRAVITY:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
                         break
                     else:
