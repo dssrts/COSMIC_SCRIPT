@@ -1312,7 +1312,7 @@ class Lexer:
                             if self.current_char == None:
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}'])
                                 return [], errors
-                            if self.current_char not in bool_delim:
+                            if self.current_char not in bool_delim + ',':
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}'])
                                 return [], errors
                             return Token(VOID, "void", pos_start = self.pos), errors
@@ -1625,7 +1625,7 @@ class Parser:
                 if form_error:
                     for err in form_error:
                         error.append(err)
-                    break
+                    return res, error
                 else:
                     res.extend(form_res)
 
@@ -2436,24 +2436,62 @@ class Parser:
             if self.current_tok.token == LPAREN:
                 print("found left paren")
                 self.advance()
-                
-                if self.current_tok.token == IDENTIFIER:
-                    #self.advance()
-                    print("current token from form is: ", self.current_tok.token)
+                print("TOKEN AFTER LEFT PAREN: ", self.current_tok)
+                if self.current_tok.token == VAR:
+                    print("found var")
                     self.advance()
-                    if self.current_tok.token == COMMA:
-                        print("you found a comma in the params!")
-                        #if comma yung current, find identifier, next, then if comma, next, and repeat
-                        c_error = self.comma()
-                        if c_error:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                        
-                        print("current token after comma: ", self.current_tok.token)
-                    if self.current_tok.token != RPAREN:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                    if self.current_tok.token == IDENTIFIER:
+                        #self.advance()
+                        print("current token from form is: ", self.current_tok.token)
                         self.advance()
-                    else: 
-                        #res.append("SUCCESS from form!")
+                        if self.current_tok.token == COMMA:
+                            print("you found a comma in the params!")
+                            #if comma yung current, find identifier, next, then if comma, next, and repeat
+                            c_error = self.comma()
+                            if c_error:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Error in parameters!"))
+                                return res, error
+                            
+                            print("current token after comma: ", self.current_tok.token)
+                        if self.current_tok.token != RPAREN:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+                            self.advance()
+                        else: 
+                            #res.append("SUCCESS from form!")
+                            self.advance()
+                            if self.current_tok.token == CLBRACKET:
+                                print("left curly bracket")
+                                
+                                self.advance()
+
+                                while self.current_tok.token == NEWLINE:
+                                    self.advance()
+                                form_res, form_error = self.body()
+                                print("form res: ", res)
+                                if form_error:
+                                    print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
+                                    for err in form_error:
+                                        error.append(err)
+                                    return [], error
+                                else:
+                                    print("successful form!")
+                                    for f_res in form_res:
+                                        res.extend(f_res)
+                                        print("f res: ", f_res)
+                                    
+                                
+                                print("CURRENT TOK FROM FORM: ", self.current_tok)
+                                if self.current_tok.token != CRBRACKET:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in form!"))
+                                    
+                                else:
+                                    res.append("SUCCESS from form!")
+                                    self.advance()
+                                    
+                            else:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
+                                self.advance()
+                    elif self.current_tok.token == RPAREN:
                         self.advance()
                         if self.current_tok.token == CLBRACKET:
                             print("left curly bracket")
@@ -2463,7 +2501,7 @@ class Parser:
                             while self.current_tok.token == NEWLINE:
                                 self.advance()
                             form_res, form_error = self.body()
-                            print("form res: ", res)
+                            print("form res: ", form_res)
                             if form_error:
                                 print("THERES  AN ERROR INSIDE THE FUNCTION SCOPE")
                                 for err in form_error:
@@ -2474,19 +2512,21 @@ class Parser:
                                 for f_res in form_res:
                                     res.extend(f_res)
                                     print("f res: ", f_res)
+                                    
                                 
-                            
-                            print("CURRENT TOK FROM FORM: ", self.current_tok)
-                            if self.current_tok.token != CRBRACKET:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets in form!"))
-                                
-                            else:
-                                res.append("SUCCESS from form!")
-                                self.advance()
-                                
+                                print("CURRENT TOK FROM FORM: ", self.current_tok)
+                                if self.current_tok.token != CRBRACKET:
+                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing curly brackets!"))
+                                    
+                                else:
+                                    res.append("SUCCESS from form!")
+                                    self.advance()
                         else:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
                             self.advance()
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
+                        self.advance()
                 elif self.current_tok.token == RPAREN:
                     self.advance()
                     if self.current_tok.token == CLBRACKET:
@@ -2517,12 +2557,9 @@ class Parser:
                             else:
                                 res.append("SUCCESS from form!")
                                 self.advance()
-                    else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Form definition missing!"))
-                        self.advance()
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parameter id!"))
-                    self.advance()
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected var before id!"))
+                    
             #form add(a, b)
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parentheses for parameters!"))
@@ -2644,11 +2681,16 @@ class Parser:
         error = False
         while self.current_tok.token  == COMMA:
             self.advance()
-            if self.current_tok.token == IDENTIFIER:
+            if self.current_tok.token == VAR:
                 self.advance()
+                if self.current_tok.token == IDENTIFIER:
+                    self.advance()
+                else:
+                    #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                    error = True
             else:
-                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
                 error = True
+                
         return error
     
     #*LOOPING STATEMENTS
