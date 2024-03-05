@@ -806,6 +806,12 @@ class Lexer:
                                     return [], errors
 
                                 return Token(BLAST, "blast"), errors
+                else:
+                    print("not blast: ", self.current_char)
+                    #self.advance()
+                    ident_res = self.make_ident(ident)
+                    ident += ident_res
+                    return Token(IDENTIFIER, ident), errors
                             
                                 
                 
