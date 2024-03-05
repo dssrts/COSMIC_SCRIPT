@@ -2854,12 +2854,14 @@ class Parser:
         error = []
         if self.current_tok.token == NOT_OP:
             self.advance()
+            if self.current_tok.token != LPAREN:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please enclose the relation operation in parenthesis!"))
         if self.current_tok.token == LPAREN:
             print("found lparen")
             self.advance()
             f_rel, f_err = self.force_rel()
             if f_err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon from 2nd condition!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operation!"))
                 return res, error
             else:
                 print("sucess for 2nd rel in paren: ", self.current_tok)
