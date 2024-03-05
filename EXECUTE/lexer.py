@@ -812,11 +812,11 @@ class Lexer:
             if self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
-                ident_count += 1
+                print("ident: ", ident)
                 if self.current_char == "o":
                     ident += self.current_char
                     self.advance()
-                    ident_count += 1
+                    
                     if self.current_char == None:
                         errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}. Expected: opening bracket or newline'])
                         return [], errors
@@ -824,6 +824,12 @@ class Lexer:
                         errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}. Expected: opening bracket or newline'])
                         return [], errors
                     return Token(DO, "do"), errors
+                else:
+                    print("not do: ", self.current_char)
+                    #self.advance()
+                    ident_res = self.make_ident(ident)
+                    ident += ident_res
+                    return Token(IDENTIFIER, ident), errors
                 
                 
             if self.current_char == "e": #else, else if, entity
@@ -1335,6 +1341,8 @@ class Lexer:
             return Token(IDENTIFIER, ident), errors
 
     def make_ident(self, ident):
+        temp = ""
+        print("make ident char: ", self.current_char)
         
         while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
             
@@ -1349,15 +1357,15 @@ class Lexer:
             
             if self.current_char == UNDERSCORE:
                 
-                ident += str(self.current_char)
+                temp += str(self.current_char)
                 self.advance()
             if self.current_char.isdigit() == True:
                 
-                ident += str(self.current_char)
+                temp += str(self.current_char)
                 self.advance()
             else:
                 
-                ident += self.current_char
+                temp += self.current_char
                 self.advance()
 
             # for item in ident:
@@ -1365,7 +1373,7 @@ class Lexer:
             #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
             #         return [], error
          
-        return ident
+        return temp
         
     def make_string(self):
         pos_start = self.pos.copy()
