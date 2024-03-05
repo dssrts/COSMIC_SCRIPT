@@ -9,9 +9,9 @@ import lexer
 import sys
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
@@ -51,10 +51,15 @@ def highlight_reserve_word(keysym):
             idx = input_text.search(word, idx, nocase=1, stopindex=tk.END)
             if idx:
                 lastidx = '%s+%dc' % (idx, len(word))
-                input_text.tag_add('found', idx, lastidx)
+                if input_text.get(idx, lastidx).islower():
+                     input_text.tag_add('found', idx, lastidx)
+                else:
+                    input_text.tag_add('reserveidenti', idx, lastidx)
                 idx = lastidx
 
     input_text.tag_config('found', foreground='yellow')
+    input_text.tag_config('reserveidenti', foreground='white')
+
 
 def update_line_numbers(event):
     highlight_reserve_word(event.keysym)
@@ -156,9 +161,9 @@ def run_syntax():
 root = tk.Tk()
 root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
-ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+#ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-#ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
 #ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
