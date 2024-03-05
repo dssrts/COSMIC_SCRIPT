@@ -720,27 +720,7 @@ class Lexer:
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            # if dec_count == 4:
-            #     if dot_count == 0:
-            #         if self.current_char in all_num:
-            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
-                        
-            #             return [], errors
-            #         else:
-            #             Token(INTEL, int(num_str)), errors
-            #     else:
-            #         if self.current_char in all_num:
-            #             errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
-                        
-            #             return [], errors
-            #         else:
-            #             return Token(GRAVITY, float(num_str)), errors
-            # if num_count == 9:
-                
-            #     if self.current_char in all_num:
-            #         errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}.")
-                    
-            #         return [], errors
+           
                     
             if self.current_char == '.':
                 if dot_count == 1: 

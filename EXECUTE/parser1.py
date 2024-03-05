@@ -729,45 +729,23 @@ class Lexer:
         num_str = ''
         dot_count = 0
         errors = []
+        pos_start = self.pos.copy()
         #not used ata to
         reached_limit_intel = False
-        pos_start = self.pos.copy()
         
 
         while self.current_char is not None and self.current_char in all_num + '.':
-            if dec_count == 4:
-                if dot_count == 0:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        
-                        return [], errors
-                    else:
-                        Token(INTEL, int(num_str), pos_start, self.pos), errors
-                else:
-                    if self.current_char in all_num:
-                        errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                        
-                        return [], errors
-                    else:
-                        return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
-            if num_count == 9:
-                
-                if self.current_char in all_num:
-                    errors.append(f"Invalid number delimiter for'{num_str}'. Cause: {self.current_char}")
-                    
-                    return [], errors
+           
                     
             if self.current_char == '.':
                 if dot_count == 1: 
-                    errors.append(f"Invalid character '{self.current_char}' in number.")
-                    break
-                dot_count += 1
+                    errors.append(f"Invalid character '{self.current_char}' in number. Decimal point already found!")
+                    break 
+                dot_count += 1 
                 num_str += '.'
                 
             else:
-                if '.' in num_str:
-                    if num_count > 9:
-                        break   
+                if '.' in num_str: 
                     dec_count += 1
                     num_count -= 1
                 
@@ -788,18 +766,19 @@ class Lexer:
             
 
        #TODO need maread kapag may 0
-            if dot_count == 0:
-                #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-                return Token(INTEL, int(num_str), pos_start, self.pos), errors
-            else:
-                return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
+            # if dot_count == 0:
+            #     #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
+            #     return Token(INTEL, int(num_str)), errors
+            # else:
+            #     return Token(GRAVITY, float(num_str)), errors
         
         if dot_count == 0:
             #balik naalng yung token intel or gravity if need makita yung tokens ket may errors
-            return Token(INTEL, int(num_str), pos_start, self.pos), errors
+            return Token(INTEL, int(num_str),  pos_start, self.pos), errors
         else:
             return Token(GRAVITY, float(num_str), pos_start, self.pos), errors
-       
+        
+    
         
     #takes in the input character by character then translates them into words then tokens
     def make_word(self):
@@ -810,18 +789,7 @@ class Lexer:
         
         while self.current_char != None:
             #here cinocontrol number ng identifiers
-            if ident_count == 10:
-                #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"]) 
-                ident += self.current_char
-                self.advance()
-                if self.current_char in space_delim + ident_delim + ';' +'(,' + '\n':  
-                       
-                    return Token(IDENTIFIER, ident, pos_start = self.pos), errors
-                else:
-                    
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}"])
-                    
-                    break
+            
                 
            
             
@@ -1393,17 +1361,12 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for whirl! Cause: {self.current_char}'])
                                     return [], errors
                                 return Token(WHIRL, "whirl", pos_start = self.pos), errors
-                else:
-                    ident_count += 1
-                    if ident_count > 10:
-                        errors.extend([f"Exceeded identifier limit! Characters entered: {ident_count}"])
+                
                         
                        
             
             else:
-                if ident_count == 10:
-                    errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}"])           
-                    return [], errors
+                
                 
                 if self.current_char == None:
                     break
