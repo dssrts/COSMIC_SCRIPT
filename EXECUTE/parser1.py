@@ -1622,15 +1622,19 @@ class Parser:
 
             #functions
             if self.current_tok.token == FORM:
-                print("youve got a form token")
-                form_res, form_error = self.init_form()
-
-                if form_error:
-                    for err in form_error:
-                        error.append(err)
-                    return res, error
+                if self.is_galaxy == True:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please declarare forms before galaxy!"))
+                    break
                 else:
-                    res.extend(form_res)
+                    print("youve got a form token")
+                    form_res, form_error = self.init_form()
+
+                    if form_error:
+                        for err in form_error:
+                            error.append(err)
+                        return res, error
+                    else:
+                        res.extend(form_res)
 
             if self.current_tok.token == GALAXY:
                 if self.is_galaxy == True:
