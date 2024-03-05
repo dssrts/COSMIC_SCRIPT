@@ -3275,6 +3275,8 @@ class Parser:
         error = []
         if self.current_tok.token == NOT_OP:
             self.advance()
+            if self.current_tok.token != LPAREN:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon for relational after not operator!"))
         if self.current_tok.token == LPAREN:
             self.advance()
             if self.current_tok.token == NOT_OP:
