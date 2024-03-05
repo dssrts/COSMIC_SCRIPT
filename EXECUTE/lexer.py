@@ -1352,7 +1352,6 @@ class Lexer:
                     return [], error
             return Token(IDENTIFIER, ident), errors
                         
-                       
             
             # else:
                 
