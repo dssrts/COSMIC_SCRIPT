@@ -2323,34 +2323,37 @@ class Parser:
         elif self.current_tok.token == LPAREN:
             print("PARENTHESIS IN ASSIGN")
             self.advance()
-            check, err = self.assign_val2()
+            if self.current_tok.token == RPAREN:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Empty parenthesis is not allowed!"))   
+            else:
+                check, err = self.assign_val2()
             #self.advance()
                 
-            if err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
-                
-
-            else:
-                if self.current_tok.token == RPAREN:
-                    print("found closing")
-                    self.advance()
+                if err:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
                     
-                    if self.current_tok.token in (PLUS, MINUS, DIV, MUL, MODULUS):
-                        print("found operator  after paren")
-                        self.advance()
-                        num, err = self.assign_val2()
-                        if  err:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
 
-                        else:
-                            res.append("Success form ident assign!")
-
-                    return res, error
-                    
-                        
-                    #return True
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
+                    if self.current_tok.token == RPAREN:
+                        print("found closing")
+                        self.advance()
+                        
+                        if self.current_tok.token in (PLUS, MINUS, DIV, MUL, MODULUS):
+                            print("found operator  after paren")
+                            self.advance()
+                            num, err = self.assign_val2()
+                            if  err:
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
+
+                            else:
+                                res.append("Success form ident assign!")
+
+                        return res, error
+                        
+                            
+                        #return True
+                    else:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
     
