@@ -2251,7 +2251,7 @@ class Parser:
                 print("found a number in assign val 2")
                 self.advance()
                 
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET, OUT):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
@@ -3054,11 +3054,11 @@ class Parser:
 
             while self.current_tok.token == OUT:
                 self.advance()
-                if self.current_tok.token in (INTEL, IDENTIFIER, GRAVITY):
+                if self.current_tok.token in (INTEL, IDENTIFIER, GRAVITY, STRING):
                     outer, err = self.assign_val()
                     print("outer: ", self.current_tok)
                     if err:
-                        print("error in assign val outer")
+                        print("error in assign val outer: ", self.current_tok)
                         #error.append(err)
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your outer value!"))
                         return res, error
@@ -3067,9 +3067,9 @@ class Parser:
                         # res.append("SUCCESS from saturn")
                         # return res, error
                         print("no error after assing val outer")
-                elif self.current_tok.token in (STRING):
-                    print("found bool in outer")
-                    self.advance()
+                elif self.current_tok.token in (TRUE, FALSE):
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot print boolean value!"))
+                    
 
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot print value!"))
