@@ -1318,60 +1318,54 @@ class Lexer:
             
             else:
                 
-                
-                if self.current_char == None:
-                    break
-                if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + "\n" + "[]"):
-                    break
-               
-                
-                if self.current_char in "\n":
-                    break
-                
-                if self.current_char == UNDERSCORE:
-                    ident_count += 1
-                    ident += str(self.current_char)
-                    self.advance()
-                if self.current_char.isdigit() == True:
-                    ident_count += 1
-                    ident += str(self.current_char)
-                    self.advance()
-                else:
-                    ident_count += 1
-                    ident += self.current_char
-                    self.advance()
-
-                for item in ident:
-                    if item in ident_special_chars:
-                        errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
-                        return [], errors
+                print("non reserve word letter: ", self.current_char)
+                ident_res = self.make_ident(ident)
+                ident += ident_res
+                return Token(IDENTIFIER, ident, pos_start = self.pos), errors
         
                         
-        ###self.advance()
+        
         if self.current_char == None:
-            errors.extend([f"Invalid delimiter for: {ident}. Cause: {self.current_char}. Expected: ;, ,+-*/%><!=&|)/opening bracket and closing bracket, \']\"/~, \'\', ( or :"])           
+            errors.extend([f"Invalid delimiter for {ident}. Cause: ' {self.current_char} '"])
             return [], errors
-        
-        
-
-        
-       
-                    
-                
-             
-        # if ident_count == 10:
-        #     #errors.extend([f"Exceeded identifier limit! Limit: 10 characters. Characters entered: {ident_count}. Cause: {ident}"])           
-        #     return Token(IDENTIFIER, ident), errors
-
         
         if errors:
             return [], errors
         else:
-            return Token(IDENTIFIER, ident), errors
-        #print(ident_count)
-        # pwede return Token(IDENTIFIER, ident), errors dito basta dalawa den yung value sa nag call (ex: result, error = cat.make_word)
-        #
+            return Token(IDENTIFIER, ident, pos_start = self.pos), errors
+
+    def make_ident(self, ident):
+        
+        while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
             
+            if self.current_char == None:
+                break
+            if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
+                break
+            
+            
+            if self.current_char in "\n":
+                break
+            
+            if self.current_char == UNDERSCORE:
+                
+                ident += str(self.current_char)
+                self.advance()
+            if self.current_char.isdigit() == True:
+                
+                ident += str(self.current_char)
+                self.advance()
+            else:
+                
+                ident += self.current_char
+                self.advance()
+
+            # for item in ident:
+            #     if item in ident_special_chars:
+            #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+            #         return [], error
+         
+        return ident
         
     def make_string(self):
         pos_start = self.pos.copy()
