@@ -1321,7 +1321,7 @@ class Lexer:
                 print("non reserve word letter: ", self.current_char)
                 ident_res = self.make_ident(ident)
                 ident += ident_res
-                return Token(IDENTIFIER, ident, pos_start = self.pos), errors
+                return Token(IDENTIFIER, ident), errors
         
                         
         
@@ -1332,7 +1332,7 @@ class Lexer:
         if errors:
             return [], errors
         else:
-            return Token(IDENTIFIER, ident, pos_start = self.pos), errors
+            return Token(IDENTIFIER, ident), errors
 
     def make_ident(self, ident):
         
