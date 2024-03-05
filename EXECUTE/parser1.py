@@ -2615,7 +2615,7 @@ class Parser:
         
         self.advance()
         print("CURRENT TOKEN AFTER LPAREN IN CALL FORM: ", self.current_tok)
-        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token == GRAVITY:
+        if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token == GRAVITY or self.current_tok.token == VOID:
         
             print("current token from callform is: ", self.current_tok.token)
             self.advance()
