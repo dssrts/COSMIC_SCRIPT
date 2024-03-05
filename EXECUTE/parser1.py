@@ -955,7 +955,7 @@ class Lexer:
                                 if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
                                     return [], errors
-                                if self.current_char not in bool_delim + ',':
+                                if self.current_char not in bool_delim + ',' + ']':
                                     errors.extend([f'Invalid delimiter for false! Cause: {self.current_char}'])
                                     return [], errors
                                 return Token(FALSE, "false", pos_start = self.pos), errors
@@ -1248,7 +1248,7 @@ class Lexer:
                             if self.current_char == None:
                                     errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                     return [], errors
-                            if self.current_char not in bool_delim + ',':
+                            if self.current_char not in bool_delim + ',' + ']':
                                 errors.extend([f'Invalid delimiter for true! Cause: {self.current_char}'])
                                 return [], errors
                             return Token(TRUE, "true", pos_start = self.pos), errors
