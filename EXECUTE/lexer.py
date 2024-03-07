@@ -669,16 +669,7 @@ class Lexer:
                     continue
                 #TODO FIX DELIMITER
                 tokens.append(Token(COLON, ":"))
-            elif self.current_char == "~":
-                
-                self.advance()
-                if self.current_char == None:
-                    errors.extend([f"Invalid delimiter for ' ~ '. Cause: ' {self.current_char} '. Expected: \' \' or abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "])
-                    continue
-                if self.current_char not in delim0:
-                    errors.extend([f"Invalid delimiter for ' ~ '. Cause: ' {self.current_char} '. Expected: \' \' or abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "])
-                    continue
-                tokens.append(Token(TILDE, "~"))
+            
 
             else:
                 #errors.extend([f"Invalid character: {self.current_char}"])
@@ -774,86 +765,61 @@ class Lexer:
         while self.current_char != None:
             
             if self.current_char == "b":
-                
+                if ident_count == 10:
+                    break
                 ident += self.current_char
                 self.advance()
                 ident_count += 1
                 if self.current_char == "l":
-                    
+                    if ident_count == 10:
+                        break
                     ident += self.current_char
                     self.advance()
                     ident_count += 1
                     if self.current_char == "a":
-                       
+                        if ident_count == 10:
+                            break
                         ident += self.current_char
                         self.advance()
                         ident_count += 1
                         if self.current_char == "s":
-                            
+                            if ident_count == 10:
+                                break
                             ident += self.current_char
                             self.advance()
                             ident_count += 1
                             if self.current_char == "t":
-                                
+                                if ident_count == 10:
+                                    break
                                 ident += self.current_char
                                 self.advance()
                                 ident_count += 1
                                 if self.current_char == None:
-                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}. Expected: ';'"])
+                                    errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
                                 if self.current_char not in lineEnd_delim:
-                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}. Expected: ';'"])
+                                    errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
 
-                                return Token(BLAST, "blast"), errors
-                            else:
-                                print("not blast: ", self.current_char)
-                                #self.advance()
-                                ident_res = self.make_ident(ident)
-                                ident += ident_res
-                                return Token(IDENTIFIER, ident), errors
-                        else:
-                            print("not blast: ", self.current_char)
-                            #self.advance()
-                            ident_res = self.make_ident(ident)
-                            ident += ident_res
-                            return Token(IDENTIFIER, ident), errors
-                    else:
-                        print("not blast: ", self.current_char)
-                        #self.advance()
-                        ident_res = self.make_ident(ident)
-                        ident += ident_res
-                        return Token(IDENTIFIER, ident), errors
-                else:
-                    print("not blast: ", self.current_char)
-                    #self.advance()
-                    ident_res = self.make_ident(ident)
-                    ident += ident_res
-                    return Token(IDENTIFIER, ident), errors
+                                return Token(BLAST, "blast", pos_start = self.pos), errors
                             
                                 
                 
             elif self.current_char == "d": #do
                 ident += self.current_char
                 self.advance()
-                print("ident: ", ident)
+                ident_count += 1
                 if self.current_char == "o":
                     ident += self.current_char
                     self.advance()
-                    
+                    ident_count += 1
                     if self.current_char == None:
-                        errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}. Expected: opening bracket or newline'])
+                        errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
                         return [], errors
                     if self.current_char not in block_delim:
-                        errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}. Expected: opening bracket or newline'])
+                        errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
                         return [], errors
-                    return Token(DO, "do"), errors
-                else:
-                    print("not do: ", self.current_char)
-                    #self.advance()
-                    ident_res = self.make_ident(ident)
-                    ident += ident_res
-                    return Token(IDENTIFIER, ident), errors
+                    return Token(DO, "do", pos_start = self.pos), errors
                 
                 
             elif self.current_char == "e": #else, else if, entity
@@ -1346,9 +1312,10 @@ class Lexer:
             
             ident_res = self.make_ident(ident)
             ident += ident_res
+            print("token made: ", ident)
             if self.current_char == None:
-                error.extend([f"Invalid delimiter for {ident}! Cause: {self.current_char}"])
-                break
+                errors.extend([f"Invalid delimiter for {ident}! Cause: {self.current_char}"])
+                return [], errors
 
             
 
@@ -1356,7 +1323,7 @@ class Lexer:
             for item in ident:
                 if item in ident_special_chars:
                     error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
-                    return [], error
+                    return [], errors
             return Token(IDENTIFIER, ident), errors
                         
             
@@ -1412,6 +1379,9 @@ class Lexer:
             #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
             #         return [], error
             if self.current_char == None:
+                break
+
+            if self.current_char in space_delim:
                 break
          
         return temp

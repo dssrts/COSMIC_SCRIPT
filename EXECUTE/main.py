@@ -160,30 +160,53 @@ def remove_player(videoplayer,window):
 #     videoplayer.bind("<<Ended>>",lambda remove: remove_player(videoplayer,loading_window))
 
 # Function to run the lexer and update the GUI
+# def run_lexer():
+#     input_text_str = input_text.get("1.0", "end-1c")
+#     result, error = lexer.run("<stdin>",input_text_str)
+#     output_text.delete(0, tk.END)
+#     token_text.delete(0, tk.END)
+#     errors_text.delete(0, tk.END)
+#     count = 0
+#     print(result)
+#     print (error)
+#     if error:
+#         for err in error:
+#             errors_text.insert(tk.END, err)
+#     for item in result:
+#         count += 1
+#         if item:
+#             output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
+#             token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
+
+#     # if error:
+#     #     errors_text.insert(tk.END, error.as_string())
+#     # else:
+#     #     errors_text.insert(tk.END, "Success!", result)
+#     #     #token_text.insert(tk.END, item.token)
+
 def run_lexer():
     input_text_str = input_text.get("1.0", "end-1c")
-    result, error = lexer.run("<stdin>",input_text_str)
+    result, error = lexer.run("<stdin>", input_text_str)
+    
+    # Clear the text widgets before inserting new results
     output_text.delete(0, tk.END)
     token_text.delete(0, tk.END)
-    errors_text.delete(0, tk.END)
+    
+    
     count = 0
     print(result)
-    print (error)
+    print(error)
+    errors_text.delete(0, tk.END)
     if error:
+        
         for err in error:
             errors_text.insert(tk.END, err)
     for item in result:
         count += 1
         if item:
-            output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
-            token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
-
-    # if error:
-    #     errors_text.insert(tk.END, error.as_string())
-    # else:
-    #     errors_text.insert(tk.END, "Success!", result)
-    #     #token_text.insert(tk.END, item.token)
-
+            
+            output_text.insert(tk.END, "%s.\t   %s" % (count, item.value))
+            token_text.insert(tk.END,  "%s.\t   %s" % (count, item.token))
 def run_syntax():
     input_text_str = input_text.get("1.0", "end-1c")
 
