@@ -799,10 +799,10 @@ class Lexer:
                                 self.advance()
                                 ident_count += 1
                                 if self.current_char == None:
-                                    errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}. Expected: newline '])
+                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}. Expected: ';'"])
                                     return [], errors
                                 if self.current_char not in lineEnd_delim:
-                                    errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}. Expected: newline '])
+                                    errors.extend([f"Invalid delimiter for blast! Cause: {self.current_char}. Expected: ';'"])
                                     return [], errors
 
                                 return Token(BLAST, "blast"), errors
@@ -1346,6 +1346,13 @@ class Lexer:
             
             ident_res = self.make_ident(ident)
             ident += ident_res
+            if self.current_char == None:
+                error.extend([f"Invalid delimiter for {ident}! Cause: {self.current_char}"])
+                break
+
+            
+
+                
             for item in ident:
                 if item in ident_special_chars:
                     error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
@@ -1375,10 +1382,11 @@ class Lexer:
         temp = ""
         print("make ident char: ", self.current_char)
         
+        if self.current_char == None:
+            return temp
         while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
+            print("current char in loop: ", self.current_char)
             
-            if self.current_char == None:
-                break
             if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
                 break
             
@@ -1403,6 +1411,8 @@ class Lexer:
             #     if item in ident_special_chars:
             #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
             #         return [], error
+            if self.current_char == None:
+                break
          
         return temp
         
