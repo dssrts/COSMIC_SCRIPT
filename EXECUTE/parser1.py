@@ -1884,6 +1884,8 @@ class Parser:
                         if self.current_tok.token == CLBRACKET:
                             self.advance()
                             print("IN LOOP NOW")
+                            if self.in_condition == True:
+                                self.in_condition = False
                             self.in_loop = True
                             w_result, w_err = self.body()
                             print("w res: ", res)
@@ -2726,6 +2728,8 @@ class Parser:
                             print("success condition")
                             #TODO FORCE SCOPE
                             if self.current_tok.token == CLBRACKET:
+                                if self.in_condition == True:
+                                    self.in_condition = False
                                 self.in_loop = True
                                 self.advance()
                                 force_res, force_error = self.body()
@@ -2956,6 +2960,8 @@ class Parser:
         res = []
         error = []
         self.in_loop = True
+        if self.in_condition == True:
+            self.in_condition = False
         if self.current_tok.token == CLBRACKET:
             self.advance()
             do_res, do_error = self.body()
