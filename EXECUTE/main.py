@@ -8,6 +8,7 @@ import parser1
 import lexer
 import sys
 
+
 OUTPUT_PATH = Path(__file__).parent
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
@@ -43,8 +44,36 @@ def multiple_yview(*args):
     input_text.yview(*args)
     input_text1_counter.yview(*args)
 
+# def highlight_reserve_word(keysym):
+#     input_text.tag_remove('found', '1.0', tk.END)
+#     for word in reserve_word:
+#         idx = '1.0'
+#         while idx:
+#             idx = input_text.search(r'\m{}\M'.format(word), idx, regexp=True, nocase=1, stopindex=tk.END)
+#             if idx:
+#                 lastidx = '{}+{}c'.format(idx, len(word))
+#                 if input_text.get(idx, lastidx).islower():
+#                     input_text.tag_add('found', idx, lastidx)
+#                 else:
+#                     input_text.tag_add('reserveidenti', idx, lastidx)
+#                 idx = lastidx
+
+#     input_text.tag_config('found', foreground='yellow')
+#     input_text.tag_config('reserveidenti', foreground='white')
+    # ...
+
+# ...
+
+# ...
+
+# ...
+
+# ...
+
 def highlight_reserve_word(keysym):
     input_text.tag_remove('found', '1.0', tk.END)
+    input_text.tag_remove('comment', '1.0', tk.END)
+
     for word in reserve_word:
         idx = '1.0'
         while idx:
@@ -57,8 +86,42 @@ def highlight_reserve_word(keysym):
                     input_text.tag_add('reserveidenti', idx, lastidx)
                 idx = lastidx
 
+    lines = input_text.get("1.0", tk.END).split('\n')
+    in_multiline_comment = False
+    comment_start = None
+
+    for i, line in enumerate(lines):
+        # Single-line comments starting with '/*'
+        if '/*' in line:
+            comment_start = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start}.end')
+
+        # Multiline comments starting with '//*'
+        if '//*' in line:
+            in_multiline_comment = True
+            comment_start = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start + 1}.0')
+
+        if in_multiline_comment:
+            input_text.tag_add('comment', f'{i + 1}.0', f'{i + 1}.end')
+
+        # Multiline comments ending with '*//'
+        if '*//' in line:
+            in_multiline_comment = False
+            comment_end = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_end}.0', f'{comment_end + 1}.0')
+
     input_text.tag_config('found', foreground='yellow')
     input_text.tag_config('reserveidenti', foreground='white')
+    input_text.tag_config('comment', foreground='pink')
+
+# ...
+
+
+# ...
+
+
+
 
 
 def update_line_numbers(event):
