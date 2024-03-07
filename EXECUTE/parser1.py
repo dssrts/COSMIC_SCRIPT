@@ -2186,7 +2186,7 @@ class Parser:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
 
                 #res.append("SUCCESS! from variable declaration")
-    
+            # fixed variable declaraion
 
         return res, error
     
