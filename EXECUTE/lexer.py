@@ -1317,6 +1317,9 @@ class Lexer:
             if self.current_char == None:
                 errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
                 return [], errors
+            if self.current_char in newline_delim:
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: '\\n'"])
+                return [], errors
             if self.current_char == '.':
                 errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
                 errors.extend([f"Identifiers cannot have special characters!"])
