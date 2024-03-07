@@ -2775,7 +2775,7 @@ class Parser:
                         print("success 3rd condition")
                         print("after success 3rd condition:" , self.current_tok)
                         if self.current_tok.token != SEMICOLON:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon after third phase in force!"))
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon after statement 3 in force!"))
                         else:
                             self.advance()
                             if self.current_tok.token != RPAREN:
