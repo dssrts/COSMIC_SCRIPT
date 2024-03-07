@@ -11,10 +11,10 @@ import sys
 OUTPUT_PATH = Path(__file__).parent
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+#ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # List to store the history of input text changes
 input_history = []
 keysym_buffer = ""
@@ -82,19 +82,19 @@ def remove_player(videoplayer,window):
     window.destroy()
     root.deiconify()
 
-def loading_screen():
-    root.withdraw()
-    loading_window = tk.Toplevel()
-    loading_window.attributes('-fullscreen',True)
-    loading_window.resizable(False,False)
+# def loading_screen():
+#     root.withdraw()
+#     loading_window = tk.Toplevel()
+#     loading_window.attributes('-fullscreen',True)
+#     loading_window.resizable(False,False)
 
-    videoplayer = TkinterVideo(master=loading_window, scaled=True)
-    videoplayer.load(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicloading.mp4")
-    pg.mixer.music.load("D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicaudio.MP3")
-    videoplayer.pack(expand=True, fill="both")
-    videoplayer.play()
-    pg.mixer.music.play(loops=0)
-    videoplayer.bind("<<Ended>>",lambda remove: remove_player(videoplayer,loading_window))
+#     videoplayer = TkinterVideo(master=loading_window, scaled=True)
+#     videoplayer.load(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicloading.mp4")
+#     pg.mixer.music.load("D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicaudio.MP3")
+#     videoplayer.pack(expand=True, fill="both")
+#     videoplayer.play()
+#     pg.mixer.music.play(loops=0)
+#     videoplayer.bind("<<Ended>>",lambda remove: remove_player(videoplayer,loading_window))
 
 # Function to run the lexer and update the GUI
 def run_lexer():
@@ -163,16 +163,16 @@ root.geometry("1280x720")
 root.resizable(False, False)  # Disable window resizing
 #ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-#ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 # ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
-ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+#ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
 root.wm_iconphoto(False, photo)
 root.title("Cosmic Script")
 root.configure(bg="#252655")
 pg.mixer.init()
-loading_screen()
+#loading_screen()
 
 #Create the style ttk
 style = ttk.Style()
