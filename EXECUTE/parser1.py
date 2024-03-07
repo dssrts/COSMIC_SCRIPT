@@ -4,7 +4,7 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 special_chars = "$?@\^`#"
-ident_special_chars = "$:?@\^\"`~#"
+ident_special_chars = "$:?@\^\"`~#."
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -1371,6 +1371,7 @@ class Lexer:
                 if item in ident_special_chars:
                     error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
                     return [], error
+            
             return Token(IDENTIFIER, ident, pos_start = self.pos), errors
         
                         
@@ -1403,6 +1404,8 @@ class Lexer:
             if self.current_char == None:
                 break
             if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
+                break
+            if self.current_char in ".":
                 break
             
             

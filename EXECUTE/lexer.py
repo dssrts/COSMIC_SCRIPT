@@ -3,7 +3,7 @@ all_num = '0123456789'
 all_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 special_chars = "$?@\^`#"
-ident_special_chars = "$:?@\^\"`~#"
+ident_special_chars = "$:?@\^\"`~# "
 
 space_delim = " "
 arithmetic_operator = "+-*/%"
@@ -1311,18 +1311,28 @@ class Lexer:
                                 return Token(WHIRL, "whirl"), errors
             
             ident_res = self.make_ident(ident)
+            
             ident += ident_res
             print("token made: ", ident)
             if self.current_char == None:
-                errors.extend([f"Invalid delimiter for {ident}! Cause: {self.current_char}"])
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
                 return [], errors
-
+            if self.current_char == '.':
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
+                errors.extend([f"Identifiers cannot have special characters!"])
+                return [], errors
+            if self.current_char in special_chars:
+                errors.extend([f"Invalid delimiter for '{ident}'"])
+                errors.extend([f"Identifiers cannot have special characters! Cause: {self.current_char}"])
+                return [], errors
             
 
                 
             for item in ident:
+                print("item: ", item)
                 if item in ident_special_chars:
-                    error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+                    errors.extend([f"Invalid delimiter for '{ident}'"])
+                    errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
                     return [], errors
             return Token(IDENTIFIER, ident), errors
                         
@@ -1350,10 +1360,12 @@ class Lexer:
         print("make ident char: ", self.current_char)
         
         if self.current_char == None:
+            print("none found")
             return temp
         while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
             print("current char in loop: ", self.current_char)
-            
+            if self.current_char == None:
+                print("none found")
             if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
                 break
             
@@ -1369,20 +1381,32 @@ class Lexer:
                 
                 temp += str(self.current_char)
                 self.advance()
+                
             else:
+                
                 
                 temp += self.current_char
                 self.advance()
+                if self.current_char == None:
+                    return temp
 
             # for item in ident:
             #     if item in ident_special_chars:
             #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
             #         return [], error
+            if self.current_char in special_chars:
+                break
             if self.current_char == None:
+                print("none found")
                 break
 
             if self.current_char in space_delim:
                 break
+            if self.current_char == ".":
+                break
+            if self.current_char == None:
+                print("none found")
+                return temp
          
         return temp
         
@@ -1407,6 +1431,7 @@ class Lexer:
   
 
 def run(fn, text):
+
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
     
