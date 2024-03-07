@@ -801,7 +801,7 @@ class Lexer:
                                     errors.extend([f'Invalid delimiter for blast! Cause: {self.current_char}'])
                                     return [], errors
 
-                                return Token(BLAST, "blast", pos_start = self.pos), errors
+                                return Token(BLAST, "blast"), errors
                             
                                 
                 
@@ -819,7 +819,7 @@ class Lexer:
                     if self.current_char not in block_delim:
                         errors.extend([f'Invalid delimiter for do! Cause: {self.current_char}'])
                         return [], errors
-                    return Token(DO, "do", pos_start = self.pos), errors
+                    return Token(DO, "do"), errors
                 
                 
             elif self.current_char == "e": #else, else if, entity
@@ -1260,7 +1260,7 @@ class Lexer:
                             if self.current_char == None:
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
                                 return [], errors
-                            if self.current_char not in bool_delim + ',':
+                            if self.current_char not in bool_delim + ',' + ']':
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}. Expected: \' \', ;, newline or ) '])
                                 return [], errors
                             return Token(VOID, "void"), errors

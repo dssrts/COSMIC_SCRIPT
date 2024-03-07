@@ -1312,7 +1312,7 @@ class Lexer:
                             if self.current_char == None:
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}'])
                                 return [], errors
-                            if self.current_char not in bool_delim + ',':
+                            if self.current_char not in bool_delim + ',' + ']':
                                 errors.extend([f'Invalid delimiter for void! Cause: {self.current_char}'])
                                 return [], errors
                             return Token(VOID, "void", pos_start = self.pos), errors
@@ -1366,11 +1366,32 @@ class Lexer:
                        
             
             ident_res = self.make_ident(ident)
+            
             ident += ident_res
+            print("token made: ", ident)
+            if self.current_char == None:
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
+                return [], errors
+            if self.current_char in newline_delim:
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: '\\n'"])
+                return [], errors
+            if self.current_char == '.':
+                errors.extend([f"Invalid delimiter for {ident} -> Cause: {self.current_char}"])
+                errors.extend([f"Identifiers cannot have special characters!"])
+                return [], errors
+            if self.current_char in special_chars:
+                errors.extend([f"Invalid delimiter for '{ident}'"])
+                errors.extend([f"Identifiers cannot have special characters! Cause: {self.current_char}"])
+                return [], errors
+            
+
+                
             for item in ident:
+                print("item: ", item)
                 if item in ident_special_chars:
-                    error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
-                    return [], error
+                    errors.extend([f"Invalid delimiter for '{ident}'"])
+                    errors.extend([f"Identifiers cannot have special characters! Cause: {item}"])
+                    return [], errors
             
             return Token(IDENTIFIER, ident, pos_start = self.pos), errors
         
@@ -1399,13 +1420,14 @@ class Lexer:
         temp = ""
         print("make ident char: ", self.current_char)
         
+        if self.current_char == None:
+            print("none found")
+            return temp
         while self.current_char not in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
-            
+            print("current char in loop: ", self.current_char)
             if self.current_char == None:
-                break
+                print("none found")
             if self.current_char in (lineEnd_delim + ident_delim + CLBRACKET + CRBRACKET + space_delim + '(' + ':' + '\n' + "[]"):
-                break
-            if self.current_char in ".":
                 break
             
             
@@ -1420,17 +1442,35 @@ class Lexer:
                 
                 temp += str(self.current_char)
                 self.advance()
+                
             else:
+                
                 
                 temp += self.current_char
                 self.advance()
+                if self.current_char == None:
+                    return temp
 
             # for item in ident:
             #     if item in ident_special_chars:
             #         error.extend([f"Identifiers cannot have special characters! Cause: {item}"])
             #         return [], error
+            if self.current_char in special_chars:
+                break
+            if self.current_char == None:
+                print("none found")
+                break
+
+            if self.current_char in space_delim:
+                break
+            if self.current_char == ".":
+                break
+            if self.current_char == None:
+                print("none found")
+                return temp
          
-        return temp       
+        return temp
+    
     def make_string(self):
         
         string = ""
@@ -2246,7 +2286,8 @@ class Parser:
         elif self.current_tok.token == SLBRACKET:
             l_res, l_err = self.init_list()
             if l_err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Error from list initialization!"))
+                for err in l_err:
+                    error.append(err)
             else:
                 print("list init is successful!")
                 res.append("Success form list init!")
@@ -2573,6 +2614,7 @@ class Parser:
         res = []
         error = []
         #-- so una muna yung SLBRACKET
+        print("first val in init list: ", self.current_tok)
         self.advance()
         print("CURRENT TOKEN AFTER SLBRACKET IN CALL FORM: ", self.current_tok)
         if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token == GRAVITY:
@@ -2586,7 +2628,7 @@ class Parser:
                 print("current token after comma: ", self.current_tok.token)
                 if a_error:
                     print("THERES AN ERROR IN THE LIST ELEMENTS")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal after comma!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, f"Invalid value in the list!"))
                 
                 else:
                     print("NO ERROR IN THE LIST ELEMENTS")
@@ -2610,7 +2652,7 @@ class Parser:
             res.append(["SUCCESS from list  init!"])         
 
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid list init!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid value inside list!"))
 
         print("RES FROM list init: ", res)
         return res, error
