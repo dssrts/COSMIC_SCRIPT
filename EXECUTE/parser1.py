@@ -1884,6 +1884,8 @@ class Parser:
                         if self.current_tok.token == CLBRACKET:
                             self.advance()
                             print("IN LOOP NOW")
+                            if self.in_condition == True:
+                                self.in_condition = False
                             self.in_loop = True
                             w_result, w_err = self.body()
                             print("w res: ", res)
@@ -2143,7 +2145,8 @@ class Parser:
                     self.advance()
                     assign,err = self.assign_val()
                     if err:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                        for e in err:
+                            error.append(e)
                         
                     else:
                         #self.advance()
@@ -2174,6 +2177,8 @@ class Parser:
                                 res.append(c)
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid force condition!"))
+            else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
 
             # else:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
@@ -2209,7 +2214,8 @@ class Parser:
             n_res, n_error = self.assign_val2()
 
             if n_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
+                for err in n_error:
+                    error.append(err)
             else:
                 res.append("Success form ident assign!")
 
@@ -2220,7 +2226,8 @@ class Parser:
             n_res, n_error = self.assign_val2()
 
             if n_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check the syntax!"))
+                for err in n_error:
+                    error.append(err)
             else:
                 res.append("Success form ident assign!")
                 
@@ -2234,7 +2241,7 @@ class Parser:
         elif self.current_tok.token == SLBRACKET:
             l_res, l_err = self.init_list()
             if l_err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Error from list initialization!"))
             else:
                 print("list init is successful!")
                 res.append("Success form list init!")
@@ -2243,7 +2250,7 @@ class Parser:
             self.advance()
             return res, error
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please initialize a valid value!"))
     
         return res, error
         
@@ -2262,14 +2269,15 @@ class Parser:
                 self.advance()
                 
                 if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET, OUT):
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid number operation!"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
                 check, err = self.num_loop(num)
                 if err:
                     print("FOUND AN ERROR IN NUM LOOP")
                     #return False
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                    for e in err:
+                        error.append(e)
                     return res, error
 
                 else:
@@ -2388,7 +2396,7 @@ class Parser:
                     check.append(self.current_tok.token)
             elif self.current_tok.token == LPAREN:
                 self.advance()
-                num = self.assign_val2()
+                num, err = self.assign_val2()
                 if num:
                     if self.current_tok.token == RPAREN:
                         print("found closing")
@@ -2401,7 +2409,7 @@ class Parser:
                             if  num:
                                 return res, error
                             else:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM ASSIGN VAL!"))
+                                error.extend(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM ASSIGN VAL!"))
 
                                 #return False
                         return res, error
@@ -2410,10 +2418,10 @@ class Parser:
                         #return True
                     else:
                         #return False
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parethesis in arithmetic expression!"))
                 else:
                     #return False
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                    error.extend(err)
             # elif self.current_tok.token == RPAREN:
             #     print("found rparen")
             #     break
@@ -2430,7 +2438,7 @@ class Parser:
                     print("advanced after string found")
                     self.advance()
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM NUM LOOP!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid operand!"))
                 return res, error
 
         
@@ -2726,6 +2734,8 @@ class Parser:
                             print("success condition")
                             #TODO FORCE SCOPE
                             if self.current_tok.token == CLBRACKET:
+                                if self.in_condition == True:
+                                    self.in_condition = False
                                 self.in_loop = True
                                 self.advance()
                                 force_res, force_error = self.body()
@@ -2956,6 +2966,8 @@ class Parser:
         res = []
         error = []
         self.in_loop = True
+        if self.in_condition == True:
+            self.in_condition = False
         if self.current_tok.token == CLBRACKET:
             self.advance()
             do_res, do_error = self.body()
