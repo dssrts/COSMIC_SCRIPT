@@ -13,9 +13,9 @@ OUTPUT_PATH = Path(__file__).parent
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
+# ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # List to store the history of input text changes
 input_history = []
 keysym_buffer = ""
@@ -250,9 +250,9 @@ root.resizable(False, False)  # Disable window resizing
 #ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
+# ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
-#ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
 root.wm_iconphoto(False, photo)
 root.title("Cosmic Script")
