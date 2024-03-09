@@ -481,7 +481,7 @@ class Lexer:
                             if self.current_char == "/":
                                 self.advance()
                                 if self.current_char == "/":
-                                    tokens.append(Token(COMMENT, f"{comment}"))# for single comet
+                                    tokens.append(Token(COMMENT, f"{comment}"), pos_start = self.pos)# for single comet
                                     tokens.append(Token(M_END_COMET, "*//", pos_start = self.pos))# for single comet
                                     self.advance()
                                 else:
@@ -496,7 +496,7 @@ class Lexer:
                         self.advance()
                         comment += self.current_char
                         print("CURRENT CHAR IN TOKEN: ", self.current_char)
-                    tokens.append(Token(COMMENT, f"{comment}"))# for single comet
+                    tokens.append(Token(COMMENT, f"{comment}", pos_start = self.pos))# for single comet
                 else:
                     
                     if self.current_char == None:
@@ -1609,7 +1609,7 @@ class Parser:
                         break
                 self.advance()
 
-            if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token !=  LANDING:
+            if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token != LANDING and self.current_tok.token !=  COMMENT:
                 print("token causing error: ", self.current_tok)
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax structure!"))
                 break
@@ -2126,7 +2126,7 @@ class Parser:
     
     # * checks if the current token's a valid statement in body
     def is_statement(self):
-        if self.current_tok.token == BLAST or self.current_tok.token == S_COMET or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
+        if self.current_tok.token == BLAST or self.current_tok.token == S_COMET or self.current_tok.token == COMMENT or self.current_tok.token == NEWLINE or self.current_tok.token in INTEL or self.current_tok.token == IDENTIFIER or self.current_tok.token in FORCE or self.current_tok.token in WHIRL or self.current_tok.token in WHIRL or self.current_tok.token in OUTER or self.current_tok.token in IF or self.current_tok.token in ELSE or self.current_tok.token in INNER or self.current_tok.token in VAR or self.current_tok.token in SATURN or self.current_tok.token in FORM or self.current_tok.token in CRBRACKET or self.current_tok.token in EOF or self.current_tok.token == DO or self.current_tok.token == WHIRL or self.current_tok.token == INCRE or self.current_tok.token == DECRE  or self.current_tok.token == COMMENT or self.current_tok.token == M_OPEN_COMET or self.current_tok.token == M_END_COMET or self.current_tok.token ==LANDING:
             return True
         else:
             return False
