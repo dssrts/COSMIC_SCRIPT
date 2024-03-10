@@ -3336,14 +3336,20 @@ class Parser:
     def if_whirl_condition(self):
         res = []
         error = []
+        print("IN IF WHIRL NOW")
         if self.current_tok.token == NOT_OP:
+            print("found not op in if whirl condition")
             self.advance()
             if self.current_tok.token != LPAREN:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon for relational after not operator!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parenthesis for relational after not operator!"))
+                return res, error
         if self.current_tok.token == LPAREN:
             self.advance()
             if self.current_tok.token == NOT_OP:
                 self.advance()
+                if self.current_tok.token != LPAREN:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parenthesis for relational after not operator!"))
+                    return res, error
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
