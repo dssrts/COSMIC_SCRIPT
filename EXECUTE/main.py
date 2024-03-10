@@ -139,7 +139,7 @@ def highlight_reserve_word(keysym):
         # Single-line comments starting with '/*'
         comment_start = line.find('/*')
         if comment_start != -1:
-            input_text.tag_add('comment', f'{i + 1}.{comment_start + 2}', f'{i + 1}.end')
+            input_text.tag_add('comment', f'{i + 1}.{comment_start}', f'{i + 1}.end')
 
         # Multiline comments starting with '//*'
         if '//*' in line:
