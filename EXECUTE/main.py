@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-#import pygame as pg
+import pygame as pg
 from tkVideoPlayer import TkinterVideo
 from PIL import Image, ImageTk  # Import Pillow
 from pathlib import Path
@@ -13,9 +13,9 @@ OUTPUT_PATH = Path(__file__).parent
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\seped\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # ASSETS_PATH = OUTPUT_PATH / Path(r"C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
+# ASSETS_PATH = OUTPUT_PATH / Path(r"D:\Repositories\make_a_compiler\EXECUTE\assets\frame0")
 #ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\DELL\Documents\GitHub\COSMIC_SCRIPT\EXECUTE\assets\frame0")
-#ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0")
 # List to store the history of input text changes
 input_history = []
 keysym_buffer = ""
@@ -44,22 +44,22 @@ def multiple_yview(*args):
     input_text.yview(*args)
     input_text1_counter.yview(*args)
 
-# def highlight_reserve_word(keysym):
-#     input_text.tag_remove('found', '1.0', tk.END)
-#     for word in reserve_word:
-#         idx = '1.0'
-#         while idx:
-#             idx = input_text.search(r'\m{}\M'.format(word), idx, regexp=True, nocase=1, stopindex=tk.END)
-#             if idx:
-#                 lastidx = '{}+{}c'.format(idx, len(word))
-#                 if input_text.get(idx, lastidx).islower():
-#                     input_text.tag_add('found', idx, lastidx)
-#                 else:
-#                     input_text.tag_add('reserveidenti', idx, lastidx)
-#                 idx = lastidx
+def highlight_reserve_word(keysym):
+    input_text.tag_remove('found', '1.0', tk.END)
+    for word in reserve_word:
+        idx = '1.0'
+        while idx:
+            idx = input_text.search(r'\m{}\M'.format(word), idx, regexp=True, nocase=1, stopindex=tk.END)
+            if idx:
+                lastidx = '{}+{}c'.format(idx, len(word))
+                if input_text.get(idx, lastidx).islower():
+                    input_text.tag_add('found', idx, lastidx)
+                else:
+                    input_text.tag_add('reserveidenti', idx, lastidx)
+                idx = lastidx
 
-#     input_text.tag_config('found', foreground='yellow')
-#     input_text.tag_config('reserveidenti', foreground='white')
+    input_text.tag_config('found', foreground='yellow')
+    input_text.tag_config('reserveidenti', foreground='white')
     # ...
 
 # ...
@@ -70,50 +70,50 @@ def multiple_yview(*args):
 
 # ...
 
-# def highlight_reserve_word(keysym):
-#     input_text.tag_remove('found', '1.0', tk.END)
-#     input_text.tag_remove('comment', '1.0', tk.END)
+def highlight_reserve_word(keysym):
+    input_text.tag_remove('found', '1.0', tk.END)
+    input_text.tag_remove('comment', '1.0', tk.END)
 
-#     for word in reserve_word:
-#         idx = '1.0'
-#         while idx:
-#             idx = input_text.search(r'\m{}\M'.format(word), idx, regexp=True, nocase=1, stopindex=tk.END)
-#             if idx:
-#                 lastidx = '{}+{}c'.format(idx, len(word))
-#                 if input_text.get(idx, lastidx).islower():
-#                     input_text.tag_add('found', idx, lastidx)
-#                 else:
-#                     input_text.tag_add('reserveidenti', idx, lastidx)
-#                 idx = lastidx
+    for word in reserve_word:
+        idx = '1.0'
+        while idx:
+            idx = input_text.search(r'\m{}\M'.format(word), idx, regexp=True, nocase=1, stopindex=tk.END)
+            if idx:
+                lastidx = '{}+{}c'.format(idx, len(word))
+                if input_text.get(idx, lastidx).islower():
+                    input_text.tag_add('found', idx, lastidx)
+                else:
+                    input_text.tag_add('reserveidenti', idx, lastidx)
+                idx = lastidx
 
-#     lines = input_text.get("1.0", tk.END).split('\n')
-#     in_multiline_comment = False
-#     comment_start = None
+    lines = input_text.get("1.0", tk.END).split('\n')
+    in_multiline_comment = False
+    comment_start = None
 
-#     for i, line in enumerate(lines):
-#         # Single-line comments starting with '/*'
-#         if '/*' in line:
-#             comment_start = i + 1  # Line numbers start from 1
-#             input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start}.end')
+    for i, line in enumerate(lines):
+        # Single-line comments starting with '/*'
+        if '/*' in line:
+            comment_start = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start}.end')
 
-#         # Multiline comments starting with '//*'
-#         if '//*' in line:
-#             in_multiline_comment = True
-#             comment_start = i + 1  # Line numbers start from 1
-#             input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start + 1}.0')
+        # Multiline comments starting with '//*'
+        if '//*' in line:
+            in_multiline_comment = True
+            comment_start = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_start}.0', f'{comment_start + 1}.0')
 
-#         if in_multiline_comment:
-#             input_text.tag_add('comment', f'{i + 1}.0', f'{i + 1}.end')
+        if in_multiline_comment:
+            input_text.tag_add('comment', f'{i + 1}.0', f'{i + 1}.end')
 
-#         # Multiline comments ending with '*//'
-#         if '*//' in line:
-#             in_multiline_comment = False
-#             comment_end = i + 1  # Line numbers start from 1
-#             input_text.tag_add('comment', f'{comment_end}.0', f'{comment_end + 1}.0')
+        # Multiline comments ending with '*//'
+        if '*//' in line:
+            in_multiline_comment = False
+            comment_end = i + 1  # Line numbers start from 1
+            input_text.tag_add('comment', f'{comment_end}.0', f'{comment_end + 1}.0')
 
-#     input_text.tag_config('found', foreground='yellow')
-#     input_text.tag_config('reserveidenti', foreground='white')
-#     input_text.tag_config('comment', foreground='pink')
+    input_text.tag_config('found', foreground='yellow')
+    input_text.tag_config('reserveidenti', foreground='white')
+    input_text.tag_config('comment', foreground='pink')
 
 # ...
 def highlight_reserve_word(keysym):
@@ -186,44 +186,44 @@ def remove_player(videoplayer,window):
     window.destroy()
     root.deiconify()
 
-# def loading_screen():
-#     root.withdraw()
-#     loading_window = tk.Toplevel()
-#     loading_window.attributes('-fullscreen',True)
-#     loading_window.resizable(False,False)
+def loading_screen():
+    root.withdraw()
+    loading_window = tk.Toplevel()
+    loading_window.attributes('-fullscreen',True)
+    loading_window.resizable(False,False)
 
-#     videoplayer = TkinterVideo(master=loading_window, scaled=True)
-#     videoplayer.load(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicloading.mp4")
-#     pg.mixer.music.load("D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicaudio.MP3")
-#     videoplayer.pack(expand=True, fill="both")
-#     videoplayer.play()
-#     pg.mixer.music.play(loops=0)
-#     videoplayer.bind("<<Ended>>",lambda remove: remove_player(videoplayer,loading_window))
+    videoplayer = TkinterVideo(master=loading_window, scaled=True)
+    videoplayer.load(r"D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicloading.mp4")
+    pg.mixer.music.load("D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\Intro\\cosmicaudio.MP3")
+    videoplayer.pack(expand=True, fill="both")
+    videoplayer.play()
+    pg.mixer.music.play(loops=0)
+    videoplayer.bind("<<Ended>>",lambda remove: remove_player(videoplayer,loading_window))
 
 # Function to run the lexer and update the GUI
-# def run_lexer():
-#     input_text_str = input_text.get("1.0", "end-1c")
-#     result, error = lexer.run("<stdin>",input_text_str)
-#     output_text.delete(0, tk.END)
-#     token_text.delete(0, tk.END)
-#     errors_text.delete(0, tk.END)
-#     count = 0
-#     print(result)
-#     print (error)
-#     if error:
-#         for err in error:
-#             errors_text.insert(tk.END, err)
-#     for item in result:
-#         count += 1
-#         if item:
-#             output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
-#             token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
+def run_lexer():
+    input_text_str = input_text.get("1.0", "end-1c")
+    result, error = lexer.run("<stdin>",input_text_str)
+    output_text.delete(0, tk.END)
+    token_text.delete(0, tk.END)
+    errors_text.delete(0, tk.END)
+    count = 0
+    print(result)
+    print (error)
+    if error:
+        for err in error:
+            errors_text.insert(tk.END, err)
+    for item in result:
+        count += 1
+        if item:
+            output_text.insert(tk.END, "%s.\t   %s" % (count,item.value))
+            token_text.insert(tk.END,  "%s.\t   %s" % (count,item.token))
 
-#     # if error:
-#     #     errors_text.insert(tk.END, error.as_string())
-#     # else:
-#     #     errors_text.insert(tk.END, "Success!", result)
-#     #     #token_text.insert(tk.END, item.token)
+    # if error:
+    #     errors_text.insert(tk.END, error.as_string())
+    # else:
+    #     errors_text.insert(tk.END, "Success!", result)
+    #     #token_text.insert(tk.END, item.token)
 
 def run_lexer():
     input_text_str = input_text.get("1.0", "end-1c")
@@ -280,8 +280,8 @@ def run_syntax():
                 errors_text.insert(tk.END, arrowDetail)
                 errors_text.insert(tk.END, arrows)
         else:
-            for res in syntax_result:
-                errors_text.insert(tk.END, res)
+            #for res in syntax_result:
+            errors_text.insert(tk.END, "SUCCESS")
             #token_text.insert(tk.END, item.token)
 
 #create main canvas
@@ -291,15 +291,15 @@ root.resizable(False, False)  # Disable window resizing
 #ico = Image.open('C:\\Users\\seped\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 #ico = Image.open('C:\\Users\\RaffyAldiny\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 # ico = Image.open('C:\\Users\\Melissa\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
-ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
+# ico = Image.open('D:\\Repositories\\make_a_compiler\\EXECUTE\\logo-automata.png')
 #ico = Image.open('C:\\Users\\DELL\\Documents\\GitHub\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\s\logo-automata.png')
-#ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
+ico = Image.open('D:\\Cosmic Script\\COSMIC_SCRIPT\\EXECUTE\\assets\\frame0\\logo-automata.png')
 photo = ImageTk.PhotoImage(ico)
 root.wm_iconphoto(False, photo)
 root.title("Cosmic Script")
 root.configure(bg="#252655")
-#pg.mixer.init()
-#loading_screen()
+pg.mixer.init()
+loading_screen()
 
 #Create the style ttk
 style = ttk.Style()

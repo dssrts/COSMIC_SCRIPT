@@ -1611,7 +1611,7 @@ class Parser:
 
             if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != VAR and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token != LANDING and self.current_tok.token !=  COMMENT:
                 print("token causing error: ", self.current_tok)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid syntax structure!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form, or galaxy, or universe!"))
                 break
             else:
                 self.advance()
@@ -1870,7 +1870,7 @@ class Parser:
                     # -- else no other operation for it
                     else:
                         print('INVALID IDENT OPERATION')
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected assignment operator, increment, decrement, or call form!"))
                         return [], error
 
                 if self.current_tok.token == INCRE:
@@ -2163,7 +2163,7 @@ class Parser:
                 res.append("SUCCESS! from assign")
                     
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization! from initialize variable"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected assignment operator!"))
         return res, error
     
     #*declare a variable
@@ -2177,7 +2177,7 @@ class Parser:
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
             print("current tok: ", self.current_tok.token)
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER "))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier"))
         else:
             print("u good")
             self.advance()
@@ -2223,7 +2223,7 @@ class Parser:
             elif self.current_tok.token == SEMICOLON:
                 res.append("SUCCESS from variable declaration")
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected equal, comma or semicolon!"))
 
             # else:
             #     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
@@ -3083,7 +3083,7 @@ class Parser:
                             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
 
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid Condition!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier!"))
                         
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected relational operator!"))
@@ -3180,7 +3180,8 @@ class Parser:
             self.advance()
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                for err in c_error:
+                    error.append(err)
             else:
                 if self.current_tok.token == RPAREN:
                     self.advance()
@@ -3243,9 +3244,9 @@ class Parser:
                     #res.append(["SUCCESS FROM IF"]) 
                     
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Exepected left paren!"))
 
         return res, error
     
@@ -3352,7 +3353,7 @@ class Parser:
                     return res, error
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                error.append(c_error)
             else:
                 if self.current_tok.token == RPAREN:
                     
@@ -3361,7 +3362,7 @@ class Parser:
                         self.advance()
                         c_ces, c_error = self.if_whirl_condition()
                         if c_error:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                            error.append(c_error)
                         else:
                             if self.current_tok.token == RPAREN:
                                 res.append("SUCCESS FROM CONDITION") 
@@ -3371,7 +3372,7 @@ class Parser:
                         res.append("SUCCESS FROM CONDITION")       
                         return res, error
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
         elif self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY) :
             if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
                 
@@ -3388,7 +3389,10 @@ class Parser:
                         c_ces, c_error = self.if_whirl_condition()
                         if c_error:
                             print("ERROR IN LEFT SIDE")
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                            for err in c_error:
+                                for e in err:
+                                    for erro in e:
+                                        error.append(erro)
                         else:
                             print("REL OP TOKEN: ", self.current_tok)
                             if self.current_tok.token == RPAREN:
@@ -3404,7 +3408,7 @@ class Parser:
                     c_ces, c_error = self.if_whirl_condition()
                     if c_error:
                         print('error after log op')
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                        error.append(c_error)
                     
                     else:
                         print("SUCCESS NAMAN YUNG RIGHT SIDE: ", self.current_tok)
@@ -3423,7 +3427,8 @@ class Parser:
                         self.advance()
                     c_ces, c_error = self.if_whirl_condition()
                     if c_error:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                        for err in c_error:
+                            error.append(err)
                     else:
                         if self.current_tok.token == RPAREN:
                             
@@ -3432,29 +3437,30 @@ class Parser:
                                 self.advance()
                                 c_ces, c_error = self.if_whirl_condition()
                                 if c_error:
-                                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                                    for err in c_error:
+                                        error.append(err)
                                 else:
                                     if self.current_tok.token == RPAREN:
                                         res.append("SUCCESS FROM CONDITION") 
                                     else:
-                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
+                                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                             else:
                                 res.append("SUCCESS FROM CONDITION")       
                                 return res, error
                         else:
-                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if condition!"))
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                 #------------------
                 else:
                     print("error 2nd part")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected left paren or identifier!"))
             elif self.current_tok.token == RPAREN:
                 res.append("SUCCESS from if condition")
                 return res, error 
             else:
                 print("ETO YUNG ERROR")
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or logical operator or relational operator or right parenthesis!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid condition!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, or left paren!"))
         
         return res, error
 
