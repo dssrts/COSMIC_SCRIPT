@@ -1611,7 +1611,11 @@ class Parser:
 
             if self.current_tok.token != S_COMET and self.current_tok.token != EOF and self.current_tok.token != NEWLINE and self.current_tok.token != S_COMET and self.current_tok.token != UNIVERSE and self.current_tok.token != FORM and self.current_tok.token != GALAXY and self.current_tok.token != M_OPEN_COMET and self.current_tok.token != M_END_COMET and self.current_tok.token != LANDING and self.current_tok.token !=  COMMENT:
                 print("token causing error: ", self.current_tok)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form, or galaxy, or universe!"))
+                if self.is_galaxy == True:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected landing!"))
+                else:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected form, or galaxy, or universe!"))
+
                 break
             else:
                 self.advance()
