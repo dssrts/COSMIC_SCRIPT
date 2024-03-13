@@ -2086,7 +2086,7 @@ class Parser:
                 if self.current_tok.token == SATURN:
                     self.advance()
                     if self.current_tok.token != INTEL and self.current_tok.token != LPAREN and self.current_tok.token != IDENTIFIER and self.current_tok.token != TRUE and self.current_tok.token != FALSE and self.current_tok.token != STRING and self.current_tok.token != VOID and self.current_tok.token != GRAVITY:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid return value!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, left parenthesis, true, false, string or void!"))
                         break
                     else:
                         # self.advance()
