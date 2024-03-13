@@ -2322,7 +2322,7 @@ class Parser:
                 self.advance()
                 
                 if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET, OUT):
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, /, * or %"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, /, *, %, or ; "))
                     print("current error tok: ",  self.current_tok)
                     return res, error
                 check, err = self.num_loop(num)
@@ -2868,8 +2868,7 @@ class Parser:
             if err:
                 #error.append(err)
                 for e in err:
-                    for erro in e:
-                        error.append(erro)
+                    error.append(e)
 
 
             else:
