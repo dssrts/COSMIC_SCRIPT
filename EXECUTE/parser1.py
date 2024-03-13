@@ -2481,7 +2481,7 @@ class Parser:
                 print("check:", check)
                 print("there's a string here")
                 if "-" in ops or "/" in ops or "%" in ops or "*" in ops:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid string operation!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected + !"))
                     print("ERROR IN STRING OPS")
                 elif INTEL in check or GRAVITY in check:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot concat string with number!"))
