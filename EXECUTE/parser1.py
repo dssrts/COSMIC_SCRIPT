@@ -1851,6 +1851,7 @@ class Parser:
                             #self.advance()
                             if self.current_tok.token != SEMICOLON:
                                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon! from init var"))
+                                return res, error
                             else:
                                 res.append(assign)
                                 self.advance()
@@ -2367,7 +2368,7 @@ class Parser:
 
                             check, err = self.assign_val2()
                             if  err:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon!!"))
 
                             else:
                                 res.append("Success form ident assign!")
