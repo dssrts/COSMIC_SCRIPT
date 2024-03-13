@@ -2484,7 +2484,7 @@ class Parser:
                     print("advanced after string found")
                     self.advance()
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid operand!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier or left parenthesis!"))
                 return res, error
 
         
@@ -3378,6 +3378,9 @@ class Parser:
                 
                 n_res, n_error = self.assign_val2()
                 print("assign val in arith rel op left: ", self.current_tok.token)
+                if n_error:
+                    for err in n_error:
+                        error.append(err)
                 #self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
@@ -3390,9 +3393,7 @@ class Parser:
                         if c_error:
                             print("ERROR IN LEFT SIDE")
                             for err in c_error:
-                                for e in err:
-                                    for erro in e:
-                                        error.append(erro)
+                                error.append(err)
                         else:
                             print("REL OP TOKEN: ", self.current_tok)
                             if self.current_tok.token == RPAREN:
