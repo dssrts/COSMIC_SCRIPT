@@ -3359,7 +3359,7 @@ class Parser:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected parenthesis for relational after not operator!"))
                     return res, error
             if self.current_tok.token == RPAREN:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier or left parentheis!"))
                 return res, error
 
             c_ces, c_error = self.if_whirl_condition()
