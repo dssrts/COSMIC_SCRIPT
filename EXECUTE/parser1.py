@@ -2949,13 +2949,19 @@ class Parser:
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
-                if self.current_tok.token in (IDENTIFIER, INTEL, GRAVITY):
-                    self.advance()
-                    #return res, error
+                if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
+                
+                    n_res, n_error = self.assign_val2()
+                    print("assign val in arith rel op left: ", self.current_tok.token)
+                    if n_error:
+                        for err in n_error:
+                            error.append(err)
+                        return res, error
+                    #self.advance()
                    
 
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid relational operand in force 2!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier!"))
                     print("error operand: ", self.current_tok)
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected <, >, <=, >=, !=  "))
