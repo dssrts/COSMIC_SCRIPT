@@ -3192,6 +3192,8 @@ class Parser:
             else:
                 if self.current_tok.token == RPAREN:
                     self.advance()
+                    if self.current_tok.token == NEWLINE:
+                        self.advance()
                     if self.current_tok.token == CLBRACKET:
                         self.advance()
                         if_res, if_error = self.body()
@@ -3246,7 +3248,7 @@ class Parser:
                         
                             return res, error
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid if scope!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected { !"))
                         
                     #res.append(["SUCCESS FROM IF"]) 
                     
