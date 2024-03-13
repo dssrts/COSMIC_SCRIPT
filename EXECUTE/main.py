@@ -242,6 +242,9 @@ def run_lexer():
         
         for err in error:
             errors_text.insert(tk.END, err)
+    else:
+        errors_text.insert(tk.END, "Lexer SUCCESS")
+
     for item in result:
         count += 1
         if item:
