@@ -2397,7 +2397,8 @@ class Parser:
                     print("list: ", err)
                     if err:
                         #error.append(err)
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your list value!"))
+                        for e in err:
+                            error.append(e)
                         #return res, error
                     else:
                         if self.current_tok.token != SRBRACKET:
@@ -2668,11 +2669,11 @@ class Parser:
             if self.current_tok.token == COMMA:
                 print("you found a comma in the list init !")
                 #if comma yung current, find identifier, next, then if comma, next, and repeat
-                a_error = self.arguments()
+                a_error = self.list_literal()
                 print("current token after comma: ", self.current_tok.token)
                 if a_error:
                     print("THERES AN ERROR IN THE LIST ELEMENTS")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, f"Invalid value in the list!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, f"Expected number, identifier, string, true, or false"))
                 
                 else:
                     print("NO ERROR IN THE LIST ELEMENTS")
@@ -2696,7 +2697,8 @@ class Parser:
             res.append(["SUCCESS from list  init!"])         
 
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid value inside list!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, f"Expected number, identifier, string, true, or false"))
+
 
         print("RES FROM list init: ", res)
         return res, error
@@ -2753,6 +2755,17 @@ class Parser:
         while self.current_tok.token  == COMMA:
             self.advance()
             if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token==GRAVITY or self.current_tok.token == VOID :
+                self.advance()
+            else:
+                #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
+                error = True
+        return error
+    
+    def list_literal (self):
+        error = False
+        while self.current_tok.token  == COMMA:
+            self.advance()
+            if self.current_tok.token == IDENTIFIER or self.current_tok.token == INTEL or self.current_tok.token == STRING or self.current_tok.token == TRUE or self.current_tok.token == FALSE or self.current_tok.token==GRAVITY :
                 self.advance()
             else:
                 #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
