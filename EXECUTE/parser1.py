@@ -2124,7 +2124,7 @@ class Parser:
             
             else:
                 print("error tok: ", self.current_tok)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please follow proper syntax!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected var, inner, outer, identifier, if, ++, --, force, do, whirl"))
                 break
 
 
