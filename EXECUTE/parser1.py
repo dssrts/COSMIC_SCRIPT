@@ -2428,7 +2428,7 @@ class Parser:
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expeected number, identifier or left parenthesis!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier or left parenthesis!"))
     
         return res, error
         
@@ -2824,7 +2824,7 @@ class Parser:
         if self.current_tok.token != IDENTIFIER:
             print("bro put an identifier!")
             print("current tok: ", self.current_tok.token)
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "PLS GIVE ME AN IDENTIFIER "))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier"))
         else:
             print("u good")
             self.advance()
@@ -2835,26 +2835,17 @@ class Parser:
                 self.advance()
                 assign,err = self.assign_val2()
                 if err:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                    for e in err:
+                        error.append(e)
                     
                 else:
                     #self.advance()
                     print("CURRENT TOKEN FROM VAR DEC INIT: ", self.current_tok)
-                    if self.current_tok.token == COMMA:
-                        print("comma after init!")
-                        comma, c_error = self.var_dec()
-                        print('FROM  VAR  DEC CURRENT TOKEN: ', self.current_tok)
-                        
-                        if c_error:
-                            for err in c_error:
-                                error.append(err)
-                        else:
-                            for c in comma:
-                                res.append(c)
+                    res.append("success init first statement force")
                 
             
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid initialization!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected = !"))
 
             #res.append("SUCCESS! from variable declaration")
 
