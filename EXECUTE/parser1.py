@@ -2307,6 +2307,13 @@ class Parser:
         elif self.current_tok.token == VOID:
             self.advance()
             return res, error
+        elif self.current_tok.token == INCRE or self.current_tok.token == DECRE:
+            self.advance()
+            if self.current_tok.token != IDENTIFIER:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+            else:
+                self.advance()
+
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please initialize a valid value!"))
     
@@ -2958,7 +2965,6 @@ class Parser:
                             error.append(err)
                         return res, error
                     #self.advance()
-                   
 
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier, or lparen!"))
