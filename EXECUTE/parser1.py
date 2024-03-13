@@ -2146,7 +2146,8 @@ class Parser:
             print("assign: ", err)
             if err:
                 #error.append(err)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+                for e in err:
+                    error.append(e)
                 
             else:
                 res.append("SUCCESS from assign")
@@ -2157,7 +2158,8 @@ class Parser:
             self.advance()
             assign, err = self.assign_val2()
             if err:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+                for e in err:
+                    error.append(e)
                 
             else:
                 res.append("SUCCESS! from assign")
@@ -2420,7 +2422,7 @@ class Parser:
                             
                         #return True
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expeected number, identifier or left parenthesis!"))
     
@@ -2866,15 +2868,20 @@ class Parser:
             print("assign: ", err)
             if err:
                 #error.append(err)
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+                for e in err:
+                    for erro in e:
+                        error.append(erro)
 
 
             else:
                 # semicolon current char
-                res.append("force first condition")
-                self.advance()
+                if self.current_tok.token != SEMICOLON:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected semicolon after first statement"))
+                else:    
+                    res.append("force first condition")
+                    self.advance()
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your initialization!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected = !"))
 
         return res, error
     # combine lang  init and var
