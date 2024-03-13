@@ -2410,12 +2410,10 @@ class Parser:
                     if self.in_universe == True:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, true, false, void, string, [ "))
                         return res, error
+                    #self.advance()
+                    
+                    res.append("success unary init")
                     self.advance()
-                    if self.current_tok.token != IDENTIFIER:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
-                    else:
-                        res.append("success unary init")
-                        self.advance()
                     ########
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
