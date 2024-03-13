@@ -2308,6 +2308,9 @@ class Parser:
             self.advance()
             return res, error
         elif self.current_tok.token == INCRE or self.current_tok.token == DECRE:
+            if self.in_universe == True:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, true, false, void, string, [ "))
+                return res, error
             self.advance()
             if self.current_tok.token != IDENTIFIER:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
@@ -2357,7 +2360,7 @@ class Parser:
                 print("first value in assign val is an identifier")
                 self.advance()
                 if self.in_universe == True:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot initialize an identifier to variable in universe declaration/initialization!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, true, false, void, string, [ "))
                     return res, error
                 if self.current_tok.token == LPAREN:
                     if self.in_universe == True:
@@ -2402,7 +2405,9 @@ class Parser:
                             print("Sucess from assign list")
                             self.advance()
                 elif self.current_tok.token in (INCRE, DECRE):
-                    
+                    if self.in_universe == True:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, true, false, void, string, [ "))
+                        return res, error
                     self.advance()
                     if self.current_tok.token != IDENTIFIER:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
