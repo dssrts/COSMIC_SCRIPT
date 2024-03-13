@@ -2315,7 +2315,7 @@ class Parser:
                 self.advance()
                 
                 if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET, OUT):
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid number operation!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, /, * or %"))
                     print("current error tok: ",  self.current_tok)
                     return res, error
                 check, err = self.num_loop(num)
@@ -2383,7 +2383,7 @@ class Parser:
                     print('FIRST OPERAND IS AN IDENTIFIER')
                     num, err = self.num_loop()
                     if err:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+                        error.append(err)
                     else:
                         res.append("Success form ident assign!")
 
@@ -2397,7 +2397,7 @@ class Parser:
             #self.advance()
                 
                 if err:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+                    error.append(err)
                     
 
                 else:
@@ -2422,7 +2422,7 @@ class Parser:
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "No closing paren!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM assign val2!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expeected number, identifier or left parenthesis!"))
     
         return res, error
         
