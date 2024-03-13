@@ -2072,7 +2072,8 @@ class Parser:
                     print("current token from var dec parse: ", self.current_tok)
                     
                     if self.current_tok.token != SEMICOLON:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec body!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
+                        return res, error
                     else:
                         self.advance()
                         res.append(["SUCCESS from variable declaration!"])
@@ -2420,7 +2421,8 @@ class Parser:
                             self.advance()
                             num, err = self.assign_val2()
                             if  err:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid assign val!"))
+                                for e in err:
+                                    error.append(e)
 
                             else:
                                 res.append("Success form ident assign!")
@@ -2897,7 +2899,7 @@ class Parser:
             print("current token from var dec parse: ", self.current_tok)
             
             if self.current_tok.token != SEMICOLON:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon from var dec body!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected Semicolon!"))
             else:
                 self.advance()
                 res.append(["force first condition"])
