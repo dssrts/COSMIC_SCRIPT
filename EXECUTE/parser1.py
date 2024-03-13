@@ -1917,15 +1917,19 @@ class Parser:
                             #self.advance()
                             print("current token from force dec parse: ", self.current_tok)
                     
-                    
+                #   whirl_stmt    
                 if self.current_tok.token in WHIRL:
                     self.advance()
+                    if self.current_tok.token != LPAREN:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected (!"))
+                        return res, error
                     w_res, w_error = self.if_whirl_condition()
                     print("token after whirl:", self.current_tok)
                     if w_error:
                         for err in w_error:
-                            error.append(err)
-                        return [], error
+                            for e in err:
+                                error.append(e)
+                        return res, error
                     else:
                         #res.append(w_res)
                         #self.advance()
@@ -3050,11 +3054,15 @@ class Parser:
                     if self.current_tok.token == WHIRL:
                         self.advance()
                         #TODO connect whirl here
+                        if self.current_tok.token != LPAREN:
+                            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected ( !"))
+                            return res, error
+
                         w_res, w_error = self.if_whirl_condition()
                         print("token after whirl:", self.current_tok)
                         if w_error:
                             for err in w_error:
-                                error.append(err)
+                                error.extend(err)
                             return [], error
                         else:
                             #self.advance()
@@ -3383,7 +3391,7 @@ class Parser:
                             if self.current_tok.token == RPAREN:
                                 res.append("SUCCESS FROM CONDITION") 
                             else:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Missing closing parenthesis!"))
+                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
                     else:
                         res.append("SUCCESS FROM CONDITION")       
                         return res, error
@@ -3397,6 +3405,7 @@ class Parser:
                 if n_error:
                     for err in n_error:
                         error.append(err)
+                    return res, error
                 #self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
@@ -3476,6 +3485,7 @@ class Parser:
             else:
                 print("ETO YUNG ERROR")
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or logical operator or relational operator or right parenthesis!"))
+                return res, error
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, or left paren!"))
         
