@@ -2343,9 +2343,12 @@ class Parser:
             elif self.current_tok.token == IDENTIFIER:
                 print("first value in assign val is an identifier")
                 self.advance()
+                if self.in_universe == True:
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot initialize an identifier to variable in universe declaration/initialization!"))
+                    return res, error
                 if self.current_tok.token == LPAREN:
                     if self.in_universe == True:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM call form!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot call form in universe declaration/initialization!"))
                         return res, error
                     print("we assigned a function call to a variable")
                     c_form, call_form_error = self.call_form()
