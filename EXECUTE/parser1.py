@@ -2949,7 +2949,7 @@ class Parser:
             self.advance()
             if self.current_tok.token in REL_OP:
                 self.advance()
-                if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER):
+                if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER, LPAREN):
                 
                     n_res, n_error = self.assign_val2()
                     print("assign val in arith rel op left: ", self.current_tok.token)
@@ -2961,7 +2961,7 @@ class Parser:
                    
 
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier, or lparen!"))
                     print("error operand: ", self.current_tok)
             else:
                 error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected <, >, <=, >=, !=  "))
