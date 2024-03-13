@@ -3192,8 +3192,8 @@ class Parser:
             else:
                 if self.current_tok.token == RPAREN:
                     self.advance()
-                    if self.current_tok.token == NEWLINE:
-                        self.advance()
+                    # if self.current_tok.token == NEWLINE:
+                    #     self.advance()
                     if self.current_tok.token == CLBRACKET:
                         self.advance()
                         if_res, if_error = self.body()
@@ -3272,6 +3272,8 @@ class Parser:
             else:
                 if self.current_tok.token == RPAREN:
                     self.advance()
+                    # if self.current_tok.token == NEWLINE:
+                    #     self.advance()
                     if self.current_tok.token == CLBRACKET:
                         self.advance()
                         if_res, if_error = self.body()
@@ -3322,7 +3324,7 @@ class Parser:
         self.advance()
         print("IN ELSE STMT: ", self.current_tok)
         if self.current_tok.token != CLBRACKET:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected else Scope!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected { !"))
         else:
             self.advance()
             else_res, else_error = self.body()
