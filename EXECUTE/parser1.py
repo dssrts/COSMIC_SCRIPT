@@ -2429,7 +2429,7 @@ class Parser:
             print("PARENTHESIS IN ASSIGN")
             self.advance()
             if self.current_tok.token == RPAREN:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Empty parenthesis is not allowed!"))   
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier or left parenthesis!"))   
             else:
                 check, err = self.assign_val2()
             #self.advance()
