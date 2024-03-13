@@ -3267,7 +3267,8 @@ class Parser:
             self.advance()
             c_ces, c_error = self.if_whirl_condition()
             if c_error:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                for err in c_error:
+                    error.append(err)
             else:
                 if self.current_tok.token == RPAREN:
                     self.advance()
@@ -3304,14 +3305,14 @@ class Parser:
                             #         self.advance()
                             # return res, error
                     else:
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif scope!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected { !"))
                         
                     #res.append(["SUCCESS FROM IF"]) 
                     
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid elif condition!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected (!"))
 
         return res, error
     
