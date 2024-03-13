@@ -2393,7 +2393,7 @@ class Parser:
                     print("list: ", err)
                     if err:
                         #error.append(err)
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your saturn value!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your list value!"))
                         #return res, error
                     else:
                         if self.current_tok.token != SRBRACKET:
@@ -2401,6 +2401,15 @@ class Parser:
                         else:
                             print("Sucess from assign list")
                             self.advance()
+                elif self.current_tok.token in (INCRE, DECRE):
+                    
+                    self.advance()
+                    if self.current_tok.token != IDENTIFIER:
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+                    else:
+                        res.append("success unary init")
+                        self.advance()
+                    ########
                 else:
                     print('FIRST OPERAND IS AN IDENTIFIER')
                     num, err = self.num_loop()
@@ -2444,6 +2453,12 @@ class Parser:
                         #return True
                     else:
                         error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
+        elif self.current_tok.token == INCRE or self.current_tok.token == DECRE:
+            self.advance()
+            if self.current_tok.token != IDENTIFIER:
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier!"))
+            else:
+                self.advance()
         else:
             error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier or left parenthesis!"))
     
