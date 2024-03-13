@@ -2373,7 +2373,8 @@ class Parser:
                     print('call form result in assign val:', c_form)
                     if call_form_error:
                         print("ERROR IN VALL FORM")
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "ERROR FROM call form!"))
+                        for err in call_form_error:
+                            error.append(err)
                         
                     else:
                         self.advance()
@@ -2718,7 +2719,7 @@ class Parser:
                 print("current token after comma: ", self.current_tok.token)
                 if a_error:
                     print("THERES AN ERROR IN THE FUNCTION ARGS")
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected literal after comma!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, true, false, or string after commna!"))
                 
                 else:
                     print("NO ERROR IN THE FUNCTION ARGS")
@@ -2734,7 +2735,7 @@ class Parser:
                 res.append(["SUCCESS from function call!"])
                     
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid function call!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected closing parenthesis!"))
 
         elif self.current_tok.token == RPAREN:
             print("found no arguments in function call")
