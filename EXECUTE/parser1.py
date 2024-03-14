@@ -3199,7 +3199,7 @@ class Parser:
                     if err:
                         print("error in assign val outer: ", self.current_tok)
                         #error.append(err)
-                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Please check your outer value!"))
+                        error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, or string!"))
                         return res, error
                         
                     else:
@@ -3207,11 +3207,11 @@ class Parser:
                         # return res, error
                         print("no error after assing val outer")
                 elif self.current_tok.token in (TRUE, FALSE):
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot print boolean value!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, or string!"))
                     
 
                 else:
-                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Cannot print value!"))
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number, identifier, or string!"))
 
                         
                 # if self.current_tok.token != STRING and self.current_tok.token != IDENTIFIER and self.current_tok.token != INTEL and self.current_tok.token != GRAVITY:
