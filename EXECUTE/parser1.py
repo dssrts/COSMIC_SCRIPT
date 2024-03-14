@@ -3018,7 +3018,7 @@ class Parser:
         if self.current_tok.token == IDENTIFIER:
             self.advance()
             #-- if we assign a value to it but not declaring it           
-            if self.current_tok.token == EQUAL or self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
+            if self.current_tok.token == PLUS_EQUAL or self.current_tok.token == MINUS_EQUAL or self.current_tok.token == MUL_EQUAL or self.current_tok.token == DIV_EQUAL:
                 print("initialize the variable")
                 assign, a_error = self.init_var()
 
@@ -3039,7 +3039,7 @@ class Parser:
             # -- else no other operation for it
             else:
                 print('INVALID IDENT OPERATION')
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid identifier operation in force third condition!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected --, ++, +=, -=, *=, /="))
                 return [], error
         elif self.current_tok.token == INCRE:
             self.advance()
@@ -3049,7 +3049,7 @@ class Parser:
                 return res, error
             
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after increment!"))
 
         elif self.current_tok.token == DECRE:
             self.advance()
@@ -3058,10 +3058,10 @@ class Parser:
                 return res, error
                     
             else:
-                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid unary statement!"))
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifierafter decrement!"))
 
         else:
-            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Invalid third condition for force!"))
+            error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier, ++, or --"))
         
 
         return res, error
