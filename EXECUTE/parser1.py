@@ -2336,7 +2336,7 @@ class Parser:
                 print("found a number in assign val 2")
                 self.advance()
                 
-                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, SRBRACKET, OUT):
+                if self.current_tok.token not in (MUL, DIV, PLUS, MINUS, MODULUS, SEMICOLON, COMMA, RPAREN, LESS_THAN, GREATER_THAN, SRBRACKET, OUT, AND_OP, OR_OP):
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected +, -, /, *, %, or ; "))
                     print("current error tok: ",  self.current_tok)
                     return res, error
@@ -2996,7 +2996,7 @@ class Parser:
                 if self.current_tok.token in (INTEL, GRAVITY, IDENTIFIER, LPAREN):
                 
                     n_res, n_error = self.assign_val2()
-                    print("assign val in arith rel op left: ", self.current_tok.token)
+                    print("assign val in arith rel op left in: ", self.current_tok.token)
                     if n_error:
                         for err in n_error:
                             error.append(err)
@@ -3452,6 +3452,7 @@ class Parser:
                 n_res, n_error = self.assign_val2()
                 print("assign val in arith rel op left: ", self.current_tok.token)
                 if n_error:
+                    print("ERROR IN assign val in arith rel op left")
                     for err in n_error:
                         error.append(err)
                     return res, error
@@ -3483,7 +3484,8 @@ class Parser:
                     c_ces, c_error = self.if_whirl_condition()
                     if c_error:
                         print('error after log op')
-                        error.append(c_error)
+                        for err in c_error:
+                            error.append(err)
                     
                     else:
                         print("SUCCESS NAMAN YUNG RIGHT SIDE: ", self.current_tok)
