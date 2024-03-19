@@ -2560,9 +2560,10 @@ class Parser:
                         if self.current_tok.token == COMMA:
                             print("you found a comma in the params!")
                             #if comma yung current, find identifier, next, then if comma, next, and repeat
-                            c_error = self.comma()
+                            res, c_error = self.comma()
                             if c_error:
-                                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Error in parameters!"))
+                                for err in c_error:
+                                    error.append(err)
                                 return res, error
                             
                             print("current token after comma: ", self.current_tok.token)
@@ -2771,7 +2772,9 @@ class Parser:
         return error
 
     def comma(self):
-        error = False
+        res = []
+        error = []
+        #error = False
         while self.current_tok.token  == COMMA:
             self.advance()
             if self.current_tok.token == VAR:
@@ -2780,11 +2783,13 @@ class Parser:
                     self.advance()
                 else:
                     #error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier after comma!"))
-                    error = True
+                    error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected identifier "))
+
             else:
-                error = True
+                error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected var "))
                 
-        return error
+                
+        return res, error
     
     #*LOOPING STATEMENTS
     def force_stmt(self):
