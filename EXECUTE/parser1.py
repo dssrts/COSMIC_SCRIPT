@@ -3473,6 +3473,17 @@ class Parser:
                             print("REL OP TOKEN: ", self.current_tok)
                             if self.current_tok.token == RPAREN:
                                 return res, error
+                elif self.current_tok.token in LPAREN:
+                    #TODO RECURSIVE CALL SA IF WHIRL CONDITION
+                    n_res, n_error = self.assign_val2()
+                    print("assign val in arith rel op left: ", self.current_tok.token)
+                    if n_error:
+                        print("ERROR IN assign val in arith rel op left")
+                        for err in n_error:
+                            error.append(err)
+                        return res, error
+                    
+                    
                        
                 else:
                     error.append(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected number or identifier!"))
